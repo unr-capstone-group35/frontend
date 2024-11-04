@@ -1,24 +1,8 @@
 <template>
     <div class="min-h-screen bg-gradient-to-b from-white to-green-50 flex flex-col">
-      <header class="border-b bg-white">
-        <nav
-          class="container mx-auto px-4 py-3 flex justify-between items-center"
-        >
-          <NuxtLink to="/" class="flex items-center gap-2">
-            <span class="font-bold text-xl text-emerald-600">CodeLingo</span>
-          </NuxtLink>
-          <div class="flex items-center gap-4">
-            <button class="text-gray-600 hover:text-gray-800 text-sm font-medium">
-              SITE LANGUAGE: ENGLISH
-            </button>
-          </div>
-        </nav>
-      </header>
   
       <main class="container mx-auto px-4 flex-1 flex items-center py-24">
-        <div
-          class="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-6xl mx-auto"
-        >
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-6xl mx-auto">
           <div class="lg:w-1/2 text-center lg:text-left order-2 lg:order-1">
             <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               The free, fun, and effective way to learn programming concepts!
@@ -28,30 +12,28 @@
               hands-on coding challenges.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto lg:mx-0">
-              <button
+              <NuxtLink
+                to="/start-learning"
                 class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-8 rounded-xl shadow-md transition-colors flex-1"
               >
                 START LEARNING
-              </button>
-              <button
-                class="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-bold py-4 px-8 rounded-xl transition-colors flex-1"
+              </NuxtLink>
+              <NuxtLink
+                to="/signin"
+                class="inline-flex items-center justify-center border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 font-bold py-4 px-8 rounded-xl transition-colors flex-1"
               >
                 SIGN IN
-              </button>
+              </NuxtLink>
             </div>
           </div>
   
           <div class="lg:w-1/2 order-1 lg:order-2">
             <div class="relative">
-              <div
-                class="absolute inset-0 bg-gradient-to-br from-green-200 to-green-100 rounded-2xl transform -rotate-3"
-              ></div>
+              <div class="absolute inset-0 bg-gradient-to-br from-green-200 to-green-100 rounded-2xl transform -rotate-3"></div>
               <div class="relative bg-white p-8 rounded-2xl shadow-lg">
                 <div class="space-y-4">
                   <div class="flex items-center gap-4">
-                    <div
-                      class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                       <span class="text-2xl">💻</span>
                     </div>
                     <div class="flex-1">
@@ -71,4 +53,14 @@
         </div>
       </main>
     </div>
-  </template> 
+</template>
+
+<script>
+export default {
+  name: 'IndexPage',
+};
+</script>
+
+<style scoped>
+/* additional styling */
+</style>

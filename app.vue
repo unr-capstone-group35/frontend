@@ -1,5 +1,27 @@
 <template>
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <div id="app">
+    <Header /> 
+    <NuxtPage />  
+    <Footer /> 
+  </div>
 </template>
+
+<script>
+import Header from './components/Header.vue';  // Import header component
+import Footer from './components/Footer.vue';  // Import footer component
+
+export default {
+  components: {
+    Header,
+    Footer,
+  },
+};
+</script>
+
+<style>
+/* Global styles here */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+</style>
