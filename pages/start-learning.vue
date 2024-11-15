@@ -1,63 +1,64 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white to-green-50 flex flex-col overflow-auto">
-
-    <main class="container mx-auto px-4 py-24">
-      <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 text-center mb-12">
-        Choose a Topic to Start Learning
-      </h1>
-
-      <div class="flex flex-col gap-8">
-        
-        <div class="bg-white p-10 rounded-lg shadow-md w-full max-w-2xl mx-auto">
-          <h2 class="text-3xl font-semibold text-gray-800 mb-4">Basics of Computer Science</h2>
-          <p class="text-gray-600 mb-6 text-lg">
-            Start with foundational concepts like variables, data types, and control structures.
+  <div class="min-h-screen bg-gradient-to-b from-white to-green-50 p-8">
+    <main class="max-w-7xl mx-auto space-y-24">
+      <!-- Computer Science Basics -->
+      <section class="flex flex-col lg:flex-row gap-8">
+        <div class="lg:w-2/5">
+          <h2 class="text-4xl font-bold mb-6 text-gray-900">Computer Science Basics</h2>
+          <p class="text-gray-600 text-lg leading-relaxed mb-6">
+            Master the fundamental concepts of computer science and programming. Build a strong foundation in computational thinking and problem-solving skills essential for any programming journey.
           </p>
-          <NuxtLink
-            :to="{ name: 'learn', params: { topic: 'basics' } }"
-            class="block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors text-lg"
-          >
-            Explore
-          </NuxtLink>
         </div>
-
-        <div class="bg-white p-10 rounded-lg shadow-md w-full max-w-2xl mx-auto">
-          <h2 class="text-3xl font-semibold text-gray-800 mb-4">Data Structures</h2>
-          <p class="text-gray-600 mb-6 text-lg">
-            Learn about various data structures like arrays, linked lists, stacks, and queues.
+        <div class="lg:w-3/5">
+          <CourseCard
+            title="Programming Fundamentals"
+            description="Learn the basics of programming and computational thinking through hands-on exercises and real-world examples."
+            :image="'/images/basics.jpg'"
+            :duration="12"
+            difficulty="Beginner"
+          />
+        </div>
+      </section>
+      <!-- Data Structures -->
+      <section class="flex flex-col lg:flex-row gap-8">
+        <div class="lg:w-2/5">
+          <h2 class="text-4xl font-bold mb-6 text-gray-900">Data Structures</h2>
+          <p class="text-gray-600 text-lg leading-relaxed mb-6">
+            Dive deep into essential data structures that power modern software. Learn how to organize and manage data efficiently for optimal performance and scalability.
           </p>
-          <NuxtLink
-            :to="{ name: 'learn', params: { topic: 'data-structures' } }"
-            class="block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors text-lg"
-          >
-            Explore
-          </NuxtLink>
         </div>
-
-        <div class="bg-white p-10 rounded-lg shadow-md w-full max-w-2xl mx-auto">
-          <h2 class="text-3xl font-semibold text-gray-800 mb-4">Algorithms</h2>
-          <p class="text-gray-600 mb-6 text-lg">
-            Understand algorithm concepts like sorting, searching, and complexity analysis.
+        <div class="lg:w-3/5">
+          <CourseCard
+            title="Data Structures for Beginners"
+            description="Master fundamental data structures like arrays, linked lists, and trees with practical implementations."
+            :image="'/images/data-structures.jpg'"
+            :duration="24"
+            difficulty="Medium"
+          />
+        </div>
+      </section>
+      <!-- Algorithms -->
+      <section class="flex flex-col lg:flex-row gap-8">
+        <div class="lg:w-2/5">
+          <h2 class="text-4xl font-bold mb-6 text-gray-900">Algorithms</h2>
+          <p class="text-gray-600 text-lg leading-relaxed mb-6">
+            Master the art of problem-solving with algorithms. Learn essential techniques for designing efficient solutions to complex computational problems.
           </p>
-          <NuxtLink
-            :to="{ name: 'learn', params: { topic: 'algorithms' } }"
-            class="block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors text-lg"
-          >
-            Explore
-          </NuxtLink>
         </div>
-
-      </div>
+        <div class="lg:w-3/5">
+          <CourseCard
+            title="Advanced Algorithms"
+            description="Master complex algorithms and optimization techniques used in modern software development."
+            :image="'/images/algorithms.jpg'"
+            :duration="25"
+            difficulty="Hard"
+          />
+        </div>
+      </section>
     </main>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'StartLearning',
-};
+<script setup>
+import CourseCard from '~/components/CourseCard.vue'
 </script>
-
-<style scoped>
-/* Additional styling here if needed */
-</style>
