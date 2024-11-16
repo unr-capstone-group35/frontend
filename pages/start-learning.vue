@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white to-green-50 p-8">
+  <div class="min-h-screen bg-gray-50 p-8">
     <main class="max-w-7xl mx-auto space-y-24">
       <!-- Computer Science Basics -->
       <section class="flex flex-col lg:flex-row gap-8">
@@ -11,14 +11,16 @@
         </div>
         <div class="lg:w-3/5">
           <CourseCard
+            courseId="cs-basics"
             title="Programming Fundamentals"
             description="Learn the basics of programming and computational thinking through hands-on exercises and real-world examples."
             :image="'/images/basics3.jpg'"
-            :duration="12"
-            difficulty="Beginner"
+            :duration="5"
+            difficulty="Easy"
           />
         </div>
       </section>
+
       <!-- Data Structures -->
       <section class="flex flex-col lg:flex-row gap-8">
         <div class="lg:w-2/5">
@@ -29,14 +31,16 @@
         </div>
         <div class="lg:w-3/5">
           <CourseCard
-            title="Data Structures for Beginners"
+            courseId="data-structures"
+            title="Data Structures"
             description="Master fundamental data structures like arrays, linked lists, and trees with practical implementations."
             :image="'/images/data-structures2.jpg'"
-            :duration="24"
+            :duration="10"
             difficulty="Medium"
           />
         </div>
       </section>
+
       <!-- Algorithms -->
       <section class="flex flex-col lg:flex-row gap-8">
         <div class="lg:w-2/5">
@@ -47,10 +51,11 @@
         </div>
         <div class="lg:w-3/5">
           <CourseCard
+            courseId="algorithms"
             title="Advanced Algorithms"
             description="Master complex algorithms and optimization techniques used in modern software development."
             :image="'/images/algorithms.jpg'"
-            :duration="25"
+            :duration="15"
             difficulty="Hard"
           />
         </div>

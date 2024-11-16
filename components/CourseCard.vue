@@ -1,55 +1,65 @@
 <template>
-    <div class="course-card bg-white rounded-xl overflow-hidden shadow-lg flex flex-col md:flex-row border border-gray-200">
-      <div class="md:w-1/3 relative">
-        <div class="absolute inset-0 bg-gradient-to-br from-green-200 to-green-100 opacity-20"></div>
-        <img :src="image" :alt="title" class="h-full w-full object-cover relative z-10" />
-      </div>
-      <div class="p-6 md:w-2/3">
-        <h3 class="text-xl font-bold mb-3 text-gray-900">{{ title }}</h3>
-        <p class="text-gray-600 mb-4 mt-4">{{ description }}</p>
-        <div class="flex items-center">
-          <span class="text-sm text-emerald-600">{{ duration }} hours</span>
-          <span :class="[difficultyClass, 'ml-4 px-3 py-1 text-xs rounded-full text-white']">
-            {{ difficulty }}
-          </span>
-        </div>
+  <div 
+    class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer max-w-lg mx-auto"
+  >
+    <img :src="image" :alt="title" class="w-full h-40 object-cover" />
+    <div 
+    class="p-5 transition-colors duration-300 hover:bg-emerald-100" @click="handleCourseSelect">
+      <h3 class="text-xl font-bold text-gray-900 mb-2">{{ title }}</h3>
+      <p class="text-gray-600 mb-4 text-sm">{{ description }}</p>
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-500">{{ duration }} hours</span>
+        <span 
+          class="px-3 py-1 rounded-full text-sm"
+          :class="{
+            'bg-green-100 text-green-800': difficulty.toLowerCase() === 'easy',
+            'bg-yellow-100 text-yellow-800': difficulty.toLowerCase() === 'medium',
+            'bg-red-100 text-red-800': difficulty.toLowerCase() === 'hard'
+          }"
+        >
+          {{ difficulty }}
+        </span>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { computed } from 'vue'
-  
-  const props = defineProps({
-    title: {
-      type: String,
-      required: true
-    },
-    description: {
-      type: String,
-      required: true
-    },
-    image: {
-      type: String,
-      required: true
-    },
-    duration: {
-      type: Number,
-      required: true
-    },
-    difficulty: {
-      type: String,
-      required: true,
-      validator: (value) => ['Beginner', 'Medium', 'Hard'].includes(value)
-    }
-  })
-  
-  const difficultyClass = computed(() => {
-    const classes = {
-    'Beginner': 'bg-green-600',
-    'Medium': 'bg-yellow-600',
-    'Hard': 'bg-red-600'
-    }
-    return classes[props.difficulty] || 'bg-emerald-600'
-  })
-  </script>
+  </div>
+</template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+import { useCourseStore } from '~/stores/courseStore'
+
+const props = defineProps({
+  courseId: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  image: {
+    type: String,
+    required: true
+  },
+  duration: {
+    type: Number,
+    required: true
+  },
+  difficulty: {
+    type: String,
+    required: true
+  }
+})
+
+const router = useRouter()
+const courseStore = useCourseStore()
+
+const handleCourseSelect = () => {
+  courseStore.selectCourse(props.courseId)
+  router.push('/learn')
+}
+</script>
