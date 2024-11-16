@@ -1,20 +1,20 @@
 <template>
   <div 
-    class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer max-w-lg mx-auto"
+    class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer max-w-lg mx-auto"
   >
     <img :src="image" :alt="title" class="w-full h-40 object-cover" />
     <div 
-    class="p-5 transition-colors duration-300 hover:bg-emerald-100" @click="handleCourseSelect">
-      <h3 class="text-xl font-bold text-gray-900 mb-2">{{ title }}</h3>
-      <p class="text-gray-600 mb-4 text-sm">{{ description }}</p>
+    class="p-5 transition-colors duration-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50" @click="handleCourseSelect">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ title }}</h3>
+      <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">{{ description }}</p>
       <div class="flex justify-between items-center">
-        <span class="text-sm text-gray-500">{{ duration }} hours</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ duration }} hours</span>
         <span 
           class="px-3 py-1 rounded-full text-sm"
           :class="{
-            'bg-green-100 text-green-800': difficulty.toLowerCase() === 'easy',
-            'bg-yellow-100 text-yellow-800': difficulty.toLowerCase() === 'medium',
-            'bg-red-100 text-red-800': difficulty.toLowerCase() === 'hard'
+            'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100': difficulty.toLowerCase() === 'easy',
+            'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100': difficulty.toLowerCase() === 'medium',
+            'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100': difficulty.toLowerCase() === 'hard'
           }"
         >
           {{ difficulty }}

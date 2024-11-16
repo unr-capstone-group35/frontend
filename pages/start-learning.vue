@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-8">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
     <main class="max-w-7xl mx-auto space-y-24">
       <!-- Computer Science Basics -->
       <section class="flex flex-col lg:flex-row gap-8">
         <div class="lg:w-2/5">
-          <h2 class="text-4xl font-bold mb-6 text-gray-900">Computer Science Basics</h2>
-          <p class="text-gray-600 text-lg leading-relaxed mb-6">
+          <h2 class="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Computer Science Basics</h2>
+          <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
             Master the fundamental concepts of computer science and programming. Build a strong foundation in computational thinking and problem-solving skills essential for any programming journey.
           </p>
         </div>
@@ -24,8 +24,8 @@
       <!-- Data Structures -->
       <section class="flex flex-col lg:flex-row gap-8">
         <div class="lg:w-2/5">
-          <h2 class="text-4xl font-bold mb-6 text-gray-900">Data Structures</h2>
-          <p class="text-gray-600 text-lg leading-relaxed mb-6">
+          <h2 class="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Data Structures</h2>
+          <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
             Dive deep into essential data structures that power modern software. Learn how to organize and manage data efficiently for optimal performance and scalability.
           </p>
         </div>
@@ -44,8 +44,8 @@
       <!-- Algorithms -->
       <section class="flex flex-col lg:flex-row gap-8">
         <div class="lg:w-2/5">
-          <h2 class="text-4xl font-bold mb-6 text-gray-900">Algorithms</h2>
-          <p class="text-gray-600 text-lg leading-relaxed mb-6">
+          <h2 class="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Algorithms</h2>
+          <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
             Learn to analyze and optimize sorting, searching, and other fundamental algorithms to build faster, more efficient solutions.
           </p>
         </div>
@@ -63,7 +63,6 @@
     </main>
   </div>
 </template>
-
 <script setup>
 import CourseCard from '~/components/CourseCard.vue'
 </script>
