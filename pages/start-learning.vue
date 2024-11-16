@@ -13,7 +13,7 @@
           <CourseCard
             title="Programming Fundamentals"
             description="Learn the basics of programming and computational thinking through hands-on exercises and real-world examples."
-            :image="'/images/basics.jpg'"
+            :image="'/images/basics3.jpg'"
             :duration="12"
             difficulty="Beginner"
           />
@@ -31,7 +31,7 @@
           <CourseCard
             title="Data Structures for Beginners"
             description="Master fundamental data structures like arrays, linked lists, and trees with practical implementations."
-            :image="'/images/data-structures.jpg'"
+            :image="'/images/data-structures2.jpg'"
             :duration="24"
             difficulty="Medium"
           />
