@@ -5,7 +5,7 @@ export const useCourseStore = defineStore('course', {
     selectedCourse: null,
     courses: {
       'cs-basics': {
-        id: 1,
+        id: 'cs-basics',  // Changed to match courseId
         name: "Computer Science Basics",
         description: "Master the fundamental concepts of computer science and programming",
         steps: [
@@ -15,7 +15,7 @@ export const useCourseStore = defineStore('course', {
         ]
       },
       'data-structures': {
-        id: 2,
+        id: 'data-structures',  // Changed to match courseId
         name: "Data Structures",
         description: "Dive deep into essential data structures that power modern software",
         steps: [
@@ -27,7 +27,7 @@ export const useCourseStore = defineStore('course', {
         ]
       },
       'algorithms': {
-        id: 3,
+        id: 'algorithms',  // Changed to match courseId
         name: "Algorithms",
         description: "Master the art of problem-solving with algorithms",
         steps: [
@@ -41,8 +41,8 @@ export const useCourseStore = defineStore('course', {
   }),
   actions: {
     selectCourse(courseId) {
+      // Set the entire course object as selectedCourse
       this.selectedCourse = this.courses[courseId]
     }
   }
 })
-

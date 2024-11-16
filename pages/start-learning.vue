@@ -46,7 +46,7 @@
         <div class="lg:w-2/5">
           <h2 class="text-4xl font-bold mb-6 text-gray-900">Algorithms</h2>
           <p class="text-gray-600 text-lg leading-relaxed mb-6">
-            Master the art of problem-solving with algorithms. Learn essential techniques for designing efficient solutions to complex computational problems.
+            Learn to analyze and optimize sorting, searching, and other fundamental algorithms to build faster, more efficient solutions.
           </p>
         </div>
         <div class="lg:w-3/5">

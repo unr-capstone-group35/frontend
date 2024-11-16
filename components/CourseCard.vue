@@ -58,8 +58,14 @@ const props = defineProps({
 const router = useRouter()
 const courseStore = useCourseStore()
 
-const handleCourseSelect = () => {
-  courseStore.selectCourse(props.courseId)
-  router.push('/learn')
+const handleCourseSelect = async () => {
+  try {
+    // First select the course
+    courseStore.selectCourse(props.courseId)
+    // Then navigate
+    await router.push('/learn')
+  } catch (error) {
+    console.error('Error navigating to learn page:', error)
+  }
 }
 </script>
