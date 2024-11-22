@@ -141,7 +141,7 @@
                 <!-- Controller graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                   <path d="M120 160 C100 140 100 100 150 100 L250 100 C300 100 300 140 280 160 Q260 180 200 180 Q140 180 120 160 Z" 
-                        fill="#818CF8" 
+                        fill="#22c55e" 
                         opacity="0.9"/>
 
                   <rect x="140" y="120" width="10" height="30" fill="white"/>
@@ -152,8 +152,8 @@
                   <circle cx="245" cy="135" r="8" fill="white"/> <!-- Right Buttons: Left  -->
                   <circle cx="260" cy="150" r="8" fill="white"/> <!-- Right Buttons: Bottom  -->
 
-                  <circle cx="170" cy="160" r="12" fill="#6366F1"/>
-                  <circle cx="230" cy="160" r="12" fill="#6366F1"/>
+                  <circle cx="170" cy="160" r="12" fill="#166534"/>
+                  <circle cx="230" cy="160" r="12" fill="#166534"/>
                 </svg>
                 <!-- End of Controller graphic -->
               </div>

@@ -5,11 +5,6 @@
         <span class="font-bold text-xl text-emerald-600 dark:text-emerald-400">CodeLingo</span>
       </NuxtLink>
       <div class="flex items-center gap-4">
-        <button 
-          class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 text-sm font-medium"
-        >
-          SITE LANGUAGE: ENGLISH
-        </button>
         <button
           @click="toggleTheme"
           class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"

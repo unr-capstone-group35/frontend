@@ -30,16 +30,18 @@
         <div class="max-h-[500px] overflow-y-auto">
           <div v-for="(step, index) in roadmapSteps" :key="index" class="mb-6">
             <div class="flex items-center mb-4">
+              <!-- Numbered Circle -->
               <div
                 class="w-12 h-12 flex justify-center items-center bg-emerald-600 dark:bg-emerald-500 text-white rounded-full mr-4"
               >
                 {{ index + 1 }}
               </div>
-              <div class="flex-1 border-t-2 border-emerald-600 dark:border-emerald-500"></div>
-            </div>
-            <div class="ml-16">
-              <h3 class="text-xl font-semibold text-gray-800 dark:text-white">{{ step.title }}</h3>
-              <p class="text-gray-600 dark:text-gray-300 text-lg">{{ step.description }}</p>
+              
+              <!-- Step Title and Description (Next to the circle) -->
+              <div class="flex flex-col">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">{{ step.title }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-lg">{{ step.description }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -65,6 +67,7 @@
     </aside>
   </div>
 </template>
+
 
 <script>
 import { useCourseStore } from '~/stores/courseStore'
