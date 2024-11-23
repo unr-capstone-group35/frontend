@@ -249,7 +249,7 @@ export default {
   background-clip: text;
   color: transparent;
   background-size: 200% 100%;
-  animation: gradient 6s linear infinite;
+  animation: gradient 4s linear infinite;
 }
 
 @keyframes gradient {

@@ -10,7 +10,7 @@ export const useCourseStore = defineStore('course', {
         description: "Master the fundamental concepts of computer science and programming",
         steps: [
           { title: "Learn Variables", description: "Understand variables, their types, and initialization." },
-          { title: "Learn Control Structures", description: "Understand loops, conditionals, and basic logic." },
+          { title: "Learn Control Structures", description: "Understand conditionals, loops, and basic logic." },
           { title: "Learn Functions", description: "Learn how to write functions and organize code." },
         ]
       },

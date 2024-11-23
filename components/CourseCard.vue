@@ -63,9 +63,9 @@ const handleCourseSelect = async () => {
     // First select the course
     courseStore.selectCourse(props.courseId)
     // Then navigate
-    await router.push('/learn')
+    await router.push('/roadmap')
   } catch (error) {
-    console.error('Error navigating to learn page:', error)
+    console.error('Error navigating to roadmap page:', error)
   }
 }
 </script>
