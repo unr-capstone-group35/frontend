@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+  <div class="h-[calc(100vh-116px)] bg-gray-100 dark:bg-gray-900 flex flex-col">
     <!-- Sign-up Form Container -->
     <div class="flex-1 flex items-center justify-center w-full">
       <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md max-w-md w-full">

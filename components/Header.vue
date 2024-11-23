@@ -2,7 +2,7 @@
   <header class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 w-full">
     <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
       <NuxtLink to="/" class="flex items-center gap-2">
-        <span class="font-bold text-xl text-emerald-600 dark:text-emerald-400">CodeLingo</span>
+        <span class="font-bold text-xl text-emerald-600 dark:text-emerald-400">DevQuest</span>
       </NuxtLink>
       <div class="flex items-center gap-4">
         <button

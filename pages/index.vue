@@ -1,10 +1,13 @@
 <template>
   <div>
     <!-- Start Learning Card -->
-    <section class="h-screen flex items-center bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800">
-      <div class="container mx-auto px-4">
+    <section class="h-[calc(100vh-35px)] flex items-start bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800">
+      <div class="container mx-auto px-4 pt-20">
+        <div class="text-center mb-12">
+          <span class="font-bold text-6xl animate-gradient bg-gradient-text">DevQuest</span>
+        </div>
         <!-- First card content-->
-        <div class="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-6xl mx-auto">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-6xl mx-auto mt-32">
           <div class="lg:w-1/2 text-center lg:text-left order-2 lg:order-1">
             <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
               The free, fun, and effective way to learn programming concepts!
@@ -37,21 +40,51 @@
                       <span class="text-3xl">💻</span>
                     </div>
                     <div class="flex-1">
-                      <div class="h-4 bg-gray-100 dark:bg-gray-700 rounded w-3/4"></div>
-                      <div class="h-3 bg-gray-50 dark:bg-gray-600 rounded w-1/2 mt-2"></div>
+                      <h3 class="font-semibold text-lg text-gray-900 dark:text-white">Start Coding Today</h3>
+                      <p class="text-sm text-gray-600 dark:text-gray-300">Interactive lessons & challenges</p>
                     </div>
                   </div>
-                  <div class="space-y-2">
-                    <div class="h-3 bg-gray-100 dark:bg-gray-700 rounded w-full"></div>
-                    <div class="h-3 bg-gray-50 dark:bg-gray-600 rounded w-5/6"></div>
-                    <div class="h-3 bg-gray-100 dark:bg-gray-700 rounded w-4/6"></div>
+
+                    <div class="space-y-3 font-mono text-sm">
+
+                      <div class="p-2">
+                        <span class="text-emerald-600 dark:text-emerald-400">function </span> 
+                        <span class="text-purple-600 dark:text-purple-400">learnToCode</span>
+                        <span class="text-gray-900 dark:text-gray-300">()</span>
+                        <span class="text-gray-900 dark:text-gray-300">{</span>
+                      </div>
+
+                      <div class="p-2 pl-6 whitespace-nowrap overflow-x-auto">
+                        <span class="text-blue-600 dark:text-blue-400">const </span>
+                        <span class="text-gray-900 dark:text-gray-300">skills </span>
+                        <span class="text-gray-900 dark:text-gray-300">= </span>
+                        <span class="text-gray-900 dark:text-gray-300">[</span>
+                        <span class="text-orange-600 dark:text-orange-400">'Basics'</span>
+                        <span class="text-gray-900 dark:text-gray-300">,</span>
+                        <span class="text-orange-600 dark:text-orange-400">'Data-Structs'</span>
+                        <span class="text-gray-900 dark:text-gray-300">,</span>
+                        <span class="text-orange-600 dark:text-orange-400">'Algorithms'</span>
+                        <span class="text-gray-900 dark:text-gray-300">]</span>
+                        <span class="text-gray-900 dark:text-gray-300">;</span>
+                      </div>
+
+                      <div class="p-2 pl-6">
+                        <span class="text-blue-600 dark:text-blue-400">return</span>
+                         <span class="text-orange-600 dark:text-orange-400">'Success!'</span>
+                         <span class="text-gray-900 dark:text-gray-300">;</span>
+                      </div>
+
+                      <div class="p-2">
+                        <span class="text-gray-900 dark:text-gray-300">}</span>
+                      </div>
+
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
     </section>
 
     <!-- What You'll Learn Card -->
@@ -188,24 +221,44 @@ export default {
 </script>
 
 <style scoped>
-html {
+/* Scrolling behavior */
+:deep(html) {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
 }
 
-section {
+:deep(section) {
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-::-webkit-scrollbar {
+/* Scrollbar hiding */
+:deep(::-webkit-scrollbar) {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-* {
+:deep(*) {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* DevQuest animation */
+.bg-gradient-text {
+  background: linear-gradient(to right, #059669, #34d399, #059669);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+  animation: gradient 6s linear infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
 </style>

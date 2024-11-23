@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-    <main class="max-w-7xl mx-auto space-y-24">
+  <div class="min-h-screen bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800">
+    <main class="max-w-7xl mx-auto p-12 py-24 space-y-24">
       <!-- Computer Science Basics -->
-      <section class="flex flex-col lg:flex-row gap-8">
+      <section class="flex flex-col lg:flex-row gap-8 pb-12 border-b border-gray-200 dark:border-gray-700">
         <div class="lg:w-2/5">
           <h2 class="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Computer Science Basics</h2>
           <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
@@ -22,7 +22,7 @@
       </section>
 
       <!-- Data Structures -->
-      <section class="flex flex-col lg:flex-row gap-8">
+      <section class="flex flex-col lg:flex-row gap-8 pb-12 border-b border-gray-200 dark:border-gray-700">
         <div class="lg:w-2/5">
           <h2 class="text-4xl font-bold mb-6 text-gray-900 dark:text-white">Data Structures</h2>
           <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
@@ -63,6 +63,7 @@
     </main>
   </div>
 </template>
+
 <script setup>
 import CourseCard from '~/components/CourseCard.vue'
 </script>
