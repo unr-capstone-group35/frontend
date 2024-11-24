@@ -64,35 +64,52 @@
             <div class="text-xl font-bold text-black dark:text-white">0</div>
           </div>
         </div>
-  
+
         <!-- Buttons -->
         <div class="mt-auto space-y-3">
-          <NuxtLink 
-            to="/leaderboard" 
-            class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-150 ease-in-out text-center">
-            Leaderboard
-          </NuxtLink>
-          
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition duration-150 ease-in-out">
-            Sign Out
-          </button>
-        </div>
+            <button 
+                @click="handleLeaderboardClick"
+                class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-150 ease-in-out text-center">
+                Leaderboard
+            </button>
+ 
+            <button 
+                @click="handleSignOut"
+                class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+                Sign Out
+            </button>
+         </div>
       </aside>
     </div>
   </template>
   
   
-  <script setup>
+<script setup>
   const props = defineProps({
     isOpen: {
       type: Boolean,
       required: true
     }
   })
-  
+
   const emit = defineEmits(['close'])
-  
+
   const close = () => {
     emit('close')
   }
-  </script>
+
+  const router = useRouter()
+
+  const handleSignOut = () => {
+    // fix later
+    close()
+    router.push('/')  
+  }
+
+
+  const handleLeaderboardClick = () => {
+    close()
+    router.push('/leaderboard')
+  }
+
+</script>
