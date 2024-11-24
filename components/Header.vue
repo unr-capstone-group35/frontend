@@ -1,35 +1,58 @@
 <template>
-  <header class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 w-full">
-    <nav class="py-3 flex justify-between items-center px-12">
-      <NuxtLink to="/" class="flex items-center gap-2">
-        <span class="font-bold text-xl text-emerald-600 dark:text-emerald-400">DevQuest</span>
-      </NuxtLink>
-      <div class="flex items-center gap-4">
-        <button
-          @click="toggleTheme"
-          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          aria-label="Toggle theme"
-        >
-          <img 
-            v-if="isDark" 
-            src="~/assets/icons/sun.svg" 
-            alt="Light mode"
-            class="w-5 h-5"
-          />
-          <img 
-            v-else 
-            src="~/assets/icons/moon.svg" 
-            alt="Dark mode"
-            class="w-5 h-5"
-          />
-        </button>
-      </div>
-    </nav>
-  </header>
+  <div>
+    <header class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 w-full">
+      <nav class="py-3 flex justify-between items-center px-12">
+        <NuxtLink to="/" class="flex items-center gap-2">
+          <span class="font-bold text-xl text-emerald-600 dark:text-emerald-400">DevQuest</span>
+        </NuxtLink>
+        <div class="flex items-center gap-4">
+          <button
+            @click="toggleTheme"
+            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Toggle theme"
+          >
+            <img 
+              v-if="isDark" 
+              src="~/assets/icons/sun.svg" 
+              alt="Light mode"
+              class="w-5 h-5"
+            />
+            <img 
+              v-else 
+              src="~/assets/icons/moon.svg" 
+              alt="Dark mode"
+              class="w-5 h-5"
+            />
+          </button>
+          
+          <!-- Hamburger Menu Button -->
+          <button
+            v-if="showHamburger"
+            @click="toggleMenu"
+            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <img 
+              src="~/assets/icons/hamburger-menu.svg" 
+              alt="Menu"
+              class="w-6 h-6 dark:invert" 
+            />
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <UserSidebar 
+      :is-open="isMenuOpen"
+      @close="toggleMenu"
+    />
+  </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 const isDark = ref(false)
 
@@ -58,6 +81,20 @@ onMounted(() => {
     document.documentElement.classList.add('dark')
   }
 })
+
+const route = useRoute()
+const isMenuOpen = ref(false)
+
+// don't show on index.vue and sign in pages
+const showHamburger = computed(() => {
+  const excludedRoutes = ['/', '/signin', '/signup']
+  return !excludedRoutes.includes(route.path)
+})
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
 </script>
 
 <style scoped>

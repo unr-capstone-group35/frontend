@@ -69,7 +69,7 @@
                       </div>
 
                       <div class="p-2 pl-6">
-                        <span class="text-blue-600 dark:text-blue-400">return</span>
+                        <span class="text-blue-600 dark:text-blue-400">return </span>
                          <span class="text-orange-600 dark:text-orange-400">'Success!'</span>
                          <span class="text-gray-900 dark:text-gray-300">;</span>
                       </div>
