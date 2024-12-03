@@ -71,13 +71,13 @@
     </div>
   </template>
   
-  <script setup>
- // add functionality once back-end/database complete
+<script setup>
+// add functionality once back-end/database complete
   const leaderboardUsers = [
     { name: 'You', points: 100 },
-    { name: 'Bobby Shmurda', points: 80 },
-    { name: 'Theo Von', points: 50 },
-    { name: 'Dixie Normus', points: 20 },
-    { name: 'Joe Rogan', points: 10 }
+    { name: 'User_23', points: 80 },
+    { name: 'User_48', points: 50 },
+    { name: 'User_12', points: 20 },
+    { name: 'User_87', points: 10 }
   ]
-  </script>
+</script>

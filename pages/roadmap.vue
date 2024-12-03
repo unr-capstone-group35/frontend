@@ -19,7 +19,10 @@
 
       <!-- Main Content for Roadmap -->
       <main class="flex-1 p-8 overflow-y-auto">
-        <div v-if="getMainContent()" class="bg-white dark:bg-gray-800 p-10 rounded-lg shadow-md">
+        <div 
+          v-if="getMainContent()" 
+          class="bg-white dark:bg-gray-800 p-10 rounded-lg shadow-md"
+        >
           <h2 class="text-3xl font-semibold text-gray-800 dark:text-white mb-4">
             {{ selectedTopic.name }} Roadmap
           </h2>
@@ -31,10 +34,13 @@
 
           <!-- Scrollable Roadmap Section -->
           <div class="max-h-[calc(100vh-200px)] overflow-y-auto">
-            <div v-for="(step, index) in roadmapSteps" :key="index">
-              <router-link 
-                :to="`/lessons/${step.id}`" 
-                class="block mb-4 transition duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-4"
+            <div 
+              v-for="(step, index) in roadmapSteps" 
+              :key="index"
+            >
+              <div
+                @click="navigateToLesson(step)"
+                class="block mb-4 transition duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-4 cursor-pointer"
               >
                 <div class="flex items-center">
                   <!-- Numbered Circle -->
@@ -45,19 +51,26 @@
                   </div>
                   
                   <div class="flex flex-col">
-                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white">{{ step.title }}</h3>
-                    <p class="text-gray-600 dark:text-gray-300 text-lg">{{ step.description }}</p>
+                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white">
+                      {{ step.title }}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-lg">
+                      {{ step.description }}
+                    </p>
                   </div>
                 </div>
-              </router-link>
-              <div 
-                v-if="index !== roadmapSteps.length - 1" 
+              </div>
+              <div
+                v-if="index !== roadmapSteps.length - 1"
                 class="border-b border-gray-200 dark:border-gray-600 mb-4"
               ></div>
             </div>
           </div>
         </div>
-        <div v-if="getEmptyState()" class="text-center text-gray-500 dark:text-gray-400 text-xl">
+        <div 
+          v-if="getEmptyState()" 
+          class="text-center text-gray-500 dark:text-gray-400 text-xl"
+        >
           Select a topic to view the roadmap.
         </div>
       </main>
@@ -67,84 +80,152 @@
 
 
 <script>
-  import { useCourseStore } from '~/stores/courseStore'
+import { useCourseStore } from '~/stores/courseStore'
+import { useRouter } from 'vue-router'
 
-  export default {
-    name: "RoadmapPage",
-    setup() {
-      const courseStore = useCourseStore()
-      return {
-        courseStore
+export default {
+  name: "RoadmapPage",
+  
+  setup() {
+    const courseStore = useCourseStore()
+    const router = useRouter()
+    
+    return {
+      courseStore,
+      router
+    }
+  },
+
+  data() {
+    return {
+
+      topics: [
+        {
+          id: 'cs-basics',
+          name: "Computer Science Basics",
+          description: "Master the fundamental concepts of computer science and programming"
+        },
+        {
+          id: 'data-structures',
+          name: "Data Structures",
+          description: "Dive deep into essential data structures that power modern software"
+        },
+        {
+          id: 'algorithms',
+          name: "Algorithms",
+          description: "Master complex algorithms and optimization techniques used in modern software development"
+        }
+      ],
+
+      selectedTopic: null,
+      stats: [
+        {
+          id: 1,
+          name: "Top Learner",
+          value: "User123"
+        },
+        {
+          id: 2,
+          name: "Completed Topics",
+          value: "15"
+        },
+        {
+          id: 3,
+          name: "Total Points",
+          value: "3450"
+        }
+      ],
+      roadmapSteps: [],
+    }
+  },
+
+  mounted() {
+    const currentCourseStore = this.courseStore;
+    
+    if (currentCourseStore.selectedCourse) {
+      const selectedCourseId = currentCourseStore.selectedCourse.id;
+      const matchingTopic = this.topics.find(function(topic) {
+        return topic.id === selectedCourseId;
+      });
+
+      if (matchingTopic) {
+        this.selectTopic(matchingTopic);
+      }
+    }
+  },
+
+  methods: {
+    getTopicClasses(topicId) {
+      let baseClasses = "p-4 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition";
+      
+      if (this.selectedTopic) {
+        const isSelected = this.selectedTopic.id === topicId;
+        
+        if (isSelected) {
+          baseClasses = baseClasses + " bg-emerald-200 dark:bg-emerald-800";
+        }
+      }
+      
+      return baseClasses;
+    },
+
+    getMainContent() {
+      let hasSelectedTopic;
+      if (this.selectedTopic !== null) {
+          hasSelectedTopic = true;
+      } else {
+          hasSelectedTopic = false;
+      }
+      return hasSelectedTopic;
+    },
+
+    getEmptyState() {
+      let hasSelectedTopic;
+      if (this.selectedTopic !== null) {
+          hasSelectedTopic = true;
+      } else {
+          hasSelectedTopic = false;
+      }
+      return !hasSelectedTopic;
+    },
+
+    selectTopic(topic) {
+      this.selectedTopic = topic;
+      
+      const topicId = topic.id;
+      const availableCourses = this.courseStore.courses;
+      
+      if (availableCourses[topicId]) {
+        const courseSteps = availableCourses[topicId].steps;
+        this.roadmapSteps = courseSteps;
+      } else {
+        this.roadmapSteps = [];
       }
     },
-    data() {
-      return {
-        topics: [
-          { id: 'cs-basics', name: "Computer Science Basics", description: "Master the fundamental concepts of computer science and programming" },
-          { id: 'data-structures', name: "Data Structures", description: "Dive deep into essential data structures that power modern software" },
-          { id: 'algorithms', name: "Algorithms", description: "Master complex algorithms and optimization techniques used in modern software development" },
-        ],
-        selectedTopic: null,
-        stats: [
-          { id: 1, name: "Top Learner", value: "User123" },
-          { id: 2, name: "Completed Topics", value: "15" },
-          { id: 3, name: "Total Points", value: "3450" },
-        ],
-        roadmapSteps: [],
+
+    navigateToLesson(step) {
+      const navigationConfig = {
+        path: '/learn',
+        query: {
+          course: this.selectedTopic.id,
+          lesson: step.lessonId,
+          exercise: step.exerciseId
+        }
       };
-    },
-    mounted() {
-      if (this.courseStore.selectedCourse) {
-        const topic = this.topics.find(t => t.id === this.courseStore.selectedCourse.id)
-        if (topic) {
-          this.selectTopic(topic)
-        }
-      }
-    },
-    methods: {
-      getTopicClasses(topicId) {
-        let classes = "p-4 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition"
-        
-        if (this.selectedTopic) {
-          if (this.selectedTopic.id === topicId) {
-            classes += " bg-emerald-200 dark:bg-emerald-800"
-          }
-        }
-        
-        return classes
-      },
-      getMainContent() {
-        if (this.selectedTopic) {
-          return true
-        }
-        return false
-      },
-      getEmptyState() {
-        if (this.selectedTopic) {
-          return false
-        }
-        return true
-      },
-      selectTopic(topic) {
-        this.selectedTopic = topic;
-        if (this.courseStore.courses[topic.id]) {
-          this.roadmapSteps = this.courseStore.courses[topic.id].steps;
-        } else {
-          this.roadmapSteps = [];
-        }
-      },
-    },
-  };
+
+      this.router.push(navigationConfig);
+    }
+  },
+}
 </script>
 
 <style scoped>
 .min-h-screen {
   display: flex;
 }
+
 aside {
   max-width: 100%;
   overflow-y: auto;
 }
 </style>
-
-
