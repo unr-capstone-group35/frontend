@@ -1,9 +1,13 @@
 <template>
   <div class="h-[calc(100vh-116px)] bg-gray-100 dark:bg-gray-900 flex flex-col">
-    <!-- Sign-up Form Container -->
     <div class="flex-1 flex items-center justify-center w-full">
       <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md max-w-md w-full">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Sign Up</h2>
+        
+        <!-- Show error message if exists -->
+        <div v-if="authStore.error" class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {{ authStore.error }}
+        </div>
         
         <form @submit.prevent="handleSignUp">
           <div class="mb-4">
@@ -44,12 +48,13 @@
               required
             />
           </div>
-
+          
           <button
             type="submit"
+            :disabled="isLoading"
             class="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
           >
-            Sign Up
+            {{ isLoading ? 'Signing up...' : 'Sign Up' }}
           </button>
         </form>
 
@@ -64,29 +69,24 @@
   </div>
 </template>
 
-<script>
-import Header from '@/components/Header.vue';
+<script setup>
+import { ref } from 'vue'
+import { useAuthStore } from '~/stores/authStore'
 
-export default {
-  components: {
-    Header
-  },
-  data() {
-    return {
-      email: '',
-      username: '',
-      password: ''
-    };
-  },
-  methods: {
-    handleSignUp() {
-      // Implement sign-up logic
-      alert(`Signing up with ${this.email} and username ${this.username}`);
-    }
+const email = ref('')
+const username = ref('')
+const password = ref('')
+const isLoading = ref(false)
+const authStore = useAuthStore()
+
+async function handleSignUp() {
+  try {
+    isLoading.value = true
+    await authStore.signup(email.value, username.value, password.value)
+  } catch (error) {
+    console.error('Signup failed:', error)
+  } finally {
+    isLoading.value = false
   }
-};
+}
 </script>
-
-<style scoped>
-/* Add any additional styling here if needed */
-</style>
