@@ -130,211 +130,117 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCourseStore } from '~/stores/courseStore'
 
-export default {
-  name: 'LearnPage',
+// Add auth protection to this page
+definePageMeta({
+  middleware: ['auth']
+})
+
+const route = useRoute()
+const router = useRouter()
+const courseStore = useCourseStore()
+
+// State
+const sidebarOpen = ref(true)
+const expandedCourse = ref(null)
+const expandedLesson = ref(null)
+const currentExercise = ref(null)
+
+const courses = computed(() => {
+  const coursesArray = Object.values(courseStore.courses)
   
-  setup() {
-    const route = useRoute()
-    const router = useRouter()
-    const courseStore = useCourseStore()
+  return coursesArray.map(course => ({
+    id: course.id,
+    name: course.name,
+    lessons: course.steps.map(step => ({
+      id: step.lessonId,
+      name: step.title,
+      exercises: [{
+        id: step.exerciseId,
+        name: step.title,
+        content: step.description
+      }]
+    }))
+  }))
+})
 
-    // State
-    const sidebarOpen = ref(true)
-    const expandedCourse = ref(null)
-    const expandedLesson = ref(null)
-    const currentExercise = ref(null)
+function getSidebarContainerClasses() {
+  return !sidebarOpen.value ? 'w-8' : 'w-80'
+}
 
-    const courses = computed(() => {
-      const coursesArray = Object.values(courseStore.courses);
-      
-      const transformedCourses = coursesArray.map(function(course) {
-        const transformedLessons = course.steps.map(function(step) {
-          const exerciseObject = {
-            id: step.exerciseId,
-            name: step.title,
-            content: step.description
-          };
+function getSidebarContentClasses() {
+  return sidebarOpen.value ? 'w-80' : 'w-0'
+}
 
-          return {
-            id: step.lessonId,
-            name: step.title,
-            exercises: [exerciseObject]
-          };
-        });
+function toggleSidebar() {
+  sidebarOpen.value = !sidebarOpen.value
+}
 
-        return {
-          id: course.id,
-          name: course.name,
-          lessons: transformedLessons
-        };
-      });
+function toggleCourse(courseId) {
+  expandedCourse.value = expandedCourse.value === courseId ? null : courseId
+  expandedLesson.value = null
+}
 
-      return transformedCourses;
-    })
+function toggleLesson(lessonId) {
+  expandedLesson.value = expandedLesson.value === lessonId ? null : lessonId
+}
 
-    function getSidebarContainerClasses() {
-      if (!sidebarOpen.value) {
-        return 'w-8';
-      } else {
-        return 'w-80';
+function selectExercise(courseId, lessonId, exerciseId) {
+  router.push({
+    path: '/learn',
+    query: { course: courseId, lesson: lessonId, exercise: exerciseId }
+  })
+}
+
+function isActiveCourse(courseId) {
+  return route.query.course === courseId
+}
+
+function isActiveLesson(lessonId) {
+  return route.query.lesson === lessonId
+}
+
+function isActiveExercise(exerciseId) {
+  return route.query.exercise === exerciseId
+}
+
+function getCourseClasses(courseId) {
+  const baseClasses = 'w-full flex items-center justify-between p-4 rounded-lg'
+  const activeClasses = 'bg-emerald-100 dark:bg-emerald-900/50'
+  const inactiveClasses = 'hover:bg-gray-50 dark:hover:bg-gray-700'
+  
+  return `${baseClasses} ${isActiveCourse(courseId) ? activeClasses : inactiveClasses}`
+}
+
+function getLessonClasses(lessonId) {
+  const baseClasses = 'w-full text-left p-2 rounded'
+  const activeClasses = 'bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100'
+  const inactiveClasses = 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+  
+  return `${baseClasses} ${isActiveLesson(lessonId) ? activeClasses : inactiveClasses}`
+}
+
+function updateCurrentExercise() {
+  const { course: currentCourse, lesson: currentLesson, exercise: currentExerciseId } = route.query
+
+  if (currentCourse && currentLesson && currentExerciseId) {
+    const selectedCourse = courses.value.find(course => course.id === currentCourse)
+    if (selectedCourse) {
+      const selectedLesson = selectedCourse.lessons.find(lesson => lesson.id === currentLesson)
+      if (selectedLesson) {
+        const selectedExercise = selectedLesson.exercises.find(exercise => exercise.id === currentExerciseId)
+        currentExercise.value = selectedExercise
+        expandedCourse.value = currentCourse
+        expandedLesson.value = currentLesson
       }
-    }
-
-    function getSidebarContentClasses() {
-      if (sidebarOpen.value) {
-        return 'w-80';
-      } else {
-        return 'w-0';
-      }
-    }
-
-    function toggleSidebar() {
-      sidebarOpen.value = !sidebarOpen.value;
-    }
-
-    function toggleCourse(courseId) {
-      if (expandedCourse.value === courseId) {
-        expandedCourse.value = null;
-      } else {
-        expandedCourse.value = courseId;
-      }
-      expandedLesson.value = null;
-    }
-
-    function toggleLesson(lessonId) {
-      if (expandedLesson.value === lessonId) {
-        expandedLesson.value = null;
-      } else {
-        expandedLesson.value = lessonId;
-      }
-    }
-
-    function selectExercise(courseId, lessonId, exerciseId) {
-      const navigationConfig = {
-        path: '/learn',
-        query: {
-          course: courseId,
-          lesson: lessonId,
-          exercise: exerciseId
-        }
-      };
-
-      router.push(navigationConfig);
-    }
-
-    function isActiveCourse(courseId) {
-      let isActive;
-      if (route.query.course === courseId) {
-        isActive = true;
-      } else {
-        isActive = false;
-      }
-      return isActive;
-    }
-
-    function isActiveLesson(lessonId) {
-      let isActive;
-      if (route.query.lesson === lessonId) {
-        isActive = true;
-      } else {
-        isActive = false;
-      }
-      return isActive;
-    }
-
-    function isActiveExercise(exerciseId) {
-      let isActive;
-      if (route.query.exercise === exerciseId) {
-        isActive = true;
-      } else {
-        isActive = false;
-      }
-      return isActive;
-    }
-
-    function updateCurrentExercise() {
-      const currentCourse = route.query.course;
-      const currentLesson = route.query.lesson;
-      const currentExerciseId = route.query.exercise;
-
-      if (currentCourse && currentLesson && currentExerciseId) {
-        const selectedCourse = courses.value.find(function(course) {
-          return course.id === currentCourse;
-        });
-
-        if (selectedCourse) {
-          const selectedLesson = selectedCourse.lessons.find(function(lesson) {
-            return lesson.id === currentLesson;
-          });
-
-          if (selectedLesson) {
-            const selectedExercise = selectedLesson.exercises.find(function(exercise) {
-              return exercise.id === currentExerciseId;
-            });
-
-            currentExercise.value = selectedExercise;
-            expandedCourse.value = currentCourse;
-            expandedLesson.value = currentLesson;
-          }
-        }
-      }
-    }
-
-    function getCourseClasses(courseId) {
-      const baseClasses = 'w-full flex items-center justify-between p-4 rounded-lg';
-      const activeClasses = 'bg-emerald-100 dark:bg-emerald-900/50';
-      const inactiveClasses = 'hover:bg-gray-50 dark:hover:bg-gray-700';
-
-      let stateClasses;
-      if (isActiveCourse(courseId)) {
-          stateClasses = activeClasses;
-      } else {
-          stateClasses = inactiveClasses;
-      }
-
-      return `${baseClasses} ${stateClasses}`;
-    }
-
-    function getLessonClasses(lessonId) {
-      const baseClasses = 'w-full text-left p-2 rounded';
-      const activeClasses = 'bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100';
-      const inactiveClasses = 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300';
-
-      let stateClasses;
-      if (isActiveLesson(lessonId)) {
-          stateClasses = activeClasses;
-      } else {
-          stateClasses = inactiveClasses;
-      }
-
-      return `${baseClasses} ${stateClasses}`;
-    }
-
-    watch(() => route.query, updateCurrentExercise, { immediate: true })
-
-    return {
-      sidebarOpen,
-      toggleSidebar,
-      courses,
-      expandedCourse,
-      expandedLesson,
-      currentExercise,
-      toggleCourse,
-      toggleLesson,
-      selectExercise,
-      isActiveCourse,
-      isActiveLesson,
-      isActiveExercise,
-      getSidebarContainerClasses,
-      getSidebarContentClasses,
-      getCourseClasses,
-      getLessonClasses
     }
   }
 }
+
+// Watch for route changes
+watch(() => route.query, updateCurrentExercise, { immediate: true })
 </script>

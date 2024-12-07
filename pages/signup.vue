@@ -1,3 +1,4 @@
+<!-- Sign up -->
 <template>
   <div class="h-[calc(100vh-58px)] bg-gray-100 dark:bg-gray-900 flex flex-col">
     <div class="flex-1 flex items-center justify-center w-full">

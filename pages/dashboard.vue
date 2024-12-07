@@ -16,10 +16,11 @@
   <script setup>
   import { useAuthStore } from '~/stores/authStore'
   
+  // Middleware declaration
+  definePageMeta({
+    middleware: ['auth']
+  })
+  
   const authStore = useAuthStore()
   
-  // Redirect if not authenticated
-  if (!authStore.isAuthenticated) {
-    navigateTo('/signin')
-  }
   </script>

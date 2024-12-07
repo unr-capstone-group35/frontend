@@ -23,10 +23,10 @@
                 START LEARNING
               </NuxtLink>
               <NuxtLink
-                to="/signin"
+                :to="authStore.isAuthenticated ? '/dashboard' : '/signin'"
                 class="inline-flex items-center justify-center border-2 border-emerald-600 dark:border-emerald-500 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/50 font-bold py-4 px-8 rounded-xl transition-colors flex-1"
               >
-                SIGN IN
+                {{ authStore.isAuthenticated ? 'DASHBOARD' : 'SIGN IN' }}
               </NuxtLink>
             </div>
           </div>
@@ -198,26 +198,30 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'IndexPage',
-  data() {
-    return {
-      learningFeatures: [
-        'Basic to advanced programming concepts',
-        'Problem-solving techniques',
-        'Data structures & algorithms',
-        'Software design principles'
-      ],
-      gameFeatures: [
-        'Daily streaks & achievements',
-        'Points system for completed lessons',
-        'Compete with friends on leaderboards',
-        'Unlock new challenges as you progress'
-      ]
-    }
-  }
-}
+<script setup>
+import { useAuthStore } from '~/stores/authStore'
+
+const authStore = useAuthStore()
+
+// Initialize auth state from cookies when the component mounts
+onMounted(() => {
+  authStore.initializeFromCookie()
+})
+
+// Move the data properties to refs
+const learningFeatures = ref([
+  'Basic to advanced programming concepts',
+  'Problem-solving techniques',
+  'Data structures & algorithms',
+  'Software design principles'
+])
+
+const gameFeatures = ref([
+  'Daily streaks & achievements',
+  'Points system for completed lessons',
+  'Compete with friends on leaderboards',
+  'Unlock new challenges as you progress'
+])
 </script>
 
 <style scoped>
