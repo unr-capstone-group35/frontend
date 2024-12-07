@@ -34,7 +34,49 @@
             <div class="flex-1 overflow-y-auto p-6">
               <div class="space-y-4">
                 <div v-for="course in courses" :key="course.id">
-                  <!-- Course contennt stays same -->
+                  <button
+                    @click="toggleCourse(course.id)"
+                    :class="getCourseClasses(course.id)"
+                  >
+                    <span class="font-medium text-gray-900 dark:text-white">
+                      {{ course.name }}
+                    </span>
+                    <svg
+                      :class="[
+                        'w-5 h-5 transition-transform',
+                        expandedCourse === course.id ? 'rotate-180' : ''
+                      ]"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  <!-- Lesson Dropdown -->
+                  <div
+                    :class="[
+                      'overflow-hidden transition-all duration-300',
+                      expandedCourse === course.id ? 'max-h-96' : 'max-h-0'
+                    ]"
+                  >
+                    <div class="p-4 space-y-2 bg-gray-50 dark:bg-gray-800/50">
+                      <button
+                        v-for="lesson in course.lessons"
+                        :key="lesson.id"
+                        @click="selectExercise(course.id, lesson.id, lesson.exercises[0].id)"
+                        :class="getLessonClasses(lesson.id)"
+                      >
+                        {{ lesson.name }}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -243,6 +285,36 @@ export default {
       }
     }
 
+    function getCourseClasses(courseId) {
+      const baseClasses = 'w-full flex items-center justify-between p-4 rounded-lg';
+      const activeClasses = 'bg-emerald-100 dark:bg-emerald-900/50';
+      const inactiveClasses = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+
+      let stateClasses;
+      if (isActiveCourse(courseId)) {
+          stateClasses = activeClasses;
+      } else {
+          stateClasses = inactiveClasses;
+      }
+
+      return `${baseClasses} ${stateClasses}`;
+    }
+
+    function getLessonClasses(lessonId) {
+      const baseClasses = 'w-full text-left p-2 rounded';
+      const activeClasses = 'bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100';
+      const inactiveClasses = 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300';
+
+      let stateClasses;
+      if (isActiveLesson(lessonId)) {
+          stateClasses = activeClasses;
+      } else {
+          stateClasses = inactiveClasses;
+      }
+
+      return `${baseClasses} ${stateClasses}`;
+    }
+
     watch(() => route.query, updateCurrentExercise, { immediate: true })
 
     return {
@@ -259,7 +331,9 @@ export default {
       isActiveLesson,
       isActiveExercise,
       getSidebarContainerClasses,
-      getSidebarContentClasses
+      getSidebarContentClasses,
+      getCourseClasses,
+      getLessonClasses
     }
   }
 }
