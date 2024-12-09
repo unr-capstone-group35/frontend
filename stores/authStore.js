@@ -26,6 +26,7 @@ export const useAuthStore = defineStore('auth', {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             email,
             username,
@@ -41,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
           if (jsonData.error) {
             errorMessage = jsonData.error
           } else {
-            // If signup successful, automatically sign in
+            // If signup successful, sign in
             await this.signin(username, password)
             return
           }
@@ -151,6 +152,7 @@ export const useAuthStore = defineStore('auth', {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             username,
             password
@@ -185,7 +187,8 @@ export const useAuthStore = defineStore('auth', {
             method: 'POST',
             headers: {
               'X-Session-Token': this.token
-            }
+            },
+            credentials: 'include',
           })
         }
       } catch (error) {

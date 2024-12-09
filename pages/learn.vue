@@ -1,3 +1,4 @@
+<!-- learn.vue, main page where logged in users do lessons  -->
 <template>
   <div class="min-h-screen flex flex-col">
     <div class="flex-1 flex bg-gray-100 dark:bg-gray-900">
