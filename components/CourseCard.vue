@@ -6,30 +6,11 @@
   >
     <!-- Course Image -->
     <div class="relative w-full h-40 bg-gray-100 dark:bg-gray-700">
-      <svg 
-        class="w-full h-full"
-        viewBox="0 0 400 160"
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <!-- Background -->
-        <rect width="400" height="160" :fill="courseBgColor" />
-        
-        <!-- Course Icon -->
-        <g transform="translate(170, 40)">
-          <circle cx="30" cy="30" r="30" :fill="courseIconColor" opacity="0.9" />
-          <text
-            x="30"
-            y="45"
-            text-anchor="middle"
-            class="text-2xl font-bold"
-            fill="white"
-          >
-            {{ courseInitial }}
-          </text>
-        </g>
-      </svg>
-
+      <img
+        :src="imagePath"
+        :alt="courseDisplayName"
+        class="w-full h-40 object-cover"
+      />
       <!-- Loading overlay -->
       <div v-if="loading" 
         class="absolute inset-0 bg-gray-900/20 dark:bg-gray-900/40 flex items-center justify-center"
@@ -102,6 +83,10 @@ import { storeToRefs } from 'pinia'
 
 const props = defineProps({
   courseId: {
+    type: String,
+    required: true
+  },
+  imagePath: {
     type: String,
     required: true
   }

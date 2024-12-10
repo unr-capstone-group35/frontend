@@ -38,7 +38,10 @@
             </ul>
           </div>
           <div class="lg:w-3/5">
-            <CourseCard courseId="Programming_Basics" />
+            <CourseCard 
+              courseId="Programming_Basics" 
+              imagePath="/images/basics3.jpg"
+            />
           </div>
         </section>
 
@@ -59,7 +62,10 @@
             </ul>
           </div>
           <div class="lg:w-3/5">
-            <CourseCard courseId="Data_Structures" />
+            <CourseCard 
+              courseId="Data_Structures" 
+              imagePath="/images/data-structures2.jpg"
+            />
           </div>
         </section>
 
@@ -78,7 +84,10 @@
             </ul>
           </div>
           <div class="lg:w-3/5">
-            <CourseCard courseId="Algorithms" />
+            <CourseCard 
+              courseId="Algorithms" 
+              imagePath="/images/algorithms.jpg"
+            />
           </div>
         </section>
 
