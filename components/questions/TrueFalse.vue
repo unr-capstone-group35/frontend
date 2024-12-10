@@ -10,11 +10,11 @@
         :key="index"
         @click="selectAnswer(option)"
         :class="[
-          'w-full p-4 text-left rounded-lg transition-colors',
+          'w-full p-4 text-left rounded-lg transition-all duration-200',
           getChoiceClasses(option)
         ]"
       >
-        {{ option }}
+        <span class="text-gray-900 dark:text-white">{{ option }}</span>
       </button>
     </div>
   </div>
@@ -42,7 +42,7 @@ function getChoiceClasses(option) {
   const baseClasses = 'border transition-colors'
   const selectedClasses = props.selectedAnswer === option
     ? 'bg-blue-100 dark:bg-blue-900 border-blue-500'
-    : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700'
+    : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600'
   
   return `${baseClasses} ${selectedClasses}`
 }

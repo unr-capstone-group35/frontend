@@ -10,14 +10,19 @@
         <div
           v-for="(term, index) in randomizedTerms"
           :key="`term-${term.originalIndex}`"
-          class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500"
+          class="p-4 rounded-lg border transition-all duration-200"
           :class="{
-            'border-blue-500': selectedTerm === term.originalIndex,
-            'opacity-50': isMatched(term.originalIndex, 'term')
+            'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700': !selectedTerm || selectedTerm !== term.originalIndex,
+            'bg-blue-100 dark:bg-blue-800 border-blue-500 dark:border-blue-400': selectedTerm === term.originalIndex,
+            'opacity-50': isMatched(term.originalIndex, 'term'),
+            'cursor-pointer': !isMatched(term.originalIndex, 'term')
           }"
           @click="selectTerm(term.originalIndex)"
         >
-          {{ term.text }}
+          <span :class="{
+            'text-gray-900 dark:text-white': !selectedTerm || selectedTerm !== term.originalIndex,
+            'text-blue-800 dark:text-blue-100': selectedTerm === term.originalIndex
+          }">{{ term.text }}</span>
         </div>
       </div>
 
@@ -26,26 +31,31 @@
         <div
           v-for="(def, index) in randomizedDefinitions"
           :key="`def-${def.originalIndex}`"
-          class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500"
+          class="p-4 rounded-lg border transition-all duration-200"
           :class="{
-            'border-blue-500': selectedDefinition === def.originalIndex,
-            'opacity-50': isMatched(def.originalIndex, 'definition')
+            'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700': !selectedDefinition || selectedDefinition !== def.originalIndex,
+            'bg-blue-100 dark:bg-blue-800 border-blue-500 dark:border-blue-400': selectedDefinition === def.originalIndex,
+            'opacity-50': isMatched(def.originalIndex, 'definition'),
+            'cursor-pointer': !isMatched(def.originalIndex, 'definition')
           }"
           @click="selectDefinition(def.originalIndex)"
         >
-          {{ def.text }}
+          <span :class="{
+            'text-gray-900 dark:text-white': !selectedDefinition || selectedDefinition !== def.originalIndex,
+            'text-blue-800 dark:text-blue-100': selectedDefinition === def.originalIndex
+          }">{{ def.text }}</span>
         </div>
       </div>
     </div>
 
     <!-- Show current matches with delete buttons -->
     <div v-if="currentMatches.length > 0" class="mt-4">
-      <h4 class="font-medium mb-2">Current Matches:</h4>
+      <h4 class="font-medium mb-2 text-gray-900 dark:text-white">Current Matches:</h4>
       <div class="space-y-2">
         <div 
           v-for="(match, index) in currentMatches" 
           :key="index"
-          class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex justify-between items-center"
+          class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex justify-between items-center text-gray-900 dark:text-white"
         >
           <span>
             {{ getTermText(match[0]) }} ↔ {{ getDefinitionText(match[1]) }}

@@ -21,7 +21,7 @@
         <div class="flex items-center gap-4 select-none">
           <!-- Drag Handle -->
           <div 
-            class="handle p-2 text-gray-500 hover:text-gray-700 cursor-grab active:cursor-grabbing"
+            class="handle p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing transition-colors"
             :class="{ 'opacity-50 cursor-not-allowed': showFeedback }"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,8 @@
           <!-- Item Content -->
           <div 
             :class="[
-              'flex-1 p-4 rounded-lg transition-colors',
+              'flex-1 p-4 rounded-lg transition-all duration-200 text-gray-900 dark:text-white',
+              'hover:bg-gray-50 dark:hover:bg-gray-700',
               getItemClasses(element, orderedItems.indexOf(element))
             ]"
           >
@@ -45,6 +46,7 @@
 </template>
 
 <script setup>
+// Script section remains exactly the same
 import { ref, watch, onMounted } from 'vue'
 import draggable from 'vuedraggable/src/vuedraggable'
 
@@ -67,17 +69,14 @@ const emit = defineEmits(['update-answer'])
 
 const orderedItems = ref([])
 
-// Initialize items
 onMounted(() => {
   initializeItems()
 })
 
-// Watch for exercise changes
 watch(() => props.exercise, () => {
   initializeItems()
 }, { immediate: true })
 
-// Watch for reset
 watch(() => props.selectedAnswer, (newVal) => {
   if (newVal === null) {
     initializeItems()
@@ -90,16 +89,13 @@ function initializeItems() {
     return
   }
 
-  // Create items with IDs and initial indices
   const items = props.exercise.items.map((text, index) => ({
     id: `item-${index}`,
     text,
     originalIndex: index
   }))
   
-  // Shuffle items
   orderedItems.value = shuffleArray(items)
-  // Emit initial order after shuffling
   handleChange()
 }
 
@@ -115,7 +111,6 @@ function shuffleArray(array) {
 function handleChange() {
   if (orderedItems.value.length > 0) {
     const indices = orderedItems.value.map(item => item.originalIndex)
-    // Convert to array of numbers to match backend expectation
     emit('update-answer', indices.map(Number))
   }
 }
@@ -129,8 +124,8 @@ function getItemClasses(item, index) {
   
   const isCorrect = item.originalIndex === props.exercise.correctOrder[index]
   return isCorrect
-    ? `${baseClasses} border-green-500 bg-green-50 dark:bg-green-900/20`
-    : `${baseClasses} border-red-500 bg-red-50 dark:bg-red-900/20`
+    ? `${baseClasses} border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-900/20`
+    : `${baseClasses} border-red-500 dark:border-red-400 bg-red-50 dark:bg-red-900/20`
 }
 </script>
 

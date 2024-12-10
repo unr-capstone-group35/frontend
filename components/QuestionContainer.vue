@@ -18,7 +18,9 @@
       <div v-if="showFeedback" class="flex-grow">
         <div :class="[
           'p-4 rounded-lg inline-block',
-          isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          isCorrect 
+            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' 
+            : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100'
         ]">
           {{ isCorrect ? 'Correct!' : 'Try again!' }}
         </div>
@@ -33,7 +35,7 @@
         <button
           v-if="!isCorrect"
           @click="handleMainButton"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          class="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50"
           :disabled="!canSubmit"
         >
           {{ showFeedback ? 'Try Again' : 'Check Answer' }}
@@ -45,8 +47,8 @@
           class="px-6 py-2 rounded-lg transition-colors"
           :class="[
             isCorrect 
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-600 text-white' 
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
           ]"
           :disabled="!isCorrect"
         >
