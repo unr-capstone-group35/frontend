@@ -14,7 +14,9 @@
     "nuxt": "^3.13.2",
     "pinia": "^2.2.6",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-draggable-next": "^2.2.1",
+    "vue-router": "latest",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.2"

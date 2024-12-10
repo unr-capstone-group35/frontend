@@ -1,6 +1,7 @@
 // stores/courseStore.js
 import { defineStore } from 'pinia'
 import { useAuthStore } from './authStore'
+import { useRouter } from 'vue-router'
 
 export const useCourseStore = defineStore('course', {
   state: () => ({
@@ -18,124 +19,128 @@ export const useCourseStore = defineStore('course', {
       return state.lessonProgress[`${courseId}-${lessonId}`]?.status === 'completed'
     },
 
-    nextExercise: (state) => (courseId, lessonId, currentExerciseId) => {
-      if (!state.currentLesson?.exercises) return null
-
-      const exerciseIndex = state.currentLesson.exercises.findIndex(
-        ex => ex.id === currentExerciseId
-      )
-
-      if (exerciseIndex < state.currentLesson.exercises.length - 1) {
-        return state.currentLesson.exercises[exerciseIndex + 1]
-      }
-
-      return null
+    formattedCourseId: () => (courseId) => {
+      return courseId.replace(/\s+/g, '_')
     },
 
-    courseProgress: (state) => (courseId) => {
-      return state.courseProgress[courseId] || {
-        startedAt: null,
-        completedAt: null,
-        progress: 0
+    currentExercises: (state) => {
+      return state.currentLesson?.exercises || []
+    },
+
+    getCourseProgress: (state) => (courseId) => {
+      // Check if we have current course data
+      if (!state.currentCourse?.lessons || state.currentCourse.lessons.length === 0) {
+        return 0
       }
+
+      // Calculate total and completed lessons
+      const totalLessons = state.currentCourse.lessons.length
+      const completedLessons = state.currentCourse.lessons.reduce((count, lesson) => {
+        const isCompleted = state.lessonProgress[`${courseId}-${lesson.lessonId}`]?.status === 'completed'
+        return isCompleted ? count + 1 : count
+      }, 0)
+
+      // Return rounded percentage
+      return Math.round((completedLessons / totalLessons) * 100)
+    },
+
+    getNextLesson: (state) => (currentLessonId) => {
+      if (!state.currentCourse?.lessons) return null
+      
+      const currentIndex = state.currentCourse.lessons.findIndex(
+        lesson => lesson.lessonId === currentLessonId
+      )
+      
+      if (currentIndex !== -1 && currentIndex < state.currentCourse.lessons.length - 1) {
+        return state.currentCourse.lessons[currentIndex + 1]
+      }
+      
+      return null
     }
   },
 
-  actions: {
-    // Fetch all available courses
-    selectCourse(courseId) {
-      this.selectedCourse = this.courses[courseId]
-    },
-
-    async fetchCourses() {
-      try {
-        this.loading = true
-        const authStore = useAuthStore()
-        
-        const response = await fetch('http://localhost:8080/api/courses', {
-          headers: authStore.getAuthHeaders()
-        })
-
-        if (!response.ok) throw new Error('Failed to fetch courses')
-        
-        const data = await response.json()
-        this.courses = data.reduce((acc, course) => {
-          acc[course.Name] = {
-            id: course.Name,
-            name: course.Name,
-            lessons: []
-          }
-          return acc
-        }, {})
-      } catch (error) {
-        this.error = error.message
-        console.error('Error fetching courses:', error)
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // Fetch specific course and its lessons
-    async fetchCourse(courseId) {
-      try {
-        this.loading = true
-        const authStore = useAuthStore()
-        
-        const response = await fetch(`http://localhost:8080/api/courses/${courseId}`, {
-          headers: authStore.getAuthHeaders()
-        })
-
-        if (!response.ok) throw new Error('Failed to fetch course')
-        
-        const courseData = await response.json()
-        this.currentCourse = {
-          id: courseData.Name,
-          name: courseData.Name,
-          lessons: courseData.LessonService || []
+  async getLessonProgress(courseId, lessonId) {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`,
+        {
+          headers: {
+            ...useAuthStore().getAuthHeaders(),
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
         }
+      )
 
-        // Also fetch course progress
-        await this.fetchCourseProgress(courseId)
-      } catch (error) {
-        this.error = error.message
-        console.error('Error fetching course:', error)
-      } finally {
-        this.loading = false
+      if (!response.ok) {
+        throw new Error('Failed to fetch lesson progress')
       }
+
+      const progress = await response.json()
+      this.lessonProgress[`${courseId}-${lessonId}`] = progress
+      return progress
+    } catch (error) {
+      console.error('Error getting lesson progress:', error)
+      return null
+    }
+  },
+
+
+  actions: {
+    async nextExercise(courseId, lessonId, currentExerciseId) {
+      if (!this.currentLesson || !this.currentLesson.exercises) {
+        return null
+      }
+
+      const exercises = this.currentLesson.exercises
+      if (!currentExerciseId) {
+        return exercises[0] || null
+      }
+
+      const currentIndex = exercises.findIndex(ex => ex.id === currentExerciseId)
+      if (currentIndex === -1 || currentIndex === exercises.length - 1) {
+        // Only mark lesson as completed if this was the last exercise
+        if (currentIndex === exercises.length - 1) {
+          await this.updateLessonProgress(courseId, lessonId, 'completed')
+        }
+        return null
+      }
+
+      return exercises[currentIndex + 1]
     },
 
-    // Fetch lesson data
-    async fetchLesson(courseId, lessonId) {
-      try {
-        this.loading = true
-        const authStore = useAuthStore()
-        
-        const response = await fetch(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}`,
-          {
-            headers: authStore.getAuthHeaders()
-          }
-        )
 
-        if (!response.ok) throw new Error('Failed to fetch lesson')
-        
-        const lessonData = await response.json()
-        this.currentLesson = lessonData
-
-        // Also fetch lesson progress
-        await this.fetchLessonProgress(courseId, lessonId)
-      } catch (error) {
-        this.error = error.message
-        console.error('Error fetching lesson:', error)
-      } finally {
-        this.loading = false
+    nextExercise(courseId, lessonId, currentExerciseId) {
+      if (!this.currentLesson || !this.currentLesson.exercises) {
+        return null
       }
+
+      const exercises = this.currentLesson.exercises
+      if (!currentExerciseId) {
+        return exercises[0] || null
+      }
+
+      const currentIndex = exercises.findIndex(ex => ex.id === currentExerciseId)
+      if (currentIndex === -1 || currentIndex === exercises.length - 1) {
+        // If this was the last exercise, mark lesson as completed
+        this.updateLessonProgress(courseId, lessonId, 'completed')
+        return null
+      }
+
+      return exercises[currentIndex + 1]
     },
 
-    // Submit an exercise attempt
     async submitExerciseAttempt(courseId, lessonId, exerciseId, answer) {
       try {
-        const authStore = useAuthStore()
+        console.log('Submitting exercise attempt:', {
+          courseId,
+          lessonId,
+          exerciseId,
+          answer: JSON.stringify(answer)
+        });
+        
+        this.error = null;
+        const authStore = useAuthStore();
         
         const response = await fetch(
           `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/exercises/${exerciseId}/attempt`,
@@ -145,72 +150,287 @@ export const useCourseStore = defineStore('course', {
               ...authStore.getAuthHeaders(),
               'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({ answer })
           }
-        )
-
-        if (!response.ok) throw new Error('Failed to submit exercise attempt')
-        
-        const result = await response.json()
-        
-        // If exercise was completed successfully, update progress
-        if (result.isCorrect) {
-          await this.updateLessonProgress(courseId, lessonId, 'completed')
+        );
+    
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Server error:', errorText);
+          throw new Error(`Failed to submit exercise attempt: ${errorText}`);
         }
-
-        return result
+    
+        const result = await response.json();
+        
+        if (result.isCorrect) {
+          // Only mark as completed if this is the last exercise
+          const isLastExercise = this.currentLesson.exercises.findIndex(
+            ex => ex.id === exerciseId
+          ) === this.currentLesson.exercises.length - 1;
+    
+          await this.updateLessonProgress(
+            courseId,
+            lessonId,
+            isLastExercise ? 'completed' : 'in_progress'
+          );
+          
+          await this.fetchCourseProgress(courseId);
+        }
+    
+        return result;
       } catch (error) {
-        this.error = error.message
-        console.error('Error submitting exercise:', error)
-        throw error
+        this.error = error.message;
+        console.error('Exercise submission error:', error);
+        throw error;
       }
     },
-
-    // Fetch course progress
+    
     async fetchCourseProgress(courseId) {
       try {
         const authStore = useAuthStore()
+        const formattedId = this.formattedCourseId(courseId)
         
         const response = await fetch(
-          `http://localhost:8080/api/courses/${courseId}/progress`,
+          `http://localhost:8080/api/courses/${formattedId}/progress`,
+          {
+            headers: authStore.getAuthHeaders(),
+            credentials: 'include'
+          }
+        )
+
+        if (!response.ok) {
+          // Don't throw on 404, just treat as no progress
+          if (response.status === 404) {
+            this.courseProgress[formattedId] = {
+              startedAt: null,
+              completedAt: null,
+              progress_percentage: 0
+            }
+            return
+          }
+          throw new Error(`Failed to fetch course progress: ${response.statusText}`)
+        }
+        
+        const progress = await response.json()
+        this.courseProgress[formattedId] = progress
+      } catch (error) {
+        console.error('Progress fetch failed:', error)
+        this.courseProgress[this.formattedCourseId(courseId)] = {
+          startedAt: null,
+          completedAt: null,
+          progress_percentage: 0
+        }
+      }
+    },
+
+    
+    async fetchCourses() {
+      try {
+        this.loading = true
+        this.error = null
+        const authStore = useAuthStore()
+        
+        const response = await fetch('http://localhost:8080/api/courses', {
+          headers: authStore.getAuthHeaders()
+        })
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch courses: ${response.statusText}`)
+        }
+        
+        const courseNames = await response.json()
+        this.courses = courseNames.reduce((acc, courseName) => {
+          acc[courseName] = {
+            id: courseName,
+            name: courseName,
+            lessons: []
+          }
+          return acc
+        }, {})
+      } catch (error) {
+        this.error = error.message
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchCourse(courseId) {
+      try {
+        this.loading = true;
+        this.error = null;
+        const authStore = useAuthStore();
+        const formattedId = this.formattedCourseId(courseId);
+    
+        console.log(`Requesting course with formatted ID: ${formattedId}`);
+    
+        const response = await fetch(`http://localhost:8080/api/courses/${formattedId}`, {
+          headers: authStore.getAuthHeaders(),
+        });
+    
+        if (!response.ok) {
+          console.error(`Failed to fetch course. HTTP status: ${response.status}`);
+          throw new Error(`Failed to fetch course: ${response.statusText}`);
+        }
+    
+        const courseData = await response.json();
+    
+        console.log(`Received course data for ${formattedId}:`, courseData);
+    
+        if (!courseData || !courseData.Lessons) {
+          throw new Error('Invalid course data received');
+        }
+    
+        this.currentCourse = {
+          id: courseData.Name,
+          name: courseData.Name,
+          lessons: courseData.Lessons || [],
+        };
+    
+        // Only try to fetch progress if course fetch was successful
+        try {
+          await this.fetchCourseProgress(formattedId);
+        } catch (progressError) {
+          console.warn('Could not fetch course progress:', progressError);
+          // Don't fail the whole operation if progress fetch fails
+        }
+    
+        return this.currentCourse;
+      } catch (error) {
+        console.error('Error in fetchCourse:', error);
+        this.error = error.message;
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    async fetchCourseProgress(courseId) {
+      try {
+        const authStore = useAuthStore()
+        const formattedId = this.formattedCourseId(courseId)
+        
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${formattedId}/progress`,
           {
             headers: authStore.getAuthHeaders()
           }
         )
 
-        if (!response.ok) throw new Error('Failed to fetch course progress')
+        if (!response.ok) {
+          // Don't throw on 404, just treat as no progress
+          if (response.status === 404) {
+            this.courseProgress[formattedId] = {
+              startedAt: null,
+              completedAt: null,
+              progress: 0
+            }
+            return
+          }
+          throw new Error(`Failed to fetch course progress: ${response.statusText}`)
+        }
         
         const progress = await response.json()
-        this.courseProgress[courseId] = progress
+        this.courseProgress[formattedId] = progress
       } catch (error) {
-        console.error('Error fetching course progress:', error)
+        // Log error but don't fail completely
+        console.error('Progress fetch failed:', error)
+        this.courseProgress[this.formattedCourseId(courseId)] = {
+          startedAt: null,
+          completedAt: null,
+          progress: 0
+        }
       }
     },
 
-    // Fetch lesson progress
+    async fetchLesson(courseId, lessonId) {
+      try {
+        this.loading = true
+        this.error = null
+        const authStore = useAuthStore()
+        const formattedId = this.formattedCourseId(courseId)
+
+        console.log(`Requesting lesson ${lessonId} from course ${formattedId}`)
+
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${formattedId}/lessons/${lessonId}`,
+          {
+            headers: authStore.getAuthHeaders()
+          }
+        )
+
+        if (!response.ok) {
+          console.error(`Failed to fetch lesson. HTTP status: ${response.status}`)
+          throw new Error(`Failed to fetch lesson: ${response.statusText}`)
+        }
+
+        const lessonData = await response.json()
+        
+        console.log(`Received lesson data:`, lessonData)
+        
+        this.currentLesson = lessonData
+
+        // Try to fetch lesson progress after successful lesson fetch
+        try {
+          await this.fetchLessonProgress(formattedId, lessonId)
+        } catch (progressError) {
+          console.warn('Could not fetch lesson progress:', progressError)
+          // Don't fail the whole operation if progress fetch fails
+        }
+
+        return this.currentLesson
+      } catch (error) {
+        console.error('Error in fetchLesson:', error)
+        this.error = error.message
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
     async fetchLessonProgress(courseId, lessonId) {
       try {
+        this.error = null
         const authStore = useAuthStore()
         
         const response = await fetch(
           `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`,
           {
-            headers: authStore.getAuthHeaders()
+            headers: authStore.getAuthHeaders(),
+            credentials: 'include'
           }
         )
 
-        if (!response.ok) throw new Error('Failed to fetch lesson progress')
+        if (!response.ok) {
+          throw new Error(`Failed to fetch lesson progress: ${response.statusText}`)
+        }
         
         const progress = await response.json()
         this.lessonProgress[`${courseId}-${lessonId}`] = progress
+        return progress
       } catch (error) {
+        this.error = error.message
         console.error('Error fetching lesson progress:', error)
+        throw error
       }
     },
 
-    // Update lesson progress
     async updateLessonProgress(courseId, lessonId, status) {
       try {
+        // Only allow completion if this is the last exercise
+        if (status === 'completed') {
+          const currentExerciseIndex = this.currentLesson.exercises.findIndex(
+            ex => ex.id === this.currentExercise?.id
+          )
+          
+          if (currentExerciseIndex !== this.currentLesson.exercises.length - 1) {
+            // If not the last exercise, mark as in_progress instead
+            status = 'in_progress'
+          }
+        }
+
+        this.error = null
         const authStore = useAuthStore()
         
         const response = await fetch(
@@ -221,19 +441,23 @@ export const useCourseStore = defineStore('course', {
               ...authStore.getAuthHeaders(),
               'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({ status })
           }
         )
 
-        if (!response.ok) throw new Error('Failed to update lesson progress')
+        if (!response.ok) {
+          throw new Error(`Failed to update lesson progress: ${response.statusText}`)
+        }
         
-        // Refresh progress data
         await this.fetchLessonProgress(courseId, lessonId)
         await this.fetchCourseProgress(courseId)
       } catch (error) {
+        this.error = error.message
         console.error('Error updating lesson progress:', error)
         throw error
       }
     }
+
   }
 })

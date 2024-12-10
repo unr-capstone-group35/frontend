@@ -1,65 +1,67 @@
 <!-- components/questions/FillBlank.vue -->
 <template>
-    <div class="space-y-6">
+  <div class="space-y-6">
+    <div>
+      <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+        {{ exercise.title }}
+      </h2>
+      <p class="text-gray-600 dark:text-gray-300">
+        {{ exercise.description }}
+      </p>
+    </div>
+
+    <div class="mt-6">
       <h3 class="text-xl font-medium text-gray-900 dark:text-white">
         {{ formatQuestion }}
       </h3>
       
-      <div class="max-w-xs mx-auto">
+      <div class="max-w-xs mt-4">
         <input
           type="text"
-          v-model="answer"
-          :disabled="showFeedback"
-          @keyup.enter="submitAnswer"
-          :class="[
-            'w-full p-3 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none',
-            getInputClasses()
-          ]"
+          v-model="localAnswer"
+          @input="handleInput"
+          class="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 
+                 focus:ring-2 focus:ring-blue-500 outline-none
+                 dark:bg-gray-800 dark:text-white"
           placeholder="Type your answer..."
         />
       </div>
-      
-      <button
-        v-if="!showFeedback"
-        @click="submitAnswer"
-        class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-      >
-        Submit Answer
-      </button>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, computed } from 'vue'
-  
-  const props = defineProps({
-    exercise: {
-      type: Object,
-      required: true
-    },
-    showFeedback: Boolean,
-    isCorrect: Boolean
-  })
-  
-  const emit = defineEmits(['answer-submitted'])
-  const answer = ref('')
-  
-  const formatQuestion = computed(() => {
-    return props.exercise.question.replace('__', '_____')
-  })
-  
-  function submitAnswer() {
-    if (!answer.value) return
-    emit('answer-submitted', answer.value.trim().toLowerCase() === props.exercise.correctAnswer.toLowerCase())
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch } from 'vue'
+
+const props = defineProps({
+  exercise: {
+    type: Object,
+    required: true
+  },
+  selectedAnswer: {
+    type: [String, null],
+    default: null
   }
-  
-  function getInputClasses() {
-    if (!props.showFeedback) {
-      return 'border-gray-200 dark:border-gray-700 dark:bg-gray-800'
-    }
-    
-    return props.isCorrect 
-      ? 'border-green-500 bg-green-50 dark:bg-green-900'
-      : 'border-red-500 bg-red-50 dark:bg-red-900'
+})
+
+const emit = defineEmits(['update-answer'])
+
+const localAnswer = ref('')
+
+// Watch for external answer changes
+watch(() => props.selectedAnswer, (newVal) => {
+  if (newVal === null) {
+    localAnswer.value = ''
   }
-  </script>
+}, { immediate: true })
+
+const formatQuestion = computed(() => {
+  return props.exercise.question.replace('_', '_____')
+})
+
+function handleInput(event) {
+  const value = event.target.value
+  localAnswer.value = value
+  emit('update-answer', value)
+}
+</script>

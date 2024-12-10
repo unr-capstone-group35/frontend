@@ -1,57 +1,107 @@
+<!-- components/CourseCard.vue-->
 <template>
   <div 
     class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer max-w-lg mx-auto"
+    :class="{ 'opacity-50 pointer-events-none': loading }"
   >
-    <img :src="image" :alt="title" class="w-full h-40 object-cover" />
+    <!-- Course Image -->
+    <div class="relative w-full h-40 bg-gray-100 dark:bg-gray-700">
+      <svg 
+        class="w-full h-full"
+        viewBox="0 0 400 160"
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <!-- Background -->
+        <rect width="400" height="160" :fill="courseBgColor" />
+        
+        <!-- Course Icon -->
+        <g transform="translate(170, 40)">
+          <circle cx="30" cy="30" r="30" :fill="courseIconColor" opacity="0.9" />
+          <text
+            x="30"
+            y="45"
+            text-anchor="middle"
+            class="text-2xl font-bold"
+            fill="white"
+          >
+            {{ courseInitial }}
+          </text>
+        </g>
+      </svg>
+
+      <!-- Loading overlay -->
+      <div v-if="loading" 
+        class="absolute inset-0 bg-gray-900/20 dark:bg-gray-900/40 flex items-center justify-center"
+      >
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+      </div>
+    </div>
+
     <div 
       class="p-5 transition-colors duration-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50" 
       @click="handleCourseSelect"
     >
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ title }}</h3>
-      <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">{{ description }}</p>
+      <!-- Course title and description -->
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+        {{ courseDisplayName }}
+      </h3>
+      <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+        {{ courseDescription }}
+      </p>
+
+      <!-- Course metadata -->
       <div class="flex justify-between items-center">
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{ duration }} hours</span>
+        <!-- Lesson count -->
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          {{ lessonCount }} lessons
+        </span>
+
+        <!-- Progress indicator if user has started the course -->
+        <div v-if="progress" 
+          class="flex items-center gap-2"
+        >
+          <div class="h-2 w-20 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div 
+              class="h-full bg-emerald-500 transition-all duration-300"
+              :style="{ width: `${progressPercentage}%` }"
+            ></div>
+          </div>
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            {{ progressPercentage }}%
+          </span>
+        </div>
+
+        <!-- Course status -->
         <span 
+          v-if="courseStatus"
           class="px-3 py-1 rounded-full text-sm"
           :class="{
-            'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100': difficulty.toLowerCase() === 'easy',
-            'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100': difficulty.toLowerCase() === 'medium',
-            'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100': difficulty.toLowerCase() === 'hard'
+            'bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-100': courseStatus === 'completed',
+            'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100': courseStatus === 'in_progress',
+            'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100': courseStatus === 'not_started'
           }"
         >
-          {{ difficulty }}
+          {{ formatStatus(courseStatus) }}
         </span>
       </div>
+
+      <!-- Error message -->
+      <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400">
+        {{ error }}
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCourseStore } from '~/stores/courseStore'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps({
   courseId: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  image: {
-    type: String,
-    required: true
-  },
-  duration: {
-    type: Number,
-    required: true
-  },
-  difficulty: {
     type: String,
     required: true
   }
@@ -59,29 +109,112 @@ const props = defineProps({
 
 const router = useRouter()
 const courseStore = useCourseStore()
+const { currentCourse, courseProgress } = storeToRefs(courseStore)
 
+const loading = ref(false)
+const error = ref(null)
+
+// Computed properties
+const courseDisplayName = computed(() => {
+  const names = {
+    'Algorithms': 'Algorithms',
+    'data_structures': 'Data Structures',
+    'Programming_Basics': 'Programming Basics'
+  }
+  return names[props.courseId] || props.courseId
+})
+
+const courseDescription = computed(() => {
+  const descriptions = {
+    'Algorithms': 'Master fundamental algorithms and their implementations',
+    'data_structures': 'Learn essential data structures and their applications',
+    'Programming_Basics': 'Get started with programming fundamentals'
+  }
+  return descriptions[props.courseId] || 'Explore this comprehensive course'
+})
+
+const courseInitial = computed(() => courseDisplayName.value.charAt(0))
+
+const courseBgColor = computed(() => {
+  const colors = {
+    'Algorithms': '#4F46E5',
+    'data_structures': '#0891B2',
+    'Programming_Basics': '#059669'
+  }
+  return colors[props.courseId] || '#6366F1'
+})
+
+const courseIconColor = computed(() => {
+  const colors = {
+    'Algorithms': '#6366F1',
+    'data_structures': '#0EA5E9',
+    'Programming_Basics': '#10B981'
+  }
+  return colors[props.courseId] || '#818CF8'
+})
+
+const lessonCount = computed(() => {
+  return currentCourse.value?.lessons?.length || 0
+})
+
+const progress = computed(() => {
+  return courseProgress.value?.[props.courseId]
+})
+
+const progressPercentage = computed(() => {
+  if (!progress.value) return 0
+  const completed = currentCourse.value?.lessons?.filter(lesson => 
+    courseStore.isLessonCompleted(props.courseId, lesson.lessonId) 
+  ).length || 0
+  return Math.round((completed / lessonCount.value) * 100) || 0
+})
+
+const courseStatus = computed(() => {
+  if (!progress.value) return 'not_started'
+  if (progress.value.completedAt) return 'completed'
+  if (progress.value.startedAt) return 'in_progress'
+  return 'not_started'
+})
+
+// Utility functions
+const formatStatus = (status) => {
+  const formats = {
+    'completed': 'Completed',
+    'in_progress': 'In Progress',
+    'not_started': 'Start Course'
+  }
+  return formats[status] || status
+}
+
+// Event handlers
 const handleCourseSelect = async () => {
   try {
-    // First fetch the course data
+    loading.value = true
+    error.value = null
+
+    // Fetch course data
     await courseStore.fetchCourse(props.courseId)
     
-    // Get first lesson if course was loaded successfully
-    if (courseStore.currentCourse?.lessons?.length > 0) {
-      const firstLesson = courseStore.currentCourse.lessons[0]
-      
-      // Navigate directly to learn page with first lesson
-      await router.push({
-        path: '/learn',
-        query: { 
-          course: props.courseId,
-          lesson: firstLesson.lessonId
-        }
-      })
-    } else {
-      throw new Error('No lessons found in course')
+    if (!currentCourse.value?.lessons?.length) {
+      throw new Error('No lessons available in this course')
     }
-  } catch (error) {
-    console.error('Error navigating to learn page:', error)
+
+    // Get first lesson
+    const firstLesson = currentCourse.value.lessons[0]
+    
+    // Navigate to learn page
+    await router.push({
+      path: '/learn',
+      query: { 
+        course: props.courseId,
+        lesson: firstLesson.lessonId
+      }
+    })
+  } catch (err) {
+    console.error('Error accessing course:', err)
+    error.value = 'Unable to access course at this time'
+  } finally {
+    loading.value = false
   }
 }
 </script>

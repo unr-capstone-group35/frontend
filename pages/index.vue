@@ -40,7 +40,7 @@
                       <span class="text-3xl">💻</span>
                     </div>
                     <div class="flex-1">
-                      <h3 class="font-semibold text-lg text-gray-900 dark:text-white">Start Coding Today</h3>
+                      <h3 class="font-semibold text-lg text-gray-900 dark:text-white">Start Learning Today</h3>
                       <p class="text-sm text-gray-600 dark:text-gray-300">Interactive lessons & challenges</p>
                     </div>
                   </div>

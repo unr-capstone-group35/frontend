@@ -1,92 +1,185 @@
-<!-- components/questions/Matching.vue -->
 <template>
-    <div class="space-y-6">
-      <h3 class="text-xl font-medium text-gray-900 dark:text-white">
-        {{ exercise.question }}
-      </h3>
-      
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Left column (fixed) -->
-        <div class="space-y-2">
-          <div
-            v-for="(pair, index) in exercise.pairs"
-            :key="`left-${index}`"
-            class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-          >
-            {{ pair[0] }}
-          </div>
-        </div>
-        
-        <!-- Right column (draggable) -->
-        <draggable
-          v-model="rightColumn"
-          :disabled="showFeedback"
-          item-key="id"
-          class="space-y-2"
-        >
-          <template #item="{ element }">
-            <div
-              :class="[
-                'p-4 rounded-lg cursor-move',
-                getMatchItemClasses(element)
-              ]"
-            >
-              {{ element.text }}
-            </div>
-          </template>
-        </draggable>
-      </div>
-      
-      <button
-        v-if="!showFeedback"
-        @click="checkMatches"
-        class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-      >
-        Check Matches
-      </button>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue'
-  import { VueDraggableNext as draggable } from 'vue-draggable-next'
-  
-  const props = defineProps({
-    exercise: {
-      type: Object,
-      required: true
-    },
-    showFeedback: Boolean,
-    isCorrect: Boolean
-  })
-  
-  const emit = defineEmits(['answer-submitted'])
-  
-  const rightColumn = ref([])
-  
-  onMounted(() => {
-    // Initialize with shuffled right column items
-    rightColumn.value = props.exercise.pairs.map((pair, index) => ({
-      id: index,
-      text: pair[1],
-      originalIndex: index
-    })).sort(() => Math.random() - 0.5)
-  })
-  
-  function checkMatches() {
-    const isCorrect = rightColumn.value.every((item, index) => {
-      return item.originalIndex === index
-    })
-    emit('answer-submitted', isCorrect)
-  }
-  
-  function getMatchItemClasses(item) {
-    if (!props.showFeedback) {
-      return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-    }
+  <div class="space-y-6">
+    <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+      {{ exercise.question }}
+    </h3>
     
-    return item.originalIndex === rightColumn.value.indexOf(item)
-      ? 'bg-green-100 dark:bg-green-900 border-green-500'
-      : 'bg-red-100 dark:bg-red-900 border-red-500'
+    <div class="grid gap-6 md:grid-cols-2">
+      <!-- Left column: Terms -->
+      <div class="space-y-3">
+        <div
+          v-for="(term, index) in randomizedTerms"
+          :key="`term-${term.originalIndex}`"
+          class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500"
+          :class="{
+            'border-blue-500': selectedTerm === term.originalIndex,
+            'opacity-50': isMatched(term.originalIndex, 'term')
+          }"
+          @click="selectTerm(term.originalIndex)"
+        >
+          {{ term.text }}
+        </div>
+      </div>
+
+      <!-- Right column: Definitions -->
+      <div class="space-y-3">
+        <div
+          v-for="(def, index) in randomizedDefinitions"
+          :key="`def-${def.originalIndex}`"
+          class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500"
+          :class="{
+            'border-blue-500': selectedDefinition === def.originalIndex,
+            'opacity-50': isMatched(def.originalIndex, 'definition')
+          }"
+          @click="selectDefinition(def.originalIndex)"
+        >
+          {{ def.text }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Show current matches with delete buttons -->
+    <div v-if="currentMatches.length > 0" class="mt-4">
+      <h4 class="font-medium mb-2">Current Matches:</h4>
+      <div class="space-y-2">
+        <div 
+          v-for="(match, index) in currentMatches" 
+          :key="index"
+          class="p-2 bg-gray-50 dark:bg-gray-700 rounded flex justify-between items-center"
+        >
+          <span>
+            {{ getTermText(match[0]) }} ↔ {{ getDefinitionText(match[1]) }}
+          </span>
+          <button
+            @click="deleteMatch(index)"
+            class="ml-2 p-1 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+          >
+            <span class="sr-only">Delete match</span>
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+
+const props = defineProps({
+  exercise: {
+    type: Object,
+    required: true
+  },
+  selectedAnswer: {
+    type: Array,
+    default: () => []
   }
-  </script>
+})
+
+const emit = defineEmits(['update-answer'])
+
+const selectedTerm = ref(null)
+const selectedDefinition = ref(null)
+const currentMatches = ref([])
+const randomizedTerms = ref([])
+const randomizedDefinitions = ref([])
+
+function shuffleArray(array) {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+function initializeRandomization() {
+  const indices = Array.from({ length: props.exercise.pairs.length }, (_, i) => i)
+  
+  const termIndices = shuffleArray(indices)
+  randomizedTerms.value = termIndices.map(originalIndex => ({
+    text: props.exercise.pairs[originalIndex][0],
+    originalIndex
+  }))
+  
+  const defIndices = shuffleArray(indices)
+  randomizedDefinitions.value = defIndices.map(originalIndex => ({
+    text: props.exercise.pairs[originalIndex][1],
+    originalIndex
+  }))
+}
+
+function getTermText(index) {
+  const term = randomizedTerms.value.find(t => t.originalIndex === index)
+  return term ? term.text : ''
+}
+
+function getDefinitionText(index) {
+  const def = randomizedDefinitions.value.find(d => d.originalIndex === index)
+  return def ? def.text : ''
+}
+
+function deleteMatch(index) {
+  currentMatches.value.splice(index, 1)
+  updateAnswer()
+}
+
+function clearAllMatches() {
+  currentMatches.value = []
+  selectedTerm.value = null
+  selectedDefinition.value = null
+  updateAnswer()
+}
+
+// Update answer whenever matches change
+function updateAnswer() {
+  if (currentMatches.value.length === props.exercise.pairs.length) {
+    const formattedAnswer = currentMatches.value.map(match => {
+      const term = String(props.exercise.pairs[match[0]][0])
+      const definition = String(props.exercise.pairs[match[1]][1])
+      return [term, definition]
+    })
+    emit('update-answer', formattedAnswer)
+  } else {
+    emit('update-answer', null)
+  }
+}
+
+onMounted(() => {
+  initializeRandomization()
+})
+
+watch(() => props.exercise, () => {
+  clearAllMatches()
+  initializeRandomization()
+}, { immediate: true })
+
+function isMatched(index, type) {
+  if (type === 'term') {
+    return currentMatches.value.some(match => match[0] === index)
+  }
+  return currentMatches.value.some(match => match[1] === index)
+}
+
+function selectTerm(index) {
+  if (isMatched(index, 'term')) return
+  selectedTerm.value = index
+  tryMatch()
+}
+
+function selectDefinition(index) {
+  if (isMatched(index, 'definition')) return
+  selectedDefinition.value = index
+  tryMatch()
+}
+
+function tryMatch() {
+  if (selectedTerm.value !== null && selectedDefinition.value !== null) {
+    currentMatches.value.push([selectedTerm.value, selectedDefinition.value])
+    selectedTerm.value = null
+    selectedDefinition.value = null
+    updateAnswer()
+  }
+}
+</script>
