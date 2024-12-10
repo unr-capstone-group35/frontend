@@ -19,14 +19,18 @@ export default defineNuxtRouteMiddleware((to, from) => {
     hasToken: !!authStore.token
   })
 
+  // Define protected routes
+  const protectedRoutes = ['/dashboard', '/learn', '/start-learning']
+  const authRoutes = ['/signin', '/signup']
+
   // If token is invalid and trying to access protected route
-  if (!authStore.isTokenValid && to.path !== '/signin' && to.path !== '/signup') {
+  if (!authStore.isTokenValid && protectedRoutes.includes(to.path)) {
     authStore.clearSession() // Clear any invalid session data
     return navigateTo('/signin')
   }
 
   // If authenticated and trying to access auth pages
-  if (authStore.isTokenValid && (to.path === '/signin' || to.path === '/signup')) {
+  if (authStore.isTokenValid && authRoutes.includes(to.path)) {
     return navigateTo('/dashboard')
   }
 })

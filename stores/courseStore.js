@@ -1,160 +1,239 @@
-// moving to backend soon
+// stores/courseStore.js
 import { defineStore } from 'pinia'
+import { useAuthStore } from './authStore'
 
 export const useCourseStore = defineStore('course', {
   state: () => ({
-    selectedCourse: null,
-    courses: {
-      'cs-basics': {
-        id: 'cs-basics',
-        name: "Computer Science Basics",
-        description: "Master the fundamental concepts of computer science and programming",
-        steps: [
-          {
-            title: "Introduction",
-            description: "Overview of programming basics concepts",
-            lessonId: "introduction",
-            exerciseId: "1"
-          },
-          {
-            title: "Variables",
-            description: "Understand how to store and manipulate data",
-            lessonId: "variables",
-            exerciseId: "1"
-          },
-          {
-            title: "Functions",
-            description: "Learn to create reusable blocks of code",
-            lessonId: "functions",
-            exerciseId: "1"
-          },
-          {
-            title: "Conditional Statements",
-            description: "Master decision-making in programming",
-            lessonId: "conditionals",
-            exerciseId: "1"
-          },
-          {
-            title: "Loops",
-            description: "Understand how to repeat actions efficiently",
-            lessonId: "loops",
-            exerciseId: "1"
-          },
-          {
-            title: "Practice",
-            description: "Apply everything you've learned so far",
-            lessonId: "practice",
-            exerciseId: "1"
-          }
-        ]
-      },
-
-      'data-structures': {
-        id: 'data-structures',
-        name: "Data Structures",
-        description: "Master fundamental data structures used in programming",
-        steps: [
-          {
-            title: "Introduction",
-            description: "Overview of data structures and their importance",
-            lessonId: "introduction",
-            exerciseId: "1"
-          },
-          {
-            title: "Arrays",
-            description: "Learn about static and dynamic arrays",
-            lessonId: "arrays",
-            exerciseId: "1"
-          },
-          {
-            title: "Linked Lists",
-            description: "Understand linked lists and their operations",
-            lessonId: "linked-lists",
-            exerciseId: "1"
-          },
-          {
-            title: "Stacks",
-            description: "Master the stack data structure and its applications",
-            lessonId: "stacks",
-            exerciseId: "1"
-          },
-          {
-            title: "Queues",
-            description: "Learn about queue structures and their uses",
-            lessonId: "queues",
-            exerciseId: "1"
-          },
-          {
-            title: "Trees",
-            description: "Explore tree structures and their implementations",
-            lessonId: "trees",
-            exerciseId: "1"
-          },
-          {
-            title: "Graphs",
-            description: "Understand graph structures and their applications",
-            lessonId: "graphs",
-            exerciseId: "1"
-          }
-        ]
-      },
-
-      'algorithms': {
-        id: 'algorithms',
-        name: "Algorithms",
-        description: "Learn essential algorithms and problem-solving techniques",
-        steps: [
-          {
-            title: "Introduction",
-            description: "Overview of algorithms and their analysis",
-            lessonId: "introduction",
-            exerciseId: "1"
-          },
-          {
-            title: "Time Complexity",
-            description: "Understand how to analyze algorithm efficiency",
-            lessonId: "time-complexity",
-            exerciseId: "1"
-          },
-          {
-            title: "Searching Algorithms",
-            description: "Master different searching techniques",
-            lessonId: "searching",
-            exerciseId: "1"
-          },
-          {
-            title: "Sorting Algorithms",
-            description: "Learn various sorting methods and their applications",
-            lessonId: "sorting",
-            exerciseId: "1"
-          },
-          {
-            title: "Recursion",
-            description: "Understand recursive problem-solving approaches",
-            lessonId: "recursion",
-            exerciseId: "1"
-          },
-          {
-            title: "Divide & Conquer",
-            description: "Learn to break down complex problems",
-            lessonId: "divide-conquer",
-            exerciseId: "1"
-          },
-          {
-            title: "Dynamic Programming",
-            description: "Master optimization through dynamic programming",
-            lessonId: "dynamic-programming",
-            exerciseId: "1"
-          }
-        ]
-      }
-    }
+    courses: {},
+    currentCourse: null,
+    currentLesson: null,
+    lessonProgress: {},
+    courseProgress: {},
+    loading: false,
+    error: null
   }),
 
+  getters: {
+    isLessonCompleted: (state) => (courseId, lessonId) => {
+      return state.lessonProgress[`${courseId}-${lessonId}`]?.status === 'completed'
+    },
+
+    nextExercise: (state) => (courseId, lessonId, currentExerciseId) => {
+      if (!state.currentLesson?.exercises) return null
+
+      const exerciseIndex = state.currentLesson.exercises.findIndex(
+        ex => ex.id === currentExerciseId
+      )
+
+      if (exerciseIndex < state.currentLesson.exercises.length - 1) {
+        return state.currentLesson.exercises[exerciseIndex + 1]
+      }
+
+      return null
+    },
+
+    courseProgress: (state) => (courseId) => {
+      return state.courseProgress[courseId] || {
+        startedAt: null,
+        completedAt: null,
+        progress: 0
+      }
+    }
+  },
+
   actions: {
+    // Fetch all available courses
     selectCourse(courseId) {
       this.selectedCourse = this.courses[courseId]
+    },
+
+    async fetchCourses() {
+      try {
+        this.loading = true
+        const authStore = useAuthStore()
+        
+        const response = await fetch('http://localhost:8080/api/courses', {
+          headers: authStore.getAuthHeaders()
+        })
+
+        if (!response.ok) throw new Error('Failed to fetch courses')
+        
+        const data = await response.json()
+        this.courses = data.reduce((acc, course) => {
+          acc[course.Name] = {
+            id: course.Name,
+            name: course.Name,
+            lessons: []
+          }
+          return acc
+        }, {})
+      } catch (error) {
+        this.error = error.message
+        console.error('Error fetching courses:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Fetch specific course and its lessons
+    async fetchCourse(courseId) {
+      try {
+        this.loading = true
+        const authStore = useAuthStore()
+        
+        const response = await fetch(`http://localhost:8080/api/courses/${courseId}`, {
+          headers: authStore.getAuthHeaders()
+        })
+
+        if (!response.ok) throw new Error('Failed to fetch course')
+        
+        const courseData = await response.json()
+        this.currentCourse = {
+          id: courseData.Name,
+          name: courseData.Name,
+          lessons: courseData.LessonService || []
+        }
+
+        // Also fetch course progress
+        await this.fetchCourseProgress(courseId)
+      } catch (error) {
+        this.error = error.message
+        console.error('Error fetching course:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Fetch lesson data
+    async fetchLesson(courseId, lessonId) {
+      try {
+        this.loading = true
+        const authStore = useAuthStore()
+        
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}`,
+          {
+            headers: authStore.getAuthHeaders()
+          }
+        )
+
+        if (!response.ok) throw new Error('Failed to fetch lesson')
+        
+        const lessonData = await response.json()
+        this.currentLesson = lessonData
+
+        // Also fetch lesson progress
+        await this.fetchLessonProgress(courseId, lessonId)
+      } catch (error) {
+        this.error = error.message
+        console.error('Error fetching lesson:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Submit an exercise attempt
+    async submitExerciseAttempt(courseId, lessonId, exerciseId, answer) {
+      try {
+        const authStore = useAuthStore()
+        
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/exercises/${exerciseId}/attempt`,
+          {
+            method: 'POST',
+            headers: {
+              ...authStore.getAuthHeaders(),
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ answer })
+          }
+        )
+
+        if (!response.ok) throw new Error('Failed to submit exercise attempt')
+        
+        const result = await response.json()
+        
+        // If exercise was completed successfully, update progress
+        if (result.isCorrect) {
+          await this.updateLessonProgress(courseId, lessonId, 'completed')
+        }
+
+        return result
+      } catch (error) {
+        this.error = error.message
+        console.error('Error submitting exercise:', error)
+        throw error
+      }
+    },
+
+    // Fetch course progress
+    async fetchCourseProgress(courseId) {
+      try {
+        const authStore = useAuthStore()
+        
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${courseId}/progress`,
+          {
+            headers: authStore.getAuthHeaders()
+          }
+        )
+
+        if (!response.ok) throw new Error('Failed to fetch course progress')
+        
+        const progress = await response.json()
+        this.courseProgress[courseId] = progress
+      } catch (error) {
+        console.error('Error fetching course progress:', error)
+      }
+    },
+
+    // Fetch lesson progress
+    async fetchLessonProgress(courseId, lessonId) {
+      try {
+        const authStore = useAuthStore()
+        
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`,
+          {
+            headers: authStore.getAuthHeaders()
+          }
+        )
+
+        if (!response.ok) throw new Error('Failed to fetch lesson progress')
+        
+        const progress = await response.json()
+        this.lessonProgress[`${courseId}-${lessonId}`] = progress
+      } catch (error) {
+        console.error('Error fetching lesson progress:', error)
+      }
+    },
+
+    // Update lesson progress
+    async updateLessonProgress(courseId, lessonId, status) {
+      try {
+        const authStore = useAuthStore()
+        
+        const response = await fetch(
+          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`,
+          {
+            method: 'POST',
+            headers: {
+              ...authStore.getAuthHeaders(),
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status })
+          }
+        )
+
+        if (!response.ok) throw new Error('Failed to update lesson progress')
+        
+        // Refresh progress data
+        await this.fetchLessonProgress(courseId, lessonId)
+        await this.fetchCourseProgress(courseId)
+      } catch (error) {
+        console.error('Error updating lesson progress:', error)
+        throw error
+      }
     }
   }
-  
 })

@@ -1,4 +1,4 @@
-<!-- learn.vue, main page where logged in users do lessons  -->
+<!-- learn.vue -->
 <template>
   <div class="min-h-screen flex flex-col">
     <div class="flex-1 flex bg-gray-100 dark:bg-gray-900">
@@ -32,9 +32,17 @@
               </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-6">
+            <div v-if="courseStore.loading" class="p-6 text-center">
+              <span class="text-gray-500">Loading courses...</span>
+            </div>
+
+            <div v-else-if="courseStore.error" class="p-6 text-center">
+              <span class="text-red-500">{{ courseStore.error }}</span>
+            </div>
+
+            <div v-else class="flex-1 overflow-y-auto p-6">
               <div class="space-y-4">
-                <div v-for="course in courses" :key="course.id">
+                <div v-for="course in Object.values(courseStore.courses)" :key="course.id">
                   <button
                     @click="toggleCourse(course.id)"
                     :class="getCourseClasses(course.id)"
@@ -42,22 +50,27 @@
                     <span class="font-medium text-gray-900 dark:text-white">
                       {{ course.name }}
                     </span>
-                    <svg
-                      :class="[
-                        'w-5 h-5 transition-transform',
-                        expandedCourse === course.id ? 'rotate-180' : ''
-                      ]"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm text-gray-500">
+                        {{ getCourseProgress(course.id) }}%
+                      </span>
+                      <svg
+                        :class="[
+                          'w-5 h-5 transition-transform',
+                          expandedCourse === course.id ? 'rotate-180' : ''
+                        ]"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
                   </button>
 
                   <!-- Lesson Dropdown -->
@@ -69,12 +82,15 @@
                   >
                     <div class="p-4 space-y-2 bg-gray-50 dark:bg-gray-800/50">
                       <button
-                        v-for="lesson in course.lessons"
-                        :key="lesson.id"
-                        @click="selectExercise(course.id, lesson.id, lesson.exercises[0].id)"
-                        :class="getLessonClasses(lesson.id)"
+                        v-for="lesson in currentCourse?.lessons"
+                        :key="lesson.lessonId"
+                        @click="selectLesson(course.id, lesson.lessonId)"
+                        :disabled="!canAccessLesson(course.id, lesson.lessonId)"
+                        :class="getLessonClasses(lesson.lessonId)"
                       >
-                        {{ lesson.name }}
+                        <span>{{ lesson.title }}</span>
+                        <span v-if="isLessonCompleted(course.id, lesson.lessonId)" 
+                              class="ml-2 text-emerald-500">✓</span>
                       </button>
                     </div>
                   </div>
@@ -109,22 +125,39 @@
 
       <!-- Main Content -->
       <main class="flex-1 p-8 overflow-y-auto transition-all duration-300">
+        <div v-if="courseStore.loading" class="text-center">
+          <span class="text-gray-500">Loading content...</span>
+        </div>
+        
+        <div v-else-if="courseStore.error" class="text-center">
+          <span class="text-red-500">{{ courseStore.error }}</span>
+        </div>
+        
         <div 
-          v-if="currentExercise" 
-          class="bg-white dark:bg-gray-800 p-10 rounded-lg shadow-md text-center"
+          v-else-if="courseStore.currentLesson" 
+          class="bg-white dark:bg-gray-800 p-10 rounded-lg shadow-md"
         >
-          <h2 class="text-3xl font-semibold text-gray-800 dark:text-white mb-4">
-            {{ currentExercise.name }}
-          </h2>
-          <div class="text-gray-600 dark:text-gray-300">
-            {{ currentExercise.content }}
+          <div class="mb-8">
+            <h2 class="text-3xl font-semibold text-gray-800 dark:text-white mb-4">
+              {{ courseStore.currentLesson.title }}
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300">
+              {{ courseStore.currentLesson.description }}
+            </p>
           </div>
+
+          <QuestionContainer
+            v-if="currentExercise"
+            :exercise="currentExercise"
+            @submit-answer="handleAnswerSubmit"
+            @next-exercise="handleNextExercise"
+          />
         </div>
         <div 
           v-else 
           class="text-center text-gray-500 dark:text-gray-400 text-xl"
         >
-          Select an exercise to begin learning.
+          Select a lesson to begin learning.
         </div>
       </main>
     </div>
@@ -132,11 +165,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCourseStore } from '~/stores/courseStore'
+import QuestionContainer from '~/components/questions/QuestionContainer.vue'
 
-// Add auth protection to this page
 definePageMeta({
   middleware: ['auth']
 })
@@ -145,29 +178,92 @@ const route = useRoute()
 const router = useRouter()
 const courseStore = useCourseStore()
 
-// State
 const sidebarOpen = ref(true)
 const expandedCourse = ref(null)
-const expandedLesson = ref(null)
 const currentExercise = ref(null)
 
-const courses = computed(() => {
-  const coursesArray = Object.values(courseStore.courses)
+// Load courses when component mounts
+onMounted(async () => {
+  await courseStore.fetchCourses()
   
-  return coursesArray.map(course => ({
-    id: course.id,
-    name: course.name,
-    lessons: course.steps.map(step => ({
-      id: step.lessonId,
-      name: step.title,
-      exercises: [{
-        id: step.exerciseId,
-        name: step.title,
-        content: step.description
-      }]
-    }))
-  }))
+  // If there are query params, load the specific course and lesson
+  if (route.query.course) {
+    await courseStore.fetchCourse(route.query.course)
+    
+    if (route.query.lesson) {
+      await courseStore.fetchLesson(route.query.course, route.query.lesson)
+      updateCurrentExercise()
+    }
+  }
 })
+
+async function handleAnswerSubmit(answer) {
+  if (!currentExercise.value) return
+
+  try {
+    const result = await courseStore.submitExerciseAttempt(
+      route.query.course,
+      route.query.lesson,
+      currentExercise.value.id,
+      answer
+    )
+    
+    return result.isCorrect
+  } catch (error) {
+    console.error('Error submitting answer:', error)
+    return false
+  }
+}
+
+async function handleNextExercise() {
+  const nextExercise = courseStore.nextExercise(
+    route.query.course,
+    route.query.lesson,
+    currentExercise.value?.id
+  )
+
+  if (nextExercise) {
+    currentExercise.value = nextExercise
+  } else {
+    // Move to next lesson
+    await router.push('/dashboard') // Or show completion message
+  }
+}
+
+async function selectLesson(courseId, lessonId) {
+  if (!canAccessLesson(courseId, lessonId)) return
+  
+  await router.push({
+    path: '/learn',
+    query: { course: courseId, lesson: lessonId }
+  })
+  
+  await courseStore.fetchLesson(courseId, lessonId)
+  updateCurrentExercise()
+}
+
+function updateCurrentExercise() {
+  if (courseStore.currentLesson?.exercises?.length > 0) {
+    currentExercise.value = courseStore.currentLesson.exercises[0]
+  }
+}
+
+function canAccessLesson(courseId, lessonId) {
+  // First lesson is always accessible
+  if (courseStore.currentCourse?.lessons[0]?.lessonId === lessonId) return true
+  
+  // Check if previous lesson is completed
+  const lessons = courseStore.currentCourse?.lessons
+  const lessonIndex = lessons?.findIndex(l => l.lessonId === lessonId)
+  if (lessonIndex <= 0) return false
+  
+  return courseStore.isLessonCompleted(courseId, lessons[lessonIndex - 1].lessonId)
+}
+
+function getCourseProgress(courseId) {
+  const progress = courseStore.courseProgress(courseId)
+  return Math.round(progress.progress * 100)
+}
 
 function getSidebarContainerClasses() {
   return !sidebarOpen.value ? 'w-8' : 'w-80'
@@ -188,13 +284,6 @@ function toggleCourse(courseId) {
 
 function toggleLesson(lessonId) {
   expandedLesson.value = expandedLesson.value === lessonId ? null : lessonId
-}
-
-function selectExercise(courseId, lessonId, exerciseId) {
-  router.push({
-    path: '/learn',
-    query: { course: courseId, lesson: lessonId, exercise: exerciseId }
-  })
 }
 
 function isActiveCourse(courseId) {
@@ -223,23 +312,6 @@ function getLessonClasses(lessonId) {
   const inactiveClasses = 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
   
   return `${baseClasses} ${isActiveLesson(lessonId) ? activeClasses : inactiveClasses}`
-}
-
-function updateCurrentExercise() {
-  const { course: currentCourse, lesson: currentLesson, exercise: currentExerciseId } = route.query
-
-  if (currentCourse && currentLesson && currentExerciseId) {
-    const selectedCourse = courses.value.find(course => course.id === currentCourse)
-    if (selectedCourse) {
-      const selectedLesson = selectedCourse.lessons.find(lesson => lesson.id === currentLesson)
-      if (selectedLesson) {
-        const selectedExercise = selectedLesson.exercises.find(exercise => exercise.id === currentExerciseId)
-        currentExercise.value = selectedExercise
-        expandedCourse.value = currentCourse
-        expandedLesson.value = currentLesson
-      }
-    }
-  }
 }
 
 // Watch for route changes

@@ -66,4 +66,9 @@
 
 <script setup>
 import CourseCard from '~/components/CourseCard.vue'
+
+// Auth protection
+definePageMeta({
+  middleware: ['auth']
+})
 </script>

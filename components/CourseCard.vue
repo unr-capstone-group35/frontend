@@ -4,7 +4,9 @@
   >
     <img :src="image" :alt="title" class="w-full h-40 object-cover" />
     <div 
-    class="p-5 transition-colors duration-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50" @click="handleCourseSelect">
+      class="p-5 transition-colors duration-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50" 
+      @click="handleCourseSelect"
+    >
       <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ title }}</h3>
       <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">{{ description }}</p>
       <div class="flex justify-between items-center">
@@ -60,12 +62,26 @@ const courseStore = useCourseStore()
 
 const handleCourseSelect = async () => {
   try {
-    // First select the course
-    courseStore.selectCourse(props.courseId)
-    // Then navigate
-    await router.push('/roadmap')
+    // First fetch the course data
+    await courseStore.fetchCourse(props.courseId)
+    
+    // Get first lesson if course was loaded successfully
+    if (courseStore.currentCourse?.lessons?.length > 0) {
+      const firstLesson = courseStore.currentCourse.lessons[0]
+      
+      // Navigate directly to learn page with first lesson
+      await router.push({
+        path: '/learn',
+        query: { 
+          course: props.courseId,
+          lesson: firstLesson.lessonId
+        }
+      })
+    } else {
+      throw new Error('No lessons found in course')
+    }
   } catch (error) {
-    console.error('Error navigating to roadmap page:', error)
+    console.error('Error navigating to learn page:', error)
   }
 }
 </script>
