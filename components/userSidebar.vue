@@ -69,6 +69,12 @@
       <!-- Buttons -->
       <div class="mt-auto space-y-3">
           <button 
+              @click="handleDashboardClick"
+              class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded-lg transition duration-150 ease-in-out text-center">
+              Dashboard
+          </button>
+
+          <button 
               @click="handleLeaderboardClick"
               class="block w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-150 ease-in-out text-center">
               Leaderboard
@@ -88,10 +94,10 @@
 import { useAuthStore } from '~/stores/authStore'
 
 const props = defineProps({
-isOpen: {
-  type: Boolean,
-  required: true
-}
+  isOpen: {
+    type: Boolean,
+    required: true
+  }
 })
 
 const emit = defineEmits(['close'])
@@ -99,21 +105,26 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const close = () => {
-emit('close')
+  emit('close')
 }
 
 const handleLogout = async () => {
-try {
-  await authStore.logout()
-  close()
-  router.push('/signin')
-} catch (error) {
-  console.error('Logout failed:', error)
-}
+  try {
+    await authStore.logout()
+    close()
+    router.push('/signin')
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
 }
 
 const handleLeaderboardClick = () => {
-close()
-router.push('/leaderboard')
+  close()
+  router.push('/leaderboard')
+}
+
+const handleDashboardClick = () => {
+  close()
+  router.push('/dashboard')
 }
 </script>
