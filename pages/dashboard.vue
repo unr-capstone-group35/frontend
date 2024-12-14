@@ -89,7 +89,6 @@
 <script setup>
 import { useAuthStore } from '~/stores/authStore'
 
-// Middleware declaration
 definePageMeta({
   middleware: ['auth']
 })

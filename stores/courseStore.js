@@ -59,6 +59,14 @@ export const useCourseStore = defineStore('course', {
     }
   },
 
+  createEmptyProgress() {
+    return {
+      startedAt: null,
+      completedAt: null,
+      progress_percentage: 0
+    };
+  },
+
   async getLessonProgress(courseId, lessonId) {
     try {
       const response = await fetch(
@@ -188,8 +196,8 @@ export const useCourseStore = defineStore('course', {
     
     async fetchCourseProgress(courseId) {
       try {
-        const authStore = useAuthStore()
-        const formattedId = this.formattedCourseId(courseId)
+        const authStore = useAuthStore();
+        const formattedId = this.formattedCourseId(courseId);
         
         const response = await fetch(
           `http://localhost:8080/api/courses/${formattedId}/progress`,
@@ -197,33 +205,28 @@ export const useCourseStore = defineStore('course', {
             headers: authStore.getAuthHeaders(),
             credentials: 'include'
           }
-        )
-
+        );
+    
         if (!response.ok) {
-          // Don't throw on 404, just treat as no progress
+          // Handle 404
           if (response.status === 404) {
-            this.courseProgress[formattedId] = {
-              startedAt: null,
-              completedAt: null,
-              progress_percentage: 0
-            }
-            return
+            this.courseProgress[formattedId] = this.createEmptyProgress();
+            return;
           }
-          throw new Error(`Failed to fetch course progress: ${response.statusText}`)
+          throw new Error(`Failed to fetch course progress: ${response.statusText}`);
         }
         
-        const progress = await response.json()
-        this.courseProgress[formattedId] = progress
+        const progress = await response.json();
+        this.courseProgress[formattedId] = {
+          ...progress,
+          progress_percentage: progress.progress_percentage || progress.progress || 0
+        };
       } catch (error) {
-        console.error('Progress fetch failed:', error)
-        this.courseProgress[this.formattedCourseId(courseId)] = {
-          startedAt: null,
-          completedAt: null,
-          progress_percentage: 0
-        }
+        console.error('Progress fetch failed:', error);
+        this.courseProgress[this.formattedCourseId(courseId)] = this.createEmptyProgress();
       }
     },
-
+    
     
     async fetchCourses() {
       try {
@@ -306,43 +309,6 @@ export const useCourseStore = defineStore('course', {
       }
     },
     
-    async fetchCourseProgress(courseId) {
-      try {
-        const authStore = useAuthStore()
-        const formattedId = this.formattedCourseId(courseId)
-        
-        const response = await fetch(
-          `http://localhost:8080/api/courses/${formattedId}/progress`,
-          {
-            headers: authStore.getAuthHeaders()
-          }
-        )
-
-        if (!response.ok) {
-          // Don't throw on 404, just treat as no progress
-          if (response.status === 404) {
-            this.courseProgress[formattedId] = {
-              startedAt: null,
-              completedAt: null,
-              progress: 0
-            }
-            return
-          }
-          throw new Error(`Failed to fetch course progress: ${response.statusText}`)
-        }
-        
-        const progress = await response.json()
-        this.courseProgress[formattedId] = progress
-      } catch (error) {
-        // Log error but don't fail completely
-        console.error('Progress fetch failed:', error)
-        this.courseProgress[this.formattedCourseId(courseId)] = {
-          startedAt: null,
-          completedAt: null,
-          progress: 0
-        }
-      }
-    },
 
     async fetchLesson(courseId, lessonId) {
       try {
