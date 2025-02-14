@@ -2,7 +2,7 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+      <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
         {{ exercise.title }}
       </h2>
       <p class="text-gray-600 dark:text-gray-300">
@@ -14,15 +14,13 @@
       <h3 class="text-xl font-medium text-gray-900 dark:text-white">
         {{ formatQuestion }}
       </h3>
-      
-      <div class="max-w-xs mt-4">
+
+      <div class="mt-4 max-w-xs">
         <input
           type="text"
           v-model="localAnswer"
           @input="handleInput"
-          class="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 
-                 focus:ring-2 focus:ring-blue-500 outline-none
-                 dark:bg-gray-800 dark:text-white"
+          class="w-full rounded-lg border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
           placeholder="Type your answer..."
         />
       </div>
@@ -31,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch } from "vue"
 
 const props = defineProps({
   exercise: {
@@ -44,24 +42,28 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update-answer'])
+const emit = defineEmits(["update-answer"])
 
-const localAnswer = ref('')
+const localAnswer = ref("")
 
 // Watch for external answer changes
-watch(() => props.selectedAnswer, (newVal) => {
-  if (newVal === null) {
-    localAnswer.value = ''
-  }
-}, { immediate: true })
+watch(
+  () => props.selectedAnswer,
+  newVal => {
+    if (newVal === null) {
+      localAnswer.value = ""
+    }
+  },
+  { immediate: true }
+)
 
 const formatQuestion = computed(() => {
-  return props.exercise.question.replace('_', '_____')
+  return props.exercise.question.replace("_", "_____")
 })
 
 function handleInput(event) {
   const value = event.target.value
   localAnswer.value = value
-  emit('update-answer', value)
+  emit("update-answer", value)
 }
 </script>

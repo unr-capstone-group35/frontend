@@ -3,14 +3,14 @@
     <h3 class="text-xl font-medium text-gray-900 dark:text-white">
       {{ exercise.question }}
     </h3>
-    
+
     <div class="space-y-3">
       <button
         v-for="(choice, index) in randomizedChoices"
         :key="choice.originalIndex"
         @click="selectAnswer(choice.originalIndex)"
         :class="[
-          'w-full p-4 text-left rounded-lg transition-colors',
+          'w-full rounded-lg p-4 text-left transition-colors',
           getChoiceClasses(choice.originalIndex)
         ]"
       >
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from "vue"
 
 const props = defineProps({
   exercise: {
@@ -34,14 +34,14 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update-answer'])
+const emit = defineEmits(["update-answer"])
 const randomizedChoices = ref([])
 
 function shuffleArray(array) {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
 }
@@ -55,25 +55,30 @@ function initializeChoices() {
   )
 }
 
-watch(() => props.exercise, () => {
-  initializeChoices()
-}, { immediate: true })
+watch(
+  () => props.exercise,
+  () => {
+    initializeChoices()
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   initializeChoices()
 })
 
 function selectAnswer(index) {
-  console.log('Selected answer:', index)
-  emit('update-answer', index)
+  console.log("Selected answer:", index)
+  emit("update-answer", index)
 }
-  
+
 function getChoiceClasses(index) {
-  const baseClasses = 'border transition-colors text-gray-900 dark:text-white'
-  const selectedClasses = props.selectedAnswer === index
-    ? 'bg-blue-100 dark:bg-blue-900 border-blue-500'
-    : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600'
-  
+  const baseClasses = "border transition-colors text-gray-900 dark:text-white"
+  const selectedClasses =
+    props.selectedAnswer === index
+      ? "bg-blue-100 dark:bg-blue-900 border-blue-500"
+      : "bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600"
+
   return `${baseClasses} ${selectedClasses}`
 }
 </script>
