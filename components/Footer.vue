@@ -1,19 +1,23 @@
 <template>
-  <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-4">
-    <div class="container mx-auto px-4 flex justify-between items-center">
+  <footer
+    class="border-t border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900"
+  >
+    <div class="container mx-auto flex items-center justify-between px-4">
       <div>
-        <p class="text-gray-600 dark:text-gray-400 text-sm">© 2024 DevQuest. All rights reserved.</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          © 2024 DevQuest. All rights reserved.
+        </p>
       </div>
       <div class="flex space-x-4">
-        <NuxtLink 
-          to="/privacy" 
-          class="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+        <NuxtLink
+          to="/privacy"
+          class="text-gray-600 transition-colors hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
         >
           Privacy Policy
         </NuxtLink>
-        <NuxtLink 
-          to="/terms" 
-          class="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+        <NuxtLink
+          to="/terms"
+          class="text-gray-600 transition-colors hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
         >
           Terms of Service
         </NuxtLink>
@@ -24,6 +28,6 @@
 
 <script>
 export default {
-  name: 'Footer',
-};
+  name: "Footer"
+}
 </script>
