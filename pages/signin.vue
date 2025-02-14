@@ -111,10 +111,7 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue"
-import { useAuthStore } from "~/stores/authStore"
-
+<script setup lang="ts">
 const username = ref("")
 const password = ref("")
 const showPassword = ref(false)

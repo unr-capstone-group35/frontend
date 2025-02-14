@@ -110,11 +110,6 @@
 </template>
 
 <script setup>
-import { watch, onMounted } from "vue"
-import { useRoute } from "vue-router"
-import { useLearn } from "~/composables/useLearn"
-import QuestionContainer from "~/components/QuestionContainer.vue"
-
 definePageMeta({
   middleware: ["auth"]
 })
