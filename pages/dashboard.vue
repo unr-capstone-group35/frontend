@@ -25,7 +25,7 @@
           </div>
         </div>
         <h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
-          Welcome back, {{ authStore.user?.username }}!
+          Welcome back, {{ username }}
         </h1>
         <p class="text-lg text-gray-600 dark:text-gray-300">
           Track your progress and continue your learning journey
@@ -124,12 +124,10 @@
   </div>
 </template>
 
-<script setup>
-import { useAuthStore } from "~/stores/authStore"
-
+<script setup lang="ts">
 definePageMeta({
   middleware: ["auth"]
 })
 
-const authStore = useAuthStore()
+const username = useAuthStore().username
 </script>

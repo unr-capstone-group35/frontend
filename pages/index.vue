@@ -286,9 +286,7 @@
   </div>
 </template>
 
-<script setup>
-import { useAuthStore } from "~/stores/authStore"
-
+<script setup lang="ts">
 const authStore = useAuthStore()
 
 // Initialize auth state from cookies when the component mounts
