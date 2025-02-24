@@ -53,15 +53,15 @@ export function useLearn() {
     const lessons = currentCourse.value?.lessons || []
 
     // First lesson is always accessible
-    if (lessons[0]?.lessonId === lessonId) return true
+    if (lessons[0]?.id === lessonId) return true
 
-    const lessonIndex = lessons.findIndex(l => l.lessonId === lessonId)
+    const lessonIndex = lessons.findIndex(l => l.id === lessonId)
     if (lessonIndex <= 0) return false
 
     // Check all previous lessons up to this one
     // If ANY previous lesson is completed, all lessons up to that point are accessible
     for (let i = lessonIndex - 1; i >= 0; i--) {
-      if (courseStore.isLessonCompleted(courseId, lessons[i].lessonId)) {
+      if (courseStore.isLessonCompleted(courseId, lessons[i].id)) {
         return true
       }
     }
@@ -172,14 +172,14 @@ export function useLearn() {
 
         // Find the next lesson
         const lessons = currentCourse.value?.lessons || []
-        const currentLessonIndex = lessons.findIndex(lesson => lesson.lessonId === route.query.lesson)
+        const currentLessonIndex = lessons.findIndex(lesson => lesson.id === route.query.lesson)
 
         // Check if there's a next lesson
         if (currentLessonIndex !== -1 && currentLessonIndex < lessons.length - 1) {
           const nextLesson = lessons[currentLessonIndex + 1]
 
           // Immediately navigate to next lesson since current lesson is completed
-          await selectLesson(route.query.course, nextLesson.lessonId)
+          await selectLesson(route.query.course, nextLesson.id)
 
           // Reset exercise state for new lesson
           if (currentLesson.value?.exercises?.length > 0) {

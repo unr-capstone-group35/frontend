@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import CourseCard from "~/components/CourseCard.vue"
-
 // Auth protection
 definePageMeta({
   middleware: ["auth"]
@@ -67,7 +65,7 @@ onMounted(fetchCourses)
             </ul>
           </div>
           <div class="lg:w-3/5">
-            <CourseCard courseId="Programming_Basics" imagePath="/images/basics3.jpg" />
+            <CourseCard courseId="programming_basics" imagePath="/images/basics3.jpg" />
           </div>
         </section>
 
@@ -86,7 +84,7 @@ onMounted(fetchCourses)
             </ul>
           </div>
           <div class="lg:w-3/5">
-            <CourseCard courseId="Data_Structures" imagePath="/images/data-structures2.jpg" />
+            <CourseCard courseId="data_structures" imagePath="/images/data-structures2.jpg" />
           </div>
         </section>
 
@@ -105,7 +103,7 @@ onMounted(fetchCourses)
             </ul>
           </div>
           <div class="lg:w-3/5">
-            <CourseCard courseId="Algorithms" imagePath="/images/algorithms.jpg" />
+            <CourseCard courseId="algorithms" imagePath="/images/algorithms.jpg" />
           </div>
         </section>
 

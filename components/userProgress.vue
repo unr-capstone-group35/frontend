@@ -13,7 +13,7 @@ const completedLessons = computed(() => {
   if (!currentCourse.value) return 0
 
   return currentCourse.value.lessons.filter(
-    lesson => lessonProgress.value[`${currentCourse.value.id}-${lesson.lessonId}`]?.status === "completed"
+    lesson => lessonProgress.value[`${currentCourse.value.id}-${lesson.id}`]?.status === "completed"
   ).length
 })
 

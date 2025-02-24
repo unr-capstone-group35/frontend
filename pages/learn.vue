@@ -1,9 +1,4 @@
-<script setup>
-import { watch, onMounted } from "vue"
-import { useRoute } from "vue-router"
-import { useLearn } from "~/composables/useLearn"
-import QuestionContainer from "~/components/QuestionContainer.vue"
-
+<script setup lang="ts">
 definePageMeta({
   middleware: ["auth"]
 })
@@ -86,7 +81,7 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
           <span class="text-gray-500">Loading content...</span>
         </div>
 
-        <div v-else-if="courseStore.error" class="text-center">
+        <div v-else-if="courseStore.error != ''" class="text-center">
           <span class="text-red-500">{{ courseStore.error }}</span>
         </div>
 
@@ -103,7 +98,7 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
           <QuestionContainer
             v-if="currentExercise"
             :exercise="currentExercise"
-            :onSubmitAnswer="answer => handleAnswerSubmit(answer)"
+            :onSubmitAnswer="(answer: any) => handleAnswerSubmit(answer)"
             @next-exercise="handleNextExercise"
           />
         </div>

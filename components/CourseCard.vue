@@ -20,18 +20,18 @@ const error = ref(null)
 // Computed properties
 const courseDisplayName = computed(() => {
   const names = {
-    Algorithms: "Algorithms",
+    algorithms: "Algorithms",
     data_structures: "Data Structures",
-    Programming_Basics: "Programming Basics"
+    programming_basics: "Programming Basics"
   }
   return names[props.courseId] || props.courseId
 })
 
 const courseDescription = computed(() => {
   const descriptions = {
-    Algorithms: "Master fundamental algorithms and their implementations",
+    algorithms: "Master fundamental algorithms and their implementations",
     data_structures: "Learn essential data structures and their applications",
-    Programming_Basics: "Get started with programming fundamentals"
+    programming_basics: "Get started with programming fundamentals"
   }
   return descriptions[props.courseId] || "Explore this comprehensive course"
 })
@@ -40,18 +40,18 @@ const courseInitial = computed(() => courseDisplayName.value.charAt(0))
 
 const courseBgColor = computed(() => {
   const colors = {
-    Algorithms: "#4F46E5",
+    algorithms: "#4F46E5",
     data_structures: "#0891B2",
-    Programming_Basics: "#059669"
+    programming_basics: "#059669"
   }
   return colors[props.courseId] || "#6366F1"
 })
 
 const courseIconColor = computed(() => {
   const colors = {
-    Algorithms: "#6366F1",
+    algorithms: "#6366F1",
     data_structures: "#0EA5E9",
-    Programming_Basics: "#10B981"
+    programming_basics: "#10B981"
   }
   return colors[props.courseId] || "#818CF8"
 })
@@ -67,8 +67,7 @@ const progress = computed(() => {
 const progressPercentage = computed(() => {
   if (!progress.value) return 0
   const completed =
-    currentCourse.value?.lessons?.filter(lesson => courseStore.isLessonCompleted(props.courseId, lesson.lessonId))
-      .length || 0
+    currentCourse.value?.lessons?.filter(lesson => courseStore.isLessonCompleted(props.courseId, lesson.id)).length || 0
   return Math.round((completed / lessonCount.value) * 100) || 0
 })
 
@@ -110,7 +109,7 @@ const handleCourseSelect = async () => {
       path: "/learn",
       query: {
         course: props.courseId,
-        lesson: firstLesson.lessonId
+        lesson: firstLesson.id
       }
     })
   } catch (err) {

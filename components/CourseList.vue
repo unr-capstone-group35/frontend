@@ -34,9 +34,8 @@ const totalLessons = computed(() => {
 const completedLessons = computed(() => {
   if (!activeCourse.value || !currentCourse.value?.lessons) return 0
 
-  return currentCourse.value.lessons.filter(lesson =>
-    courseStore.isLessonCompleted(activeCourse.value.id, lesson.lessonId)
-  ).length
+  return currentCourse.value.lessons.filter(lesson => courseStore.isLessonCompleted(activeCourse.value.id, lesson.id))
+    .length
 })
 
 // Calculate progress percentage

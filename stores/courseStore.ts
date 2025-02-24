@@ -31,7 +31,7 @@ type ExerciseAttempt = {
 }
 
 type Lesson = {
-  lessonId: string
+  id: string
   title: string
   description: string
   exercises: Exercise[]
@@ -73,10 +73,6 @@ export const useCourseStore = defineStore("course", {
       return state.lessonProgress[`${courseId}-${lessonId}`]?.status === "completed"
     },
 
-    formattedCourseId: () => (courseId: string) => {
-      return courseId.replace(/\s+/g, "_")
-    },
-
     currentExercises: state => {
       return state.currentLesson?.exercises || []
     },
@@ -90,7 +86,7 @@ export const useCourseStore = defineStore("course", {
       // Calculate total and completed lessons
       const totalLessons = state.currentCourse.lessons.length
       const completedLessons = state.currentCourse.lessons.reduce((count, lesson) => {
-        const isCompleted = state.lessonProgress[`${courseId}-${lesson.lessonId}`]?.status === "completed"
+        const isCompleted = state.lessonProgress[`${courseId}-${lesson.id}`]?.status === "completed"
         return isCompleted ? count + 1 : count
       }, 0)
 
@@ -101,7 +97,7 @@ export const useCourseStore = defineStore("course", {
     getNextLesson: state => (currentLessonId: string) => {
       if (!state.currentCourse?.lessons) return null
 
-      const currentIndex = state.currentCourse.lessons.findIndex(lesson => lesson.lessonId === currentLessonId)
+      const currentIndex = state.currentCourse.lessons.findIndex(lesson => lesson.id === currentLessonId)
 
       if (currentIndex !== -1 && currentIndex < state.currentCourse.lessons.length - 1) {
         return state.currentCourse.lessons[currentIndex + 1]
@@ -209,10 +205,8 @@ export const useCourseStore = defineStore("course", {
     // GET /api/courses/${formattedId}/progress
     async fetchCourseProgress(courseId: string) {
       try {
-        const formattedId = this.formattedCourseId(courseId)
-
         const lessonProgress = await useNuxtApp().$api<LessonProgress>(
-          `http://localhost:8080/api/courses/${formattedId}/progress`,
+          `http://localhost:8080/api/courses/${courseId}/progress`,
           { method: "GET" }
         )
         // fix this, its assigning courseProgress to lessonProgress?
@@ -223,7 +217,7 @@ export const useCourseStore = defineStore("course", {
       } catch (error: any) {
         this.error = error.message
         console.error(this.error)
-        this.courseProgress[this.formattedCourseId(courseId)] = {} as CourseProgress
+        this.courseProgress[courseId] = {} as CourseProgress
       }
     },
     // GET /api/courses
@@ -253,15 +247,13 @@ export const useCourseStore = defineStore("course", {
       this.loading = true
       this.error = ""
       try {
-        const formattedId = this.formattedCourseId(courseId)
+        console.log(`Requesting course with formatted ID: ${courseId}`)
 
-        console.log(`Requesting course with formatted ID: ${formattedId}`)
-
-        const courseResponse = await useNuxtApp().$api<Course>(`http://localhost:8080/api/courses/${formattedId}`, {
+        const courseResponse = await useNuxtApp().$api<Course>(`http://localhost:8080/api/courses/${courseId}`, {
           method: "GET"
         })
 
-        console.log(`Received course data for ${formattedId}:`, courseResponse)
+        console.log(`Received course data for ${courseId}:`, courseResponse)
 
         console.log(courseResponse.lessons)
         if (!courseResponse || !courseResponse.lessons) {
@@ -269,14 +261,14 @@ export const useCourseStore = defineStore("course", {
         }
 
         this.currentCourse = {
-          id: courseResponse.name,
+          id: courseResponse.id,
           name: courseResponse.name,
-          lessons: courseResponse.lessons || []
+          lessons: courseResponse.lessons || undefined
         }
 
         // Only try to fetch progress if course fetch was successful
         try {
-          await this.fetchCourseProgress(formattedId)
+          await this.fetchCourseProgress(courseId)
         } catch (progressError) {
           console.warn("Could not fetch course progress:", progressError)
           // Don't fail the whole operation if progress fetch fails
@@ -295,12 +287,11 @@ export const useCourseStore = defineStore("course", {
       try {
         this.loading = true
         this.error = ""
-        const formattedId = this.formattedCourseId(courseId)
 
-        console.log(`Requesting lesson ${lessonId} from course ${formattedId}`)
+        console.log(`Requesting lesson ${lessonId} from course ${courseId}`)
 
         const lessonData = await useNuxtApp().$api<Lesson>(
-          `http://localhost:8080/api/courses/${formattedId}/lessons/${lessonId}`,
+          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}`,
           {
             method: "GET"
           }
@@ -312,7 +303,7 @@ export const useCourseStore = defineStore("course", {
 
         // Try to fetch lesson progress after successful lesson fetch
         try {
-          await this.fetchLessonProgress(formattedId, lessonId)
+          await this.fetchLessonProgress(courseId, lessonId)
         } catch (progressError) {
           console.warn("Could not fetch lesson progress:", progressError)
           // Don't fail the whole operation if progress fetch fails

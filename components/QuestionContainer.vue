@@ -1,11 +1,4 @@
-<script setup>
-import { ref, computed, watch } from "vue"
-import MultipleChoice from "./questions/MultipleChoice.vue"
-import TrueFalse from "./questions/TrueFalse.vue"
-import FillBlank from "./questions/FillBlank.vue"
-import Ordering from "./questions/Ordering.vue"
-import Matching from "./questions/Matching.vue"
-
+<script setup lang="ts">
 const props = defineProps({
   exercise: {
     type: Object,
@@ -45,21 +38,21 @@ watch(
 const questionComponent = computed(() => {
   switch (props.exercise.type) {
     case "multiple_choice":
-      return MultipleChoice
+      return resolveComponent("questions/MultipleChoice")
     case "true_false":
-      return TrueFalse
+      return resolveComponent("questions/TrueFalse")
     case "fill_blank":
-      return FillBlank
+      return resolveComponent("questions/FillBlank")
     case "ordering":
-      return Ordering
+      return resolveComponent("questions/Ordering")
     case "matching":
-      return Matching
+      return resolveComponent("questions/Matching")
     default:
       return null
   }
 })
 
-function updateAnswer(answer) {
+function updateAnswer(answer: any) {
   console.log("Question Container - Answer updated:", answer)
   selectedAnswer.value = answer
   showFeedback.value = false
