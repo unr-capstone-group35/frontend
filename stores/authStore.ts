@@ -1,3 +1,5 @@
+import { useNuxt } from "nuxt/kit"
+
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     username: "",
@@ -65,11 +67,9 @@ export const useAuthStore = defineStore("auth", {
     async logout() {
       this.error = ""
       try {
-        if (this.token != "") {
-          await fetch("http://localhost:8080/api/logout", {
-            method: "POST"
-          })
-        }
+        await useNuxtApp().$api("http://localhost:8080/api/logout", {
+          method: "POST"
+        })
       } catch (error: any) {
         this.error = error.data
         console.error(this.error)
@@ -156,13 +156,6 @@ export const useAuthStore = defineStore("auth", {
       } catch (e) {
         console.error("Error clearing session:", e)
       }
-    },
-    getAuthHeaders() {
-      return this.token
-        ? {
-            "X-Session-Token": this.token
-          }
-        : {}
     }
   }
 })

@@ -5,7 +5,7 @@ export default defineNuxtPlugin(() => {
     async onRequest({ request, options }) {
       options.headers.set("Content-Type", "application/json")
       if (authStore.isAuthenticated) {
-        options.headers.set("X-Session-Token", authStore.token)
+        options.headers.set("Authorization", `Bearer ${authStore.token}`)
       }
 
       console.log(`[devfetch ${options.method} request]`, request)

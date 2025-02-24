@@ -35,7 +35,7 @@ const isMenuOpen = ref(false)
 
 // don't show on index.vue and sign in pages
 const showHamburger = computed(() => {
-  const excludedRoutes = ["/", "/signin", "/signup"]
+  const excludedRoutes = ["/signin", "/signup"]
   return !excludedRoutes.includes(route.path)
 })
 
