@@ -1,4 +1,25 @@
-<!-- Sign in -->
+<script setup>
+import { ref } from "vue"
+import { useAuthStore } from "~/stores/authStore"
+
+const username = ref("")
+const password = ref("")
+const showPassword = ref(false)
+const isLoading = ref(false)
+const authStore = useAuthStore()
+
+async function handleSignIn() {
+  try {
+    isLoading.value = true
+    await authStore.signin(username.value, password.value)
+  } catch (error) {
+    console.error("Signin failed:", error)
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>
+
 <template>
   <div class="flex h-[calc(100vh-115px)] flex-col bg-gray-100 dark:bg-gray-900">
     <div class="flex w-full flex-1 items-center justify-center">
@@ -92,25 +113,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref } from "vue"
-import { useAuthStore } from "~/stores/authStore"
-
-const username = ref("")
-const password = ref("")
-const showPassword = ref(false)
-const isLoading = ref(false)
-const authStore = useAuthStore()
-
-async function handleSignIn() {
-  try {
-    isLoading.value = true
-    await authStore.signin(username.value, password.value)
-  } catch (error) {
-    console.error("Signin failed:", error)
-  } finally {
-    isLoading.value = false
-  }
-}
-</script>

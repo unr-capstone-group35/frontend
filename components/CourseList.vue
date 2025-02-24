@@ -1,4 +1,61 @@
-<!-- components/CourseList.vue -->
+<script setup>
+import { computed } from "vue"
+import { useRoute } from "vue-router"
+import { useLearn } from "~/composables/useLearn"
+import { storeToRefs } from "pinia"
+import { useCourseStore } from "~/stores/courseStore"
+import LessonList from "./LessonList.vue"
+
+const props = defineProps({
+  loading: Boolean,
+  error: String,
+  courses: {
+    type: Array,
+    required: true
+  }
+})
+
+const route = useRoute()
+const courseStore = useCourseStore()
+const { currentCourse, courseProgress } = storeToRefs(courseStore)
+
+const { expandedCourse, toggleCourse, getLessonsForCourse, getCourseClasses } = useLearn()
+
+// Compute active course based on route
+const activeCourse = computed(() => {
+  return props.courses.find(course => course.id === route.query.course)
+})
+
+// Calculate total and completed lessons
+const totalLessons = computed(() => {
+  return currentCourse.value?.lessons?.length || 0
+})
+
+const completedLessons = computed(() => {
+  if (!activeCourse.value || !currentCourse.value?.lessons) return 0
+
+  return currentCourse.value.lessons.filter(lesson =>
+    courseStore.isLessonCompleted(activeCourse.value.id, lesson.lessonId)
+  ).length
+})
+
+// Calculate progress percentage
+const progressPercentage = computed(() => {
+  if (!totalLessons.value) return 0
+  return Math.round((completedLessons.value / totalLessons.value) * 100)
+})
+
+// Progress bar color based on completion
+const progressBarColor = computed(() => {
+  if (progressPercentage.value === 100) return "bg-green-500"
+  if (progressPercentage.value > 0) return "bg-blue-500"
+  return "bg-gray-300"
+})
+
+function formatCourseName(name) {
+  return name.replace(/_/g, " ")
+}
+</script>
 <template>
   <div class="flex h-full flex-col">
     <!-- Add User Progress Component -->
@@ -72,62 +129,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { computed } from "vue"
-import { useRoute } from "vue-router"
-import { useLearn } from "~/composables/useLearn"
-import { storeToRefs } from "pinia"
-import { useCourseStore } from "~/stores/courseStore"
-import LessonList from "./LessonList.vue"
-
-const props = defineProps({
-  loading: Boolean,
-  error: String,
-  courses: {
-    type: Array,
-    required: true
-  }
-})
-
-const route = useRoute()
-const courseStore = useCourseStore()
-const { currentCourse, courseProgress } = storeToRefs(courseStore)
-
-const { expandedCourse, toggleCourse, getLessonsForCourse, getCourseClasses } = useLearn()
-
-// Compute active course based on route
-const activeCourse = computed(() => {
-  return props.courses.find(course => course.id === route.query.course)
-})
-
-// Calculate total and completed lessons
-const totalLessons = computed(() => {
-  return currentCourse.value?.lessons?.length || 0
-})
-
-const completedLessons = computed(() => {
-  if (!activeCourse.value || !currentCourse.value?.lessons) return 0
-
-  return currentCourse.value.lessons.filter(lesson =>
-    courseStore.isLessonCompleted(activeCourse.value.id, lesson.lessonId)
-  ).length
-})
-
-// Calculate progress percentage
-const progressPercentage = computed(() => {
-  if (!totalLessons.value) return 0
-  return Math.round((completedLessons.value / totalLessons.value) * 100)
-})
-
-// Progress bar color based on completion
-const progressBarColor = computed(() => {
-  if (progressPercentage.value === 100) return "bg-green-500"
-  if (progressPercentage.value > 0) return "bg-blue-500"
-  return "bg-gray-300"
-})
-
-function formatCourseName(name) {
-  return name.replace(/_/g, " ")
-}
-</script>

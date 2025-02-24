@@ -1,43 +1,3 @@
-<!-- components/UserProgress.vue -->
-<template>
-  <div class="border-b px-6 py-4 dark:border-gray-700">
-    <div class="space-y-4">
-      <!-- Course Progress Section -->
-      <div v-if="currentCourse">
-        <div class="mb-2 flex items-center justify-between">
-          <h3 class="font-medium text-gray-700 dark:text-gray-300">Course Progress</h3>
-          <span class="text-sm font-medium text-gray-600 dark:text-gray-400"> {{ progressPercentage }}% </span>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-          <div
-            class="h-full transition-all duration-300 ease-in-out"
-            :class="progressBarColor"
-            :style="{ width: `${progressPercentage}%` }"
-          ></div>
-        </div>
-
-        <!-- Stats -->
-        <div class="mt-4 grid grid-cols-2 gap-4">
-          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-            <div class="text-sm text-gray-500 dark:text-gray-400">Completed</div>
-            <div class="font-medium text-gray-900 dark:text-white">
-              {{ completedLessons }}/{{ totalLessons }} lessons
-            </div>
-          </div>
-          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-            <div class="text-sm text-gray-500 dark:text-gray-400">Time Spent</div>
-            <div class="font-medium text-gray-900 dark:text-white">
-              {{ formatTimeSpent }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
@@ -76,3 +36,42 @@ const formatTimeSpent = computed(() => {
   return "0h 0m"
 })
 </script>
+
+<template>
+  <div class="border-b px-6 py-4 dark:border-gray-700">
+    <div class="space-y-4">
+      <!-- Course Progress Section -->
+      <div v-if="currentCourse">
+        <div class="mb-2 flex items-center justify-between">
+          <h3 class="font-medium text-gray-700 dark:text-gray-300">Course Progress</h3>
+          <span class="text-sm font-medium text-gray-600 dark:text-gray-400"> {{ progressPercentage }}% </span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+          <div
+            class="h-full transition-all duration-300 ease-in-out"
+            :class="progressBarColor"
+            :style="{ width: `${progressPercentage}%` }"
+          ></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="mt-4 grid grid-cols-2 gap-4">
+          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Completed</div>
+            <div class="font-medium text-gray-900 dark:text-white">
+              {{ completedLessons }}/{{ totalLessons }} lessons
+            </div>
+          </div>
+          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Time Spent</div>
+            <div class="font-medium text-gray-900 dark:text-white">
+              {{ formatTimeSpent }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

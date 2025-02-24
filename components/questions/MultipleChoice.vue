@@ -1,22 +1,3 @@
-<template>
-  <div class="space-y-6">
-    <h3 class="text-xl font-medium text-gray-900 dark:text-white">
-      {{ exercise.question }}
-    </h3>
-
-    <div class="space-y-3">
-      <button
-        v-for="(choice, index) in randomizedChoices"
-        :key="choice.originalIndex"
-        @click="selectAnswer(choice.originalIndex)"
-        :class="['w-full rounded-lg p-4 text-left transition-colors', getChoiceClasses(choice.originalIndex)]"
-      >
-        {{ choice.text }}
-      </button>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, watch, onMounted } from "vue"
 
@@ -79,3 +60,22 @@ function getChoiceClasses(index) {
   return `${baseClasses} ${selectedClasses}`
 }
 </script>
+
+<template>
+  <div class="space-y-6">
+    <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+      {{ exercise.question }}
+    </h3>
+
+    <div class="space-y-3">
+      <button
+        v-for="(choice, index) in randomizedChoices"
+        :key="choice.originalIndex"
+        @click="selectAnswer(choice.originalIndex)"
+        :class="['w-full rounded-lg p-4 text-left transition-colors', getChoiceClasses(choice.originalIndex)]"
+      >
+        {{ choice.text }}
+      </button>
+    </div>
+  </div>
+</template>

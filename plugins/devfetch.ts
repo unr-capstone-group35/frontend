@@ -1,5 +1,3 @@
-import { errorMessages } from "vue/compiler-sfc"
-
 export default defineNuxtPlugin(() => {
   const authStore = useAuthStore()
 

@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: "Footer"
+}
+</script>
+
 <template>
   <footer class="border-t border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900">
     <div class="container mx-auto flex items-center justify-between px-4">
@@ -21,9 +27,3 @@
     </div>
   </footer>
 </template>
-
-<script>
-export default {
-  name: "Footer"
-}
-</script>

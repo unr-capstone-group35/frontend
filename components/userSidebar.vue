@@ -1,3 +1,42 @@
+<script setup>
+import { useAuthStore } from "~/stores/authStore"
+
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    required: true
+  }
+})
+
+const emit = defineEmits(["close"])
+const router = useRouter()
+const authStore = useAuthStore()
+
+const close = () => {
+  emit("close")
+}
+
+const handleLogout = async () => {
+  try {
+    await authStore.logout()
+    close()
+    router.push("/signin")
+  } catch (error) {
+    console.error("Logout failed:", error)
+  }
+}
+
+const handleLeaderboardClick = () => {
+  close()
+  router.push("/leaderboard")
+}
+
+const handleDashboardClick = () => {
+  close()
+  router.push("/dashboard")
+}
+</script>
+
 <template>
   <div>
     <!-- Background -->
@@ -78,42 +117,3 @@
     </aside>
   </div>
 </template>
-
-<script setup>
-import { useAuthStore } from "~/stores/authStore"
-
-const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    required: true
-  }
-})
-
-const emit = defineEmits(["close"])
-const router = useRouter()
-const authStore = useAuthStore()
-
-const close = () => {
-  emit("close")
-}
-
-const handleLogout = async () => {
-  try {
-    await authStore.logout()
-    close()
-    router.push("/signin")
-  } catch (error) {
-    console.error("Logout failed:", error)
-  }
-}
-
-const handleLeaderboardClick = () => {
-  close()
-  router.push("/leaderboard")
-}
-
-const handleDashboardClick = () => {
-  close()
-  router.push("/dashboard")
-}
-</script>

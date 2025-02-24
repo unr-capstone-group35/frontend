@@ -1,66 +1,3 @@
-<!-- components/QuestionContainer.vue -->
-<template>
-  <div class="mx-auto max-w-3xl">
-    <!-- Exercise Content -->
-    <component
-      :is="questionComponent"
-      v-if="exercise"
-      :exercise="exercise"
-      :selectedAnswer="selectedAnswer"
-      :showFeedback="showFeedback"
-      :isCorrect="isCorrect"
-      @update-answer="updateAnswer"
-    />
-
-    <!-- Bottom Row: Feedback and Buttons -->
-    <div class="mt-6 flex items-center justify-between">
-      <!-- Feedback Message (if any) -->
-      <div v-if="showFeedback" class="flex-grow">
-        <div
-          :class="[
-            'inline-block rounded-lg p-4',
-            isCorrect
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
-          ]"
-        >
-          {{ isCorrect ? "Correct!" : "Try again!" }}
-        </div>
-      </div>
-      <div v-else class="flex-grow">
-        <!-- Empty space holder when no feedback -->
-      </div>
-
-      <!-- Buttons -->
-      <div class="flex gap-4">
-        <!-- Check Answer/Try Again Button -->
-        <button
-          v-if="!isCorrect"
-          @click="handleMainButton"
-          class="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
-          :disabled="!canSubmit"
-        >
-          {{ showFeedback ? "Try Again" : "Check Answer" }}
-        </button>
-
-        <!-- Next Exercise Button -->
-        <button
-          @click="handleNextExercise"
-          class="rounded-lg px-6 py-2 transition-colors"
-          :class="[
-            isCorrect
-              ? 'bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600'
-              : 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500'
-          ]"
-          :disabled="!isCorrect"
-        >
-          Next Exercise
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, watch } from "vue"
 import MultipleChoice from "./questions/MultipleChoice.vue"
@@ -169,3 +106,65 @@ function retryQuestion() {
   selectedAnswer.value = null
 }
 </script>
+
+<template>
+  <div class="mx-auto max-w-3xl">
+    <!-- Exercise Content -->
+    <component
+      :is="questionComponent"
+      v-if="exercise"
+      :exercise="exercise"
+      :selectedAnswer="selectedAnswer"
+      :showFeedback="showFeedback"
+      :isCorrect="isCorrect"
+      @update-answer="updateAnswer"
+    />
+
+    <!-- Bottom Row: Feedback and Buttons -->
+    <div class="mt-6 flex items-center justify-between">
+      <!-- Feedback Message (if any) -->
+      <div v-if="showFeedback" class="flex-grow">
+        <div
+          :class="[
+            'inline-block rounded-lg p-4',
+            isCorrect
+              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
+          ]"
+        >
+          {{ isCorrect ? "Correct!" : "Try again!" }}
+        </div>
+      </div>
+      <div v-else class="flex-grow">
+        <!-- Empty space holder when no feedback -->
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-4">
+        <!-- Check Answer/Try Again Button -->
+        <button
+          v-if="!isCorrect"
+          @click="handleMainButton"
+          class="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+          :disabled="!canSubmit"
+        >
+          {{ showFeedback ? "Try Again" : "Check Answer" }}
+        </button>
+
+        <!-- Next Exercise Button -->
+        <button
+          @click="handleNextExercise"
+          class="rounded-lg px-6 py-2 transition-colors"
+          :class="[
+            isCorrect
+              ? 'bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600'
+              : 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500'
+          ]"
+          :disabled="!isCorrect"
+        >
+          Next Exercise
+        </button>
+      </div>
+    </div>
+  </div>
+</template>

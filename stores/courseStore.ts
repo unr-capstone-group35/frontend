@@ -1,12 +1,11 @@
-import { useNuxt } from "nuxt/kit"
-
 type CourseProgress = {
   id: number
-  userID: number
+  userId: number
   courseName: string
   startedAt: string
   lastAccessedAt: string
   completedAt: string
+  progressPercentage: number
 }
 
 type LessonProgress = {
@@ -17,7 +16,6 @@ type LessonProgress = {
   status: string
   startedAt: string
   completedAt: string
-  progressPercentage: number
 }
 
 type ExerciseAttempt = {
@@ -54,7 +52,7 @@ type State = {
   currentCourse: Course | null
   currentLesson: Lesson | null
   lessonProgress: Record<string, LessonProgress>
-  courseProgress: Record<string, LessonProgress>
+  courseProgress: Record<string, CourseProgress>
   loading: boolean
   error: string
 }
@@ -187,6 +185,10 @@ export const useCourseStore = defineStore("course", {
 
         if (attemptResponse.isCorrect) {
           // Only mark as completed if this is the last exercise
+          if (!this.currentLesson) {
+            throw new Error("currentLesson not defined")
+            return
+          }
           const isLastExercise =
             this.currentLesson?.exercises.findIndex(ex => ex.id === exerciseId) ===
             this.currentLesson?.exercises?.length - 1
@@ -213,15 +215,15 @@ export const useCourseStore = defineStore("course", {
           `http://localhost:8080/api/courses/${formattedId}/progress`,
           { method: "GET" }
         )
-
-        this.courseProgress[formattedId] = {
-          ...lessonProgress,
-          progressPercentage: 0 //fix this later
-        }
+        // fix this, its assigning courseProgress to lessonProgress?
+        // this.courseProgress[formattedId] = {
+        //   ...lessonProgress,
+        //   progressPercentage: 0 //fix this later
+        // }
       } catch (error: any) {
         this.error = error.message
         console.error(this.error)
-        this.courseProgress[this.formattedCourseId(courseId)] = this.createEmptyProgress()
+        this.courseProgress[this.formattedCourseId(courseId)] = {} as CourseProgress
       }
     },
     // GET /api/courses
@@ -328,6 +330,10 @@ export const useCourseStore = defineStore("course", {
       try {
         // Only allow completion if this is the last exercise
         if (status === "completed") {
+          if (!this.currentLesson) {
+            throw new Error("current lesson does not exist")
+          }
+          // currentExercise is in useLearn, not sure how this ever worked:
           const currentExerciseIndex = this.currentLesson?.exercises.findIndex(ex => ex.id === this.currentExercise?.id)
 
           if (currentExerciseIndex !== this.currentLesson.exercises.length - 1) {

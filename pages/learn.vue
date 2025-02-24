@@ -1,3 +1,34 @@
+<script setup>
+import { watch, onMounted } from "vue"
+import { useRoute } from "vue-router"
+import { useLearn } from "~/composables/useLearn"
+import QuestionContainer from "~/components/QuestionContainer.vue"
+
+definePageMeta({
+  middleware: ["auth"]
+})
+
+const route = useRoute()
+const {
+  sidebarOpen,
+  currentExercise,
+  courseStore,
+  getSidebarContainerClasses,
+  getSidebarContentClasses,
+  toggleSidebar,
+  handleAnswerSubmit,
+  handleNextExercise,
+  updateCurrentExercise,
+  initialize
+} = useLearn()
+
+// Initialize
+onMounted(initialize)
+
+// Watch for route changes
+watch(() => route.query, updateCurrentExercise, { immediate: true })
+</script>
+
 <template>
   <div class="flex min-h-screen flex-col">
     <div class="flex flex-1 bg-gray-100 dark:bg-gray-900">
@@ -84,34 +115,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { watch, onMounted } from "vue"
-import { useRoute } from "vue-router"
-import { useLearn } from "~/composables/useLearn"
-import QuestionContainer from "~/components/QuestionContainer.vue"
-
-definePageMeta({
-  middleware: ["auth"]
-})
-
-const route = useRoute()
-const {
-  sidebarOpen,
-  currentExercise,
-  courseStore,
-  getSidebarContainerClasses,
-  getSidebarContentClasses,
-  toggleSidebar,
-  handleAnswerSubmit,
-  handleNextExercise,
-  updateCurrentExercise,
-  initialize
-} = useLearn()
-
-// Initialize
-onMounted(initialize)
-
-// Watch for route changes
-watch(() => route.query, updateCurrentExercise, { immediate: true })
-</script>

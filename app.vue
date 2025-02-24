@@ -1,3 +1,13 @@
+<script>
+import Header from "./components/Header.vue"
+
+export default {
+  components: {
+    Header
+  }
+}
+</script>
+
 <template>
   <div id="app" class="min-h-screen dark:bg-gray-900">
     <div class="fixed left-0 right-0 top-0 z-50 bg-white shadow-md dark:bg-gray-900">
@@ -9,16 +19,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import Header from "./components/Header.vue"
-
-export default {
-  components: {
-    Header
-  }
-}
-</script>
 
 <style>
 body {

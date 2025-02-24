@@ -1,36 +1,4 @@
-<!-- components/questions/FillBlank.vue -->
-<template>
-  <div class="space-y-6">
-    <div>
-      <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-        {{ exercise.title }}
-      </h2>
-      <p class="text-gray-600 dark:text-gray-300">
-        {{ exercise.description }}
-      </p>
-    </div>
-
-    <div class="mt-6">
-      <h3 class="text-xl font-medium text-gray-900 dark:text-white">
-        {{ formatQuestion }}
-      </h3>
-
-      <div class="mt-4 max-w-xs">
-        <input
-          type="text"
-          v-model="localAnswer"
-          @input="handleInput"
-          class="w-full rounded-lg border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          placeholder="Type your answer..."
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, computed, watch } from "vue"
-
 const props = defineProps({
   exercise: {
     type: Object,
@@ -67,3 +35,32 @@ function handleInput(event) {
   emit("update-answer", value)
 }
 </script>
+
+<template>
+  <div class="space-y-6">
+    <div>
+      <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+        {{ exercise.title }}
+      </h2>
+      <p class="text-gray-600 dark:text-gray-300">
+        {{ exercise.description }}
+      </p>
+    </div>
+
+    <div class="mt-6">
+      <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+        {{ formatQuestion }}
+      </h3>
+
+      <div class="mt-4 max-w-xs">
+        <input
+          type="text"
+          v-model="localAnswer"
+          @input="handleInput"
+          class="w-full rounded-lg border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          placeholder="Type your answer..."
+        />
+      </div>
+    </div>
+  </div>
+</template>

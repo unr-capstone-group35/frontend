@@ -1,3 +1,14 @@
+<script setup lang="ts">
+// add functionality once back-end/database complete
+const leaderboardUsers = [
+  { name: "You", points: 100 },
+  { name: "User_23", points: 80 },
+  { name: "User_48", points: 50 },
+  { name: "User_12", points: 20 },
+  { name: "User_87", points: 10 }
+]
+</script>
+
 <template>
   <div class="flex min-h-screen bg-gray-100 dark:bg-gray-900">
     <div class="flex w-80 flex-col p-6">
@@ -79,14 +90,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-// add functionality once back-end/database complete
-const leaderboardUsers = [
-  { name: "You", points: 100 },
-  { name: "User_23", points: 80 },
-  { name: "User_48", points: 50 },
-  { name: "User_12", points: 20 },
-  { name: "User_87", points: 10 }
-]
-</script>

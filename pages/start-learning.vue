@@ -1,3 +1,34 @@
+<script setup lang="ts">
+import CourseCard from "~/components/CourseCard.vue"
+
+// Auth protection
+definePageMeta({
+  middleware: ["auth"]
+})
+
+const courseStore = useCourseStore()
+const { courses } = storeToRefs(courseStore)
+const loading = ref(true)
+const error = ref("")
+
+// Fetch courses
+const fetchCourses = async () => {
+  try {
+    loading.value = true
+    error.value = ""
+    await courseStore.fetchCourses()
+  } catch (err: any) {
+    console.error("Error fetching courses:", err)
+    error.value = "Unable to load courses. Please try again later."
+  } finally {
+    loading.value = false
+  }
+}
+
+// Initialize on mount
+onMounted(fetchCourses)
+</script>
+
 <template>
   <div class="min-h-screen bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800">
     <main class="mx-auto max-w-7xl p-4 py-12 sm:p-6 sm:py-16 lg:p-12 lg:py-24">
@@ -91,34 +122,3 @@
     </main>
   </div>
 </template>
-
-<script setup lang="ts">
-import CourseCard from "~/components/CourseCard.vue"
-
-// Auth protection
-definePageMeta({
-  middleware: ["auth"]
-})
-
-const courseStore = useCourseStore()
-const { courses } = storeToRefs(courseStore)
-const loading = ref(true)
-const error = ref("")
-
-// Fetch courses
-const fetchCourses = async () => {
-  try {
-    loading.value = true
-    error.value = ""
-    await courseStore.fetchCourses()
-  } catch (err: any) {
-    console.error("Error fetching courses:", err)
-    error.value = "Unable to load courses. Please try again later."
-  } finally {
-    loading.value = false
-  }
-}
-
-// Initialize on mount
-onMounted(fetchCourses)
-</script>

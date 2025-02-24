@@ -1,70 +1,4 @@
-<!-- components/CourseCard.vue-->
-<template>
-  <div
-    class="mx-auto max-w-lg cursor-pointer overflow-hidden rounded-xl bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl dark:bg-gray-800"
-    :class="{ 'pointer-events-none opacity-50': loading }"
-  >
-    <!-- Course Image -->
-    <div class="relative h-40 w-full bg-gray-100 dark:bg-gray-700">
-      <img :src="imagePath" :alt="courseDisplayName" class="h-40 w-full object-cover" />
-      <!-- Loading overlay -->
-      <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-900/20 dark:bg-gray-900/40">
-        <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-emerald-500"></div>
-      </div>
-    </div>
-
-    <div
-      class="p-5 transition-colors duration-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
-      @click="handleCourseSelect"
-    >
-      <!-- Course title and description -->
-      <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-        {{ courseDisplayName }}
-      </h3>
-      <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
-        {{ courseDescription }}
-      </p>
-
-      <!-- Course metadata -->
-      <div class="flex items-center justify-between">
-        <!-- Lesson count -->
-        <span class="text-sm text-gray-500 dark:text-gray-400"> {{ lessonCount }} lessons </span>
-
-        <!-- Progress indicator if user has started the course -->
-        <div v-if="progress" class="flex items-center gap-2">
-          <div class="h-2 w-20 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-            <div
-              class="h-full bg-emerald-500 transition-all duration-300"
-              :style="{ width: `${progressPercentage}%` }"
-            ></div>
-          </div>
-          <span class="text-sm text-gray-500 dark:text-gray-400"> {{ progressPercentage }}% </span>
-        </div>
-
-        <!-- Course status -->
-        <span
-          v-if="courseStatus"
-          class="rounded-full px-3 py-1 text-sm"
-          :class="{
-            'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100': courseStatus === 'completed',
-            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': courseStatus === 'in_progress',
-            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100': courseStatus === 'not_started'
-          }"
-        >
-          {{ formatStatus(courseStatus) }}
-        </span>
-      </div>
-
-      <!-- Error message -->
-      <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400">
-        {{ error }}
-      </p>
-    </div>
-  </div>
-</template>
-
 <script setup>
-
 const props = defineProps({
   courseId: {
     type: String,
@@ -187,3 +121,67 @@ const handleCourseSelect = async () => {
   }
 }
 </script>
+
+<template>
+  <div
+    class="mx-auto max-w-lg cursor-pointer overflow-hidden rounded-xl bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl dark:bg-gray-800"
+    :class="{ 'pointer-events-none opacity-50': loading }"
+  >
+    <!-- Course Image -->
+    <div class="relative h-40 w-full bg-gray-100 dark:bg-gray-700">
+      <img :src="imagePath" :alt="courseDisplayName" class="h-40 w-full object-cover" />
+      <!-- Loading overlay -->
+      <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-900/20 dark:bg-gray-900/40">
+        <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-emerald-500"></div>
+      </div>
+    </div>
+
+    <div
+      class="p-5 transition-colors duration-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
+      @click="handleCourseSelect"
+    >
+      <!-- Course title and description -->
+      <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+        {{ courseDisplayName }}
+      </h3>
+      <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
+        {{ courseDescription }}
+      </p>
+
+      <!-- Course metadata -->
+      <div class="flex items-center justify-between">
+        <!-- Lesson count -->
+        <span class="text-sm text-gray-500 dark:text-gray-400"> {{ lessonCount }} lessons </span>
+
+        <!-- Progress indicator if user has started the course -->
+        <div v-if="progress" class="flex items-center gap-2">
+          <div class="h-2 w-20 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+            <div
+              class="h-full bg-emerald-500 transition-all duration-300"
+              :style="{ width: `${progressPercentage}%` }"
+            ></div>
+          </div>
+          <span class="text-sm text-gray-500 dark:text-gray-400"> {{ progressPercentage }}% </span>
+        </div>
+
+        <!-- Course status -->
+        <span
+          v-if="courseStatus"
+          class="rounded-full px-3 py-1 text-sm"
+          :class="{
+            'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100': courseStatus === 'completed',
+            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': courseStatus === 'in_progress',
+            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100': courseStatus === 'not_started'
+          }"
+        >
+          {{ formatStatus(courseStatus) }}
+        </span>
+      </div>
+
+      <!-- Error message -->
+      <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400">
+        {{ error }}
+      </p>
+    </div>
+  </div>
+</template>
