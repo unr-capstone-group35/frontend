@@ -212,8 +212,7 @@
   </div>
 </template>
 
-<script setup>
-import { useAuthStore } from "~/stores/authStore"
+<script setup lang="ts">
 
 const authStore = useAuthStore()
 

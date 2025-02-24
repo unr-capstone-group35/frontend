@@ -80,7 +80,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // add functionality once back-end/database complete
 const leaderboardUsers = [
   { name: "You", points: 100 },

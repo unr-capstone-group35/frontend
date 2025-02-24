@@ -1,4 +1,3 @@
-<!-- pages/dashboard.vue -->
 <template>
   <div class="min-h-screen bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800">
     <div class="mx-auto max-w-6xl px-4 py-12">
@@ -15,7 +14,7 @@
           </div>
         </div>
         <h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
-          Welcome back, {{ authStore.user?.username }}!
+          Welcome back, {{ username }}!
         </h1>
         <p class="text-lg text-gray-600 dark:text-gray-300">Track your progress and continue your learning journey</p>
       </div>
@@ -86,12 +85,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore"
 
 definePageMeta({
   middleware: ["auth"]
 })
 
-const authStore = useAuthStore()
+const username = useAuthStore().username
 </script>
