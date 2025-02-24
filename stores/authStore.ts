@@ -1,5 +1,3 @@
-import { useNuxt } from "nuxt/kit"
-
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     username: "",
@@ -20,7 +18,7 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async signup(email: string, username: string, password: string) {
       try {
-        const data = await useNuxtApp().$api<SignUpResponse>(usersRoute(), {
+        const data = await useNuxtApp().$api<SignUpResponse>("http://localhost:8080/api/register", {
           method: "POST",
           body: {
             email: email,
@@ -47,7 +45,7 @@ export const useAuthStore = defineStore("auth", {
 
     async signin(username: string, password: string) {
       try {
-        const data = await useNuxtApp().$api<SignInResponse>(signinRoute(), {
+        const data = await useNuxtApp().$api<SignInResponse>("http://localhost:8080/api/signin", {
           method: "POST",
           credentials: "include",
           body: JSON.stringify({
@@ -76,7 +74,7 @@ export const useAuthStore = defineStore("auth", {
 
     async logout() {
       try {
-        await useNuxtApp().$api<string>(logoutRoute())
+        await useNuxtApp().$api<string>("http://localhost:8080/api/logout")
       } catch (error) {
         console.error("Logout error:", error)
       } finally {
@@ -89,9 +87,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         const tokenCookie = useCookie("session_token")
         const tokenExpiryCookie = useCookie("token_expiry")
-        const userCookie = useCookie<{ username: string; email: string }>(
-          "user"
-        )
+        const userCookie = useCookie<{ username: string; email: string }>("user")
 
         if (tokenCookie.value && tokenExpiryCookie.value && userCookie.value) {
           try {
@@ -116,23 +112,17 @@ export const useAuthStore = defineStore("auth", {
     setSession(token: string, expiry: string, username: string, email: string) {
       try {
         const tokenCookie = useCookie("session_token", {
-          maxAge: Math.floor(
-            (new Date(expiry).valueOf() - new Date().valueOf()) / 1000
-          ),
+          maxAge: Math.floor((new Date(expiry).valueOf() - new Date().valueOf()) / 1000),
           secure: true,
           sameSite: "strict"
         })
         const tokenExpiryCookie = useCookie("token_expiry", {
-          maxAge: Math.floor(
-            (new Date(expiry).valueOf() - new Date().valueOf()) / 1000
-          ),
+          maxAge: Math.floor((new Date(expiry).valueOf() - new Date().valueOf()) / 1000),
           secure: true,
           sameSite: "strict"
         })
         const userCookie = useCookie("user", {
-          maxAge: Math.floor(
-            (new Date(expiry).valueOf() - new Date().valueOf()) / 1000
-          ),
+          maxAge: Math.floor((new Date(expiry).valueOf() - new Date().valueOf()) / 1000),
           secure: true,
           sameSite: "strict"
         })
@@ -170,14 +160,6 @@ export const useAuthStore = defineStore("auth", {
       } catch (e) {
         console.error("Error clearing session:", e)
       }
-    },
-
-    getAuthHeaders() {
-      return this.token
-        ? {
-            "X-Session-Token": this.token
-          }
-        : {}
     }
   }
 })
