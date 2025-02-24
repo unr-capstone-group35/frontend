@@ -1,7 +1,4 @@
-<script setup>
-import { ref, onMounted, computed } from "vue"
-import { useRoute } from "vue-router"
-
+<script setup lang="ts">
 const isDark = ref(false)
 
 const toggleTheme = () => {

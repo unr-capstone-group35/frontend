@@ -6,34 +6,16 @@ const props = defineProps<{
 
 const router = useRouter()
 const courseStore = useCourseStore()
-const { currentCourse, courseProgress } = storeToRefs(courseStore)
 
 const loading = ref(false)
 const error = ref("")
 
 // Computed properties
-const courseDisplayName = computed(() => {
-  const names = {
-    algorithms: "Algorithms",
-    data_structures: "Data Structures",
-    programming_basics: "Programming Basics"
-  }
-  return names[props.courseId] || props.courseId
-})
 
-const courseDescription = computed(() => {
-  const descriptions = {
-    algorithms: "Master fundamental algorithms and their implementations",
-    data_structures: "Learn essential data structures and their applications",
-    programming_basics: "Get started with programming fundamentals"
-  }
-  return descriptions[props.courseId] || "Explore this comprehensive course"
-})
+const courseInitial = computed(() => courseStore.courses[props.courseId].name.charAt(0))
 
-const courseInitial = computed(() => courseDisplayName.value.charAt(0))
-
-const courseBgColor = computed(() => {
-  const colors = {
+const courseBgColor = computed((): string => {
+  const colors: { [key: string]: string } = {
     algorithms: "#4F46E5",
     data_structures: "#0891B2",
     programming_basics: "#059669"
@@ -41,8 +23,8 @@ const courseBgColor = computed(() => {
   return colors[props.courseId] || "#6366F1"
 })
 
-const courseIconColor = computed(() => {
-  const colors = {
+const courseIconColor = computed((): string => {
+  const colors: { [key: string]: string } = {
     algorithms: "#6366F1",
     data_structures: "#0EA5E9",
     programming_basics: "#10B981"
@@ -50,19 +32,17 @@ const courseIconColor = computed(() => {
   return colors[props.courseId] || "#818CF8"
 })
 
-const lessonCount = computed(() => {
-  return currentCourse.value?.lessons?.length || 0
-})
-
 const progress = computed(() => {
-  return courseProgress.value?.[props.courseId]
+  return courseStore.courseProgress[props.courseId]
 })
 
 const progressPercentage = computed(() => {
   if (!progress.value) return 0
   const completed =
-    currentCourse.value?.lessons?.filter(lesson => courseStore.isLessonCompleted(props.courseId, lesson.id)).length || 0
-  return Math.round((completed / lessonCount.value) * 100) || 0
+    courseStore.courses[props.courseId].lessons?.filter(lesson =>
+      courseStore.isLessonCompleted(props.courseId, lesson.id)
+    ).length || 0
+  return Math.round((completed / courseStore.courses[props.courseId].lessonAmount) * 100) || 0
 })
 
 const courseStatus = computed(() => {
@@ -73,7 +53,7 @@ const courseStatus = computed(() => {
 })
 
 // Utility functions
-const formatStatus = status => {
+const formatStatus = (status: Status) => {
   const formats = {
     completed: "Completed",
     in_progress: "In Progress",
@@ -91,12 +71,16 @@ const handleCourseSelect = async () => {
     // Fetch course data
     await courseStore.fetchCourse(props.courseId)
 
-    if (!currentCourse.value?.lessons?.length) {
+    if (!courseStore.courses[props.courseId].lessons) {
       throw new Error("No lessons available in this course")
     }
 
+    if (!courseStore.courses[props.courseId].lessons![0]) {
+      throw new Error("First lesson not available in this course")
+    }
+
     // Get first lesson
-    const firstLesson = currentCourse.value.lessons[0]
+    const firstLesson = courseStore.courses[props.courseId].lessons![0]
 
     // Navigate to learn page
     await router.push({
@@ -122,7 +106,7 @@ const handleCourseSelect = async () => {
   >
     <!-- Course Image -->
     <div class="relative h-40 w-full bg-gray-100 dark:bg-gray-700">
-      <img :src="imagePath" :alt="courseDisplayName" class="h-40 w-full object-cover" />
+      <img :src="imagePath" :alt="courseStore.courses[courseId].name" class="h-40 w-full object-cover" />
       <!-- Loading overlay -->
       <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-900/20 dark:bg-gray-900/40">
         <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-emerald-500"></div>
@@ -135,16 +119,18 @@ const handleCourseSelect = async () => {
     >
       <!-- Course title and description -->
       <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-        {{ courseDisplayName }}
+        {{ courseStore.courses[courseId].name }}
       </h3>
       <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
-        {{ courseDescription }}
+        {{ courseStore.courses[courseId].description }}
       </p>
 
       <!-- Course metadata -->
       <div class="flex items-center justify-between">
         <!-- Lesson count -->
-        <span class="text-sm text-gray-500 dark:text-gray-400"> {{ lessonCount }} lessons </span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          {{ courseStore.courses[courseId].lessonAmount }} lessons
+        </span>
 
         <!-- Progress indicator if user has started the course -->
         <div v-if="progress" class="flex items-center gap-2">

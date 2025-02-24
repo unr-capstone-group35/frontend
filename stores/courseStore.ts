@@ -1,3 +1,5 @@
+export type Status = "not_started" | "in_progress" | "completed"
+
 export type CourseProgress = {
   id: number
   userId: number
@@ -13,7 +15,7 @@ export type LessonProgress = {
   userId: number
   courseName: number
   lessonId: number
-  status: string
+  status: Status
   startedAt: string
   completedAt: string
 }
@@ -44,7 +46,9 @@ export type Exercise = {
 export type Course = {
   id: string
   name: string
-  lessons: Lesson[]
+  description: string
+  lessonAmount: number
+  lessons: Lesson[] | undefined
 }
 
 type State = {
@@ -108,14 +112,6 @@ export const useCourseStore = defineStore("course", {
   },
 
   actions: {
-    createEmptyProgress() {
-      return {
-        startedAt: null,
-        completedAt: null,
-        progress_percentage: 0
-      }
-    },
-
     // GET /api/courses/${courseId}/lessons/${lessonId}/progress
     async fetchLessonProgress(courseId: string, lessonId: string) {
       try {
@@ -222,16 +218,28 @@ export const useCourseStore = defineStore("course", {
     },
     // GET /api/courses
     async fetchCourses() {
+      type CourseInfo = {
+        id: string
+        name: string
+        description: string
+        lessonAmount: number
+      }
       try {
         this.loading = true
         this.error = ""
 
-        const courseNames = await useNuxtApp().$api<string[]>("http://localhost:8080/api/courses", {
+        const courseInfos = await useNuxtApp().$api<CourseInfo[]>("http://localhost:8080/api/courses", {
           method: "GET"
         })
 
-        for (const courseName of courseNames) {
-          this.courses[courseName] = { id: courseName, name: courseName, lessons: [] }
+        for (const courseInfo of courseInfos) {
+          this.courses[courseInfo.id] = {
+            id: courseInfo.id,
+            name: courseInfo.name,
+            description: courseInfo.description,
+            lessonAmount: courseInfo.lessonAmount,
+            lessons: undefined
+          }
         }
       } catch (error: any) {
         this.error = error.message
@@ -260,11 +268,15 @@ export const useCourseStore = defineStore("course", {
           throw new Error("Invalid course data received")
         }
 
-        this.currentCourse = {
+        this.courses[courseResponse.id] = {
           id: courseResponse.id,
           name: courseResponse.name,
+          description: courseResponse.description,
+          lessonAmount: courseResponse.lessons.length || this.courses[courseResponse.id].lessonAmount,
           lessons: courseResponse.lessons || undefined
         }
+
+        this.currentCourse = this.courses[courseResponse.id]
 
         // Only try to fetch progress if course fetch was successful
         try {
@@ -317,7 +329,7 @@ export const useCourseStore = defineStore("course", {
       }
     },
 
-    async updateLessonProgress(courseId: string, lessonId: string, status: any) {
+    async updateLessonProgress(courseId: string, lessonId: string, status: Status) {
       try {
         // Only allow completion if this is the last exercise
         if (status === "completed") {
