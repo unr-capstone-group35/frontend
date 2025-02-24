@@ -64,10 +64,6 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
-import { useRouter } from "vue-router"
-import { useCourseStore } from "~/stores/courseStore"
-import { storeToRefs } from "pinia"
 
 const props = defineProps({
   courseId: {

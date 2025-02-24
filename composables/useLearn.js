@@ -1,8 +1,3 @@
-// composables/useLearn.js
-import { ref, computed, nextTick } from "vue"
-import { useRouter, useRoute } from "vue-router"
-import { useCourseStore } from "~/stores/courseStore"
-import { storeToRefs } from "pinia"
 
 export function useLearn() {
   const router = useRouter()

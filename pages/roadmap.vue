@@ -64,9 +64,6 @@
 </template>
 
 <script>
-import { useCourseStore } from "~/stores/courseStore"
-import { useRouter } from "vue-router"
-
 export default {
   name: "RoadmapPage",
 

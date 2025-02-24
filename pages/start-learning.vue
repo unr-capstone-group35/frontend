@@ -7,7 +7,7 @@
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="py-12 text-center">
+      <div v-else-if="error != ''" class="py-12 text-center">
         <p class="text-lg text-red-600 dark:text-red-400">
           {{ error }}
         </p>
@@ -92,10 +92,7 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue"
-import { useCourseStore } from "~/stores/courseStore"
-import { storeToRefs } from "pinia"
+<script setup lang="ts">
 import CourseCard from "~/components/CourseCard.vue"
 
 // Auth protection
@@ -106,15 +103,15 @@ definePageMeta({
 const courseStore = useCourseStore()
 const { courses } = storeToRefs(courseStore)
 const loading = ref(true)
-const error = ref(null)
+const error = ref("")
 
 // Fetch courses
 const fetchCourses = async () => {
   try {
     loading.value = true
-    error.value = null
+    error.value = ""
     await courseStore.fetchCourses()
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching courses:", err)
     error.value = "Unable to load courses. Please try again later."
   } finally {
