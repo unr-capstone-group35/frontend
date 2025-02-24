@@ -13,6 +13,8 @@
     "@pinia/nuxt": "^0.7.0",
     "nuxt": "^3.13.2",
     "pinia": "^2.2.6",
+    "prettier": "^3.5.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "vue": "latest",
     "vue-draggable-next": "^2.2.1",
     "vue-router": "latest",
@@ -21,5 +23,5 @@
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.2"
   },
-  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
+  "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af"
 }
