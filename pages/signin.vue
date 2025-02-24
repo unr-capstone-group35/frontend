@@ -1,36 +1,29 @@
-<script setup lang="ts">
-const username = ref("")
-const password = ref("")
-const showPassword = ref(false)
-const isLoading = ref(false)
-const authStore = useAuthStore()
-
-async function handleSignIn() {
-  try {
-    isLoading.value = true
-    await authStore.signin(username.value, password.value)
-  } catch (error) {
-    console.error("Signin failed:", error)
-  } finally {
-    isLoading.value = false
-  }
-}
-</script>
-
+<!-- Sign in -->
 <template>
   <div class="flex h-[calc(100vh-115px)] flex-col bg-gray-100 dark:bg-gray-900">
     <div class="flex w-full flex-1 items-center justify-center">
-      <div class="w-full max-w-md rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
-        <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">Sign In</h2>
+      <div
+        class="w-full max-w-md rounded-lg bg-white p-8 shadow-md dark:bg-gray-800"
+      >
+        <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">
+          Sign In
+        </h2>
 
         <!-- Show error message if exists -->
-        <div v-if="authStore.error" class="mb-4 rounded bg-red-100 p-3 text-red-700">
+        <div
+          v-if="authStore.error"
+          class="mb-4 rounded bg-red-100 p-3 text-red-700"
+        >
           {{ authStore.error }}
         </div>
 
         <form @submit.prevent="handleSignIn">
           <div class="mb-4">
-            <label class="mb-2 block font-medium text-gray-700 dark:text-gray-200" for="username">Username</label>
+            <label
+              class="mb-2 block font-medium text-gray-700 dark:text-gray-200"
+              for="username"
+              >Username</label
+            >
             <input
               v-model="username"
               type="text"
@@ -42,7 +35,11 @@ async function handleSignIn() {
           </div>
 
           <div class="mb-6">
-            <label class="mb-2 block font-medium text-gray-700 dark:text-gray-200" for="password">Password</label>
+            <label
+              class="mb-2 block font-medium text-gray-700 dark:text-gray-200"
+              for="password"
+              >Password</label
+            >
             <div class="relative">
               <input
                 v-model="password"
@@ -102,7 +99,10 @@ async function handleSignIn() {
 
         <p class="mt-4 text-center text-gray-600 dark:text-gray-300">
           Don't have an account?
-          <NuxtLink to="/signup" class="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
+          <NuxtLink
+            to="/signup"
+            class="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+          >
             Sign up
           </NuxtLink>
         </p>
@@ -110,3 +110,22 @@ async function handleSignIn() {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const username = ref("")
+const password = ref("")
+const showPassword = ref(false)
+const isLoading = ref(false)
+const authStore = useAuthStore()
+
+async function handleSignIn() {
+  try {
+    isLoading.value = true
+    await authStore.signin(username.value, password.value)
+  } catch (error) {
+    console.error("Signin failed:", error)
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>

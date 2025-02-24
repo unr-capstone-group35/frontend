@@ -1,8 +1,15 @@
+// composables/useLearn.js
+import { ref, computed, nextTick } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { useCourseStore } from "~/stores/courseStore"
+import { storeToRefs } from "pinia"
+
 export function useLearn() {
   const router = useRouter()
   const route = useRoute()
   const courseStore = useCourseStore()
-  const { currentCourse, currentLesson, courseProgress } = storeToRefs(courseStore)
+  const { currentCourse, currentLesson, courseProgress } =
+    storeToRefs(courseStore)
 
   // Navigation state
   const sidebarOpen = ref<boolean>(true)
@@ -32,8 +39,8 @@ export function useLearn() {
     }
   }
 
-  function toggleLesson(lessonId: string) {
-    expandedLessonId.value = lessonId
+  function toggleLesson(lessonId) {
+    expandedLesson.value = expandedLesson.value === lessonId ? null : lessonId
   }
 
   // Progress tracking
@@ -53,9 +60,9 @@ export function useLearn() {
     const lessons = currentCourse.value?.lessons || []
 
     // First lesson is always accessible
-    if (lessons[0]?.id === lessonId) return true
+    if (lessons[0]?.lessonId === lessonId) return true
 
-    const lessonIndex = lessons.findIndex(l => l.id === lessonId)
+    const lessonIndex = lessons.findIndex(l => l.lessonId === lessonId)
     if (lessonIndex <= 0) return false
 
     // Check all previous lessons up to this one
@@ -69,7 +76,7 @@ export function useLearn() {
     return false
   }
 
-  const getLessonsForCourse = computed(() => (courseId: string) => {
+  const getLessonsForCourse = computed(() => courseId => {
     if (!currentCourse.value || currentCourse.value.id !== courseId) {
       return []
     }
@@ -91,7 +98,8 @@ export function useLearn() {
 
   function getCourseClasses(courseId: string) {
     const progress = getCourseProgress(courseId)
-    const baseClasses = "w-full flex items-center justify-between p-4 rounded-lg"
+    const baseClasses =
+      "w-full flex items-center justify-between p-4 rounded-lg"
     const activeClasses = "bg-emerald-100 dark:bg-emerald-900/50"
     const inactiveClasses = "hover:bg-gray-50 dark:hover:bg-gray-700"
     const progressClasses =
@@ -104,10 +112,12 @@ export function useLearn() {
     return `${baseClasses} ${isActiveCourse(courseId) ? activeClasses : inactiveClasses} ${progressClasses}`
   }
 
-  function getLessonClasses(lessonId: string) {
+  function getLessonClasses(lessonId) {
     const baseClasses = "w-full text-left p-2 rounded"
-    const activeClasses = "bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100"
-    const inactiveClasses = "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+    const activeClasses =
+      "bg-emerald-200 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100"
+    const inactiveClasses =
+      "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
 
     return `${baseClasses} ${isActiveLesson(lessonId) ? activeClasses : inactiveClasses}`
   }
@@ -115,29 +125,32 @@ export function useLearn() {
   // Exercise management
   async function handleAnswerSubmit(answer: any) {
     if (!currentExercise.value) return false
-    const courseId = route.query.course as string
-    const lessonId = route.query.lesson as string
 
     try {
       console.log("Submitting answer:", {
-        course: courseId,
-        lesson: lessonId,
+        course: route.query.course,
+        lesson: route.query.lesson,
         exercise: currentExercise.value.id,
         answer
       })
 
-      const result = await courseStore.submitExerciseAttempt(courseId, lessonId, currentExercise.value.id, answer)
-
-      if (!result) {
-        throw new Error("result is undefined")
-      }
+      const result = await courseStore.submitExerciseAttempt(
+        route.query.course,
+        route.query.lesson,
+        currentExercise.value.id,
+        answer
+      )
 
       if (result.isCorrect) {
         // Update lesson progress
-        await courseStore.updateLessonProgress(courseId, lessonId, "completed")
+        await courseStore.updateLessonProgress(
+          route.query.course,
+          route.query.lesson,
+          "completed"
+        )
 
         // Force refresh of course progress
-        await courseStore.fetchCourseProgress(courseId)
+        await courseStore.fetchCourseProgress(route.query.course)
 
         // Force refresh of current lesson progress
         await courseStore.fetchLessonProgress(courseId, lessonId)
@@ -169,25 +182,28 @@ export function useLearn() {
     } else {
       try {
         // Mark current lesson as completed
-        await courseStore.updateLessonProgress(courseId, lessonId, "completed")
+        await courseStore.updateLessonProgress(
+          route.query.course,
+          route.query.lesson,
+          "completed"
+        )
 
         // Update course progress in store
-        await courseStore.fetchCourseProgress(courseId)
+        await courseStore.fetchCourseProgress(route.query.course)
 
         // Find the next lesson
         const lessons = currentCourse.value?.lessons || []
         const currentLessonIndex = lessons.findIndex(lesson => lesson.id === route.query.lesson)
 
         // Check if there's a next lesson
-        if (currentLessonIndex !== -1 && currentLessonIndex < lessons.length - 1) {
+        if (
+          currentLessonIndex !== -1 &&
+          currentLessonIndex < lessons.length - 1
+        ) {
           const nextLesson = lessons[currentLessonIndex + 1]
 
           // Immediately navigate to next lesson since current lesson is completed
-          await selectLesson(courseId, nextLesson.id)
-
-          if (!currentLesson.value) {
-            throw new Error("current lesson does not exist")
-          }
+          await selectLesson(route.query.course, nextLesson.lessonId)
 
           // Reset exercise state for new lesson
           if (currentLesson.value?.exercises?.length > 0) {
@@ -214,13 +230,13 @@ export function useLearn() {
     }
   }
 
-  async function selectLesson(courseId: string, lessonId: string) {
+  async function selectLesson(courseId, lessonId) {
     console.log("Selecting lesson:", { courseId, lessonId })
 
     try {
       await courseStore.fetchLesson(courseId, lessonId)
-      expandedCourseId.value = courseId
-      expandedLessonId.value = lessonId
+      expandedCourse.value = courseId
+      expandedLesson.value = lessonId
 
       await router.push({
         path: "/learn",
@@ -253,17 +269,20 @@ export function useLearn() {
     try {
       await courseStore.fetchCourses()
 
-      if (courseId != "") {
-        await courseStore.fetchCourse(courseId)
-        expandedCourseId.value = courseId
+      if (route.query.course) {
+        await courseStore.fetchCourse(route.query.course)
+        expandedCourse.value = route.query.course
 
         // Load course progress
-        await courseStore.fetchCourseProgress(courseId)
+        await courseStore.fetchCourseProgress(route.query.course)
 
         if (route.query.lesson) {
-          await courseStore.fetchLesson(courseId, lessonId)
-          await courseStore.fetchLessonProgress(courseId, lessonId)
-          expandedLessonId.value = lessonId
+          await courseStore.fetchLesson(route.query.course, route.query.lesson)
+          await courseStore.fetchLessonProgress(
+            route.query.course,
+            route.query.lesson
+          )
+          expandedLesson.value = route.query.lesson
           updateCurrentExercise()
         }
       }

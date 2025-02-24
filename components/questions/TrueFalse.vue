@@ -1,3 +1,25 @@
+<template>
+  <div class="space-y-6">
+    <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+      {{ exercise.question }}
+    </h3>
+
+    <div class="space-y-3">
+      <button
+        v-for="(option, index) in [true, false]"
+        :key="index"
+        @click="selectAnswer(option)"
+        :class="[
+          'w-full rounded-lg p-4 text-left transition-all duration-200',
+          getChoiceClasses(option)
+        ]"
+      >
+        <span class="text-gray-900 dark:text-white">{{ option }}</span>
+      </button>
+    </div>
+  </div>
+</template>
+
 <script setup>
 const props = defineProps({
   exercise: {
@@ -26,22 +48,3 @@ function getChoiceClasses(option) {
   return `${baseClasses} ${selectedClasses}`
 }
 </script>
-
-<template>
-  <div class="space-y-6">
-    <h3 class="text-xl font-medium text-gray-900 dark:text-white">
-      {{ exercise.question }}
-    </h3>
-
-    <div class="space-y-3">
-      <button
-        v-for="(option, index) in [true, false]"
-        :key="index"
-        @click="selectAnswer(option)"
-        :class="['w-full rounded-lg p-4 text-left transition-all duration-200', getChoiceClasses(option)]"
-      >
-        <span class="text-gray-900 dark:text-white">{{ option }}</span>
-      </button>
-    </div>
-  </div>
-</template>

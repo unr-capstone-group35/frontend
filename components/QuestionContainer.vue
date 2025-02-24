@@ -1,105 +1,4 @@
-<script setup lang="ts">
-const props = defineProps({
-  exercise: {
-    type: Object,
-    required: true
-  },
-  onSubmitAnswer: {
-    type: Function,
-    required: true
-  }
-})
-
-const emit = defineEmits(["next-exercise"])
-
-const isCorrect = ref(false)
-const showFeedback = ref(false)
-const selectedAnswer = ref(null)
-
-const canSubmit = computed(() => {
-  // For ordering type, we should always be able to check the answer
-  if (props.exercise.type === "ordering") {
-    return true
-  }
-  return selectedAnswer.value !== null
-})
-
-// Reset state when exercise changes
-watch(
-  () => props.exercise,
-  () => {
-    isCorrect.value = false
-    showFeedback.value = false
-    selectedAnswer.value = null
-  },
-  { immediate: true }
-)
-
-const questionComponent = computed(() => {
-  switch (props.exercise.type) {
-    case "multiple_choice":
-      return resolveComponent("questions/MultipleChoice")
-    case "true_false":
-      return resolveComponent("questions/TrueFalse")
-    case "fill_blank":
-      return resolveComponent("questions/FillBlank")
-    case "ordering":
-      return resolveComponent("questions/Ordering")
-    case "matching":
-      return resolveComponent("questions/Matching")
-    default:
-      return null
-  }
-})
-
-function updateAnswer(answer: any) {
-  console.log("Question Container - Answer updated:", answer)
-  selectedAnswer.value = answer
-  showFeedback.value = false
-  isCorrect.value = false // Reset correctness state
-}
-
-async function handleMainButton() {
-  if (showFeedback.value) {
-    // Handle retry
-    retryQuestion()
-  } else {
-    // Handle submit
-    await submitAnswer()
-  }
-}
-
-async function submitAnswer() {
-  // For ordering, we should allow submission even if selectedAnswer is null
-  if (selectedAnswer.value === null && props.exercise.type !== "ordering") return
-
-  console.log("Question Container - Submitting answer:", selectedAnswer.value)
-  showFeedback.value = false // Reset feedback before new submission
-
-  try {
-    const result = await props.onSubmitAnswer(selectedAnswer.value)
-    console.log("Question Container - Submission result:", result)
-    isCorrect.value = result
-    showFeedback.value = true
-  } catch (error) {
-    console.error("Error submitting answer:", error)
-    isCorrect.value = false
-    showFeedback.value = true
-  }
-}
-
-function handleNextExercise() {
-  if (isCorrect.value) {
-    emit("next-exercise")
-  }
-}
-
-function retryQuestion() {
-  showFeedback.value = false
-  selectedAnswer.value = null
-}
-</script>
-
+<!-- components/QuestionContainer.vue -->
 <template>
   <div class="mx-auto max-w-3xl">
     <!-- Exercise Content -->
@@ -161,3 +60,113 @@ function retryQuestion() {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref, computed, watch } from "vue"
+import MultipleChoice from "./questions/MultipleChoice.vue"
+import TrueFalse from "./questions/TrueFalse.vue"
+import FillBlank from "./questions/FillBlank.vue"
+import Ordering from "./questions/Ordering.vue"
+import Matching from "./questions/Matching.vue"
+
+const props = defineProps({
+  exercise: {
+    type: Object,
+    required: true
+  },
+  onSubmitAnswer: {
+    type: Function,
+    required: true
+  }
+})
+
+const emit = defineEmits(["next-exercise"])
+
+const isCorrect = ref(false)
+const showFeedback = ref(false)
+const selectedAnswer = ref(null)
+
+const canSubmit = computed(() => {
+  // For ordering type, we should always be able to check the answer
+  if (props.exercise.type === "ordering") {
+    return true
+  }
+  return selectedAnswer.value !== null
+})
+
+// Reset state when exercise changes
+watch(
+  () => props.exercise,
+  () => {
+    isCorrect.value = false
+    showFeedback.value = false
+    selectedAnswer.value = null
+  },
+  { immediate: true }
+)
+
+const questionComponent = computed(() => {
+  switch (props.exercise.type) {
+    case "multiple_choice":
+      return MultipleChoice
+    case "true_false":
+      return TrueFalse
+    case "fill_blank":
+      return FillBlank
+    case "ordering":
+      return Ordering
+    case "matching":
+      return Matching
+    default:
+      return null
+  }
+})
+
+function updateAnswer(answer) {
+  console.log("Question Container - Answer updated:", answer)
+  selectedAnswer.value = answer
+  showFeedback.value = false
+  isCorrect.value = false // Reset correctness state
+}
+
+async function handleMainButton() {
+  if (showFeedback.value) {
+    // Handle retry
+    retryQuestion()
+  } else {
+    // Handle submit
+    await submitAnswer()
+  }
+}
+
+async function submitAnswer() {
+  // For ordering, we should allow submission even if selectedAnswer is null
+  if (selectedAnswer.value === null && props.exercise.type !== "ordering")
+    return
+
+  console.log("Question Container - Submitting answer:", selectedAnswer.value)
+  showFeedback.value = false // Reset feedback before new submission
+
+  try {
+    const result = await props.onSubmitAnswer(selectedAnswer.value)
+    console.log("Question Container - Submission result:", result)
+    isCorrect.value = result
+    showFeedback.value = true
+  } catch (error) {
+    console.error("Error submitting answer:", error)
+    isCorrect.value = false
+    showFeedback.value = true
+  }
+}
+
+function handleNextExercise() {
+  if (isCorrect.value) {
+    emit("next-exercise")
+  }
+}
+
+function retryQuestion() {
+  showFeedback.value = false
+  selectedAnswer.value = null
+}
+</script>

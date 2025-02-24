@@ -11,7 +11,7 @@ export const useAuthStore = defineStore("auth", {
   }),
 
   getters: {
-    isTokenValid: state => {
+    isTokenValid(state): boolean {
       if (state.token == "" || state.tokenExpiry == "") return false
       return new Date(state.tokenExpiry) > new Date()
     }
@@ -19,60 +19,66 @@ export const useAuthStore = defineStore("auth", {
 
   actions: {
     async signup(email: string, username: string, password: string) {
-      this.error = ""
       try {
-        await useNuxtApp().$api("http://localhost:8080/api/register", {
+        const data = await useNuxtApp().$api<SignUpResponse>(usersRoute(), {
           method: "POST",
           body: {
             email: email,
             username: username,
             password: password
+          },
+          async onResponseError({ response }) {
+            if (response.status == 409) {
+              throw new Error("Username or email already exists")
+            } else if (response.status === 400) {
+              throw new Error("Invalid input")
+            } else {
+              throw new Error("Failed to sign up")
+            }
           }
         })
 
         await this.signin(username, password)
       } catch (err: any) {
-        this.error = err.data
+        this.error = err.message
         throw err
       }
     },
 
     async signin(username: string, password: string) {
-      this.error = ""
-      interface SignInResponse {
-        username: string
-        email: string
-        token: string
-        expiresAt: string // make date eventually
-      }
       try {
-        const signInResponse = await useNuxtApp().$api<SignInResponse>("http://localhost:8080/api/signin", {
+        const data = await useNuxtApp().$api<SignInResponse>(signinRoute(), {
           method: "POST",
-          body: {
-            username: username,
-            password: password
+          credentials: "include",
+          body: JSON.stringify({
+            username,
+            password
+          }),
+          async onResponseError({ response, error }) {
+            if (response.status == 401) {
+              throw new Error("Invalid username or password")
+            } else {
+              throw error
+            }
           }
         })
 
         // Store session data
-        this.setSession(signInResponse.token, signInResponse.expiresAt, signInResponse.username, signInResponse.email)
+        this.setSession(data.token, data.expiresAt, data.username, data.email)
 
+        this.error = ""
         await navigateTo("/dashboard")
       } catch (err: any) {
-        this.error = err.data
+        this.error = err.message
         throw err
       }
     },
 
     async logout() {
-      this.error = ""
       try {
-        await useNuxtApp().$api("http://localhost:8080/api/logout", {
-          method: "POST"
-        })
-      } catch (error: any) {
-        this.error = error.data
-        console.error(this.error)
+        await useNuxtApp().$api<string>(logoutRoute())
+      } catch (error) {
+        console.error("Logout error:", error)
       } finally {
         this.clearSession()
         await navigateTo("/signin")
@@ -83,7 +89,9 @@ export const useAuthStore = defineStore("auth", {
       try {
         const tokenCookie = useCookie("session_token")
         const tokenExpiryCookie = useCookie("token_expiry")
-        const userCookie = useCookie<{ username: string; email: string }>("user")
+        const userCookie = useCookie<{ username: string; email: string }>(
+          "user"
+        )
 
         if (tokenCookie.value && tokenExpiryCookie.value && userCookie.value) {
           try {
@@ -108,17 +116,23 @@ export const useAuthStore = defineStore("auth", {
     setSession(token: string, expiry: string, username: string, email: string) {
       try {
         const tokenCookie = useCookie("session_token", {
-          maxAge: Math.floor((new Date(expiry).valueOf() - new Date().valueOf()) / 1000),
+          maxAge: Math.floor(
+            (new Date(expiry).valueOf() - new Date().valueOf()) / 1000
+          ),
           secure: true,
           sameSite: "strict"
         })
         const tokenExpiryCookie = useCookie("token_expiry", {
-          maxAge: Math.floor((new Date(expiry).valueOf() - new Date().valueOf()) / 1000),
+          maxAge: Math.floor(
+            (new Date(expiry).valueOf() - new Date().valueOf()) / 1000
+          ),
           secure: true,
           sameSite: "strict"
         })
         const userCookie = useCookie("user", {
-          maxAge: Math.floor((new Date(expiry).valueOf() - new Date().valueOf()) / 1000),
+          maxAge: Math.floor(
+            (new Date(expiry).valueOf() - new Date().valueOf()) / 1000
+          ),
           secure: true,
           sameSite: "strict"
         })
@@ -156,6 +170,14 @@ export const useAuthStore = defineStore("auth", {
       } catch (e) {
         console.error("Error clearing session:", e)
       }
+    },
+
+    getAuthHeaders() {
+      return this.token
+        ? {
+            "X-Session-Token": this.token
+          }
+        : {}
     }
   }
 })

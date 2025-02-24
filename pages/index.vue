@@ -30,18 +30,27 @@ const gameFeatures = ref([
     >
       <div class="container mx-auto px-4 pt-20">
         <div class="mb-12 text-center">
-          <span class="animate-gradient bg-gradient-text text-6xl font-bold">DevQuest</span>
+          <span class="animate-gradient bg-gradient-text text-6xl font-bold"
+            >DevQuest</span
+          >
         </div>
         <!-- First card content-->
-        <div class="mx-auto mt-32 flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
+        <div
+          class="mx-auto mt-32 flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row"
+        >
           <div class="order-2 text-center lg:order-1 lg:w-1/2 lg:text-left">
-            <h1 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">
+            <h1
+              class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl"
+            >
               The free, fun, and effective way to learn programming concepts!
             </h1>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
-              Master programming fundamentals through interactive lessons and hands-on coding challenges.
+              Master programming fundamentals through interactive lessons and
+              hands-on coding challenges.
             </p>
-            <div class="mx-auto flex max-w-md flex-col gap-4 sm:flex-row lg:mx-0">
+            <div
+              class="mx-auto flex max-w-md flex-col gap-4 sm:flex-row lg:mx-0"
+            >
               <NuxtLink
                 to="/start-learning"
                 class="flex-1 rounded-xl bg-emerald-600 px-8 py-4 font-bold text-white shadow-md transition-colors hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
@@ -61,43 +70,71 @@ const gameFeatures = ref([
               <div
                 class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900"
               ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div
+                class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800"
+              >
                 <div class="space-y-4">
                   <div class="flex items-center gap-4">
-                    <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900">
+                    <div
+                      class="flex h-16 w-16 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900"
+                    >
                       <span class="text-3xl">💻</span>
                     </div>
                     <div class="flex-1">
-                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Start Learning Today</h3>
-                      <p class="text-sm text-gray-600 dark:text-gray-300">Interactive lessons & challenges</p>
+                      <h3
+                        class="text-lg font-semibold text-gray-900 dark:text-white"
+                      >
+                        Start Learning Today
+                      </h3>
+                      <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Interactive lessons & challenges
+                      </p>
                     </div>
                   </div>
 
                   <div class="space-y-3 font-mono text-sm">
                     <div class="p-2">
-                      <span class="text-emerald-600 dark:text-emerald-400">function </span>
-                      <span class="text-purple-600 dark:text-purple-400">learnToCode</span>
+                      <span class="text-emerald-600 dark:text-emerald-400"
+                        >function
+                      </span>
+                      <span class="text-purple-600 dark:text-purple-400"
+                        >learnToCode</span
+                      >
                       <span class="text-gray-900 dark:text-gray-300">()</span>
                       <span class="text-gray-900 dark:text-gray-300">{</span>
                     </div>
 
                     <div class="overflow-x-auto whitespace-nowrap p-2 pl-6">
-                      <span class="text-blue-600 dark:text-blue-400">const </span>
-                      <span class="text-gray-900 dark:text-gray-300">skills </span>
+                      <span class="text-blue-600 dark:text-blue-400"
+                        >const
+                      </span>
+                      <span class="text-gray-900 dark:text-gray-300"
+                        >skills
+                      </span>
                       <span class="text-gray-900 dark:text-gray-300">= </span>
                       <span class="text-gray-900 dark:text-gray-300">[</span>
-                      <span class="text-orange-600 dark:text-orange-400">'Basics'</span>
+                      <span class="text-orange-600 dark:text-orange-400"
+                        >'Basics'</span
+                      >
                       <span class="text-gray-900 dark:text-gray-300">,</span>
-                      <span class="text-orange-600 dark:text-orange-400">'Data-Structs'</span>
+                      <span class="text-orange-600 dark:text-orange-400"
+                        >'Data-Structs'</span
+                      >
                       <span class="text-gray-900 dark:text-gray-300">,</span>
-                      <span class="text-orange-600 dark:text-orange-400">'Algorithms'</span>
+                      <span class="text-orange-600 dark:text-orange-400"
+                        >'Algorithms'</span
+                      >
                       <span class="text-gray-900 dark:text-gray-300">]</span>
                       <span class="text-gray-900 dark:text-gray-300">;</span>
                     </div>
 
                     <div class="p-2 pl-6">
-                      <span class="text-blue-600 dark:text-blue-400">return </span>
-                      <span class="text-orange-600 dark:text-orange-400">'Success!'</span>
+                      <span class="text-blue-600 dark:text-blue-400"
+                        >return
+                      </span>
+                      <span class="text-orange-600 dark:text-orange-400"
+                        >'Success!'</span
+                      >
                       <span class="text-gray-900 dark:text-gray-300">;</span>
                     </div>
 
@@ -118,19 +155,33 @@ const gameFeatures = ref([
       class="flex h-screen items-center bg-gradient-to-b from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950"
     >
       <div class="container mx-auto px-4">
-        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
+        <div
+          class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row"
+        >
           <div class="order-2 text-center lg:order-2 lg:w-1/2 lg:text-left">
-            <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">What You'll Learn</h2>
+            <h2
+              class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl"
+            >
+              What You'll Learn
+            </h2>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
-              Dive deep into computer science fundamentals including algorithms, data structures, and programming
-              patterns.
+              Dive deep into computer science fundamentals including algorithms,
+              data structures, and programming patterns.
             </p>
             <div class="space-y-4">
-              <div v-for="(feature, index) in learningFeatures" :key="index" class="flex items-center gap-3">
-                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900">
+              <div
+                v-for="(feature, index) in learningFeatures"
+                :key="index"
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900"
+                >
                   <div class="h-3 w-3 rounded-full bg-indigo-500"></div>
                 </div>
-                <span class="text-gray-700 dark:text-gray-300">{{ feature }}</span>
+                <span class="text-gray-700 dark:text-gray-300">{{
+                  feature
+                }}</span>
               </div>
             </div>
           </div>
@@ -139,7 +190,9 @@ const gameFeatures = ref([
               <div
                 class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-indigo-200 to-purple-100 dark:from-indigo-800 dark:to-purple-900"
               ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div
+                class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800"
+              >
                 <!-- Book graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                   <path
@@ -163,7 +216,11 @@ const gameFeatures = ref([
 
                   <path d="M300 60 L300 40 L330 40 L315 60" fill="#6366F1" />
 
-                  <path d="M50 60 C40 60 30 70 30 80 L30 240 C30 250 40 260 50 260" fill="#6366F1" opacity="0.3" />
+                  <path
+                    d="M50 60 C40 60 30 70 30 80 L30 240 C30 250 40 260 50 260"
+                    fill="#6366F1"
+                    opacity="0.3"
+                  />
 
                   <circle cx="200" cy="40" r="8" fill="#818CF8" opacity="0.5" />
                   <circle cx="180" cy="30" r="5" fill="#818CF8" opacity="0.3" />
@@ -182,18 +239,33 @@ const gameFeatures = ref([
       class="flex h-screen items-center bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800"
     >
       <div class="container mx-auto px-4">
-        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
+        <div
+          class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row"
+        >
           <div class="order-2 text-center lg:order-1 lg:w-1/2 lg:text-left">
-            <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Game Mechanics</h2>
+            <h2
+              class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl"
+            >
+              Game Mechanics
+            </h2>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
-              Learn while having fun with game-like features that keep you motivated.
+              Learn while having fun with game-like features that keep you
+              motivated.
             </p>
             <div class="space-y-4">
-              <div v-for="(feature, index) in gameFeatures" :key="index" class="flex items-center gap-3">
-                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900">
+              <div
+                v-for="(feature, index) in gameFeatures"
+                :key="index"
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900"
+                >
                   <div class="h-3 w-3 rounded-full bg-emerald-500"></div>
                 </div>
-                <span class="text-gray-700 dark:text-gray-300">{{ feature }}</span>
+                <span class="text-gray-700 dark:text-gray-300">{{
+                  feature
+                }}</span>
               </div>
             </div>
           </div>
@@ -202,7 +274,9 @@ const gameFeatures = ref([
               <div
                 class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900"
               ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div
+                class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800"
+              >
                 <!-- Controller graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                   <path
@@ -235,6 +309,30 @@ const gameFeatures = ref([
     </section>
   </div>
 </template>
+
+<script setup lang="ts">
+const authStore = useAuthStore()
+
+// Initialize auth state from cookies when the component mounts
+onMounted(() => {
+  authStore.initializeFromCookie()
+})
+
+// Move the data properties to refs
+const learningFeatures = ref([
+  "Basic to advanced programming concepts",
+  "Problem-solving techniques",
+  "Data structures & algorithms",
+  "Software design principles"
+])
+
+const gameFeatures = ref([
+  "Daily streaks & achievements",
+  "Points system for completed lessons",
+  "Compete with friends on leaderboards",
+  "Unlock new challenges as you progress"
+])
+</script>
 
 <style scoped>
 /* Scrolling behavior */

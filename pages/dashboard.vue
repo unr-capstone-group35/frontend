@@ -7,7 +7,9 @@ const username = useAuthStore().username
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800">
+  <div
+    class="min-h-screen bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800"
+  >
     <div class="mx-auto max-w-6xl px-4 py-12">
       <!-- Welcome Section with Profile Picture -->
       <div class="mb-12 text-center">
@@ -16,13 +18,25 @@ const username = useAuthStore().username
           <div
             class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-emerald-200 bg-gray-200 dark:border-emerald-800 dark:bg-gray-700"
           >
-            <svg class="h-20 w-20 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            <svg
+              class="h-20 w-20 text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                clip-rule="evenodd"
+              />
             </svg>
           </div>
         </div>
-        <h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">Welcome back, {{ username }}!</h1>
-        <p class="text-lg text-gray-600 dark:text-gray-300">Track your progress and continue your learning journey</p>
+        <h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
+          Welcome back, {{ username }}
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-300">
+          Track your progress and continue your learning journey
+        </p>
       </div>
 
       <!-- Stats Grid -->
@@ -34,34 +48,60 @@ const username = useAuthStore().username
           ></div>
 
           <!-- Main content card -->
-          <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+          <div
+            class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800"
+          >
             <!-- Stats Grid -->
             <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
               <!-- Streak Card -->
               <div
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
               >
-                <div class="mb-2 text-xl text-emerald-600 dark:text-emerald-400">Daily Streak</div>
-                <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">days</div>
+                <div
+                  class="mb-2 text-xl text-emerald-600 dark:text-emerald-400"
+                >
+                  Daily Streak
+                </div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">
+                  0
+                </div>
+                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  days
+                </div>
               </div>
 
               <!-- Points Card -->
               <div
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
               >
-                <div class="mb-2 text-xl text-emerald-600 dark:text-emerald-400">Total Points</div>
-                <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">points earned</div>
+                <div
+                  class="mb-2 text-xl text-emerald-600 dark:text-emerald-400"
+                >
+                  Total Points
+                </div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">
+                  0
+                </div>
+                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  points earned
+                </div>
               </div>
 
               <!-- Exercises Card -->
               <div
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
               >
-                <div class="mb-2 text-xl text-emerald-600 dark:text-emerald-400">Exercises</div>
-                <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">completed</div>
+                <div
+                  class="mb-2 text-xl text-emerald-600 dark:text-emerald-400"
+                >
+                  Exercises
+                </div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">
+                  0
+                </div>
+                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  completed
+                </div>
               </div>
             </div>
 
@@ -90,3 +130,11 @@ const username = useAuthStore().username
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+definePageMeta({
+  middleware: ["auth"]
+})
+
+const username = useAuthStore().username
+</script>

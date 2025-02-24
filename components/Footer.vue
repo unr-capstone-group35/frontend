@@ -5,10 +5,14 @@ export default {
 </script>
 
 <template>
-  <footer class="border-t border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900">
+  <footer
+    class="border-t border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900"
+  >
     <div class="container mx-auto flex items-center justify-between px-4">
       <div>
-        <p class="text-sm text-gray-600 dark:text-gray-400">© 2024 DevQuest. All rights reserved.</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          © 2024 DevQuest. All rights reserved.
+        </p>
       </div>
       <div class="flex space-x-4">
         <NuxtLink
@@ -27,3 +31,9 @@ export default {
     </div>
   </footer>
 </template>
+
+<script>
+export default {
+  name: "Footer"
+}
+</script>
