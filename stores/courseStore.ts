@@ -1,4 +1,4 @@
-type CourseProgress = {
+export type CourseProgress = {
   id: number
   userId: number
   courseName: string
@@ -8,7 +8,7 @@ type CourseProgress = {
   progressPercentage: number
 }
 
-type LessonProgress = {
+export type LessonProgress = {
   id: number
   userId: number
   courseName: number
@@ -18,7 +18,7 @@ type LessonProgress = {
   completedAt: string
 }
 
-type ExerciseAttempt = {
+export type ExerciseAttempt = {
   id: number
   userId: number
   courseName: string
@@ -30,18 +30,18 @@ type ExerciseAttempt = {
   attemptedAt: string
 }
 
-type Lesson = {
+export type Lesson = {
   id: string
   title: string
   description: string
   exercises: Exercise[]
 }
 
-type Exercise = {
+export type Exercise = {
   id: string
 }
 
-type Course = {
+export type Course = {
   id: string
   name: string
   lessons: Lesson[]

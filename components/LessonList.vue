@@ -1,14 +1,8 @@
-<script setup>
-const props = defineProps({
-  courseId: {
-    type: String,
-    required: true
-  },
-  lessons: {
-    type: Array,
-    required: true
-  }
-})
+<script setup lang="ts">
+const props = defineProps<{
+  courseId: string
+  lessons: Lesson[]
+}>()
 
 const { courseStore, selectLesson, canAccessLesson, getLessonClasses } = useLearn()
 </script>

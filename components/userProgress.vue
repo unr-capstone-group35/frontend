@@ -1,8 +1,4 @@
-<script setup>
-import { computed } from "vue"
-import { storeToRefs } from "pinia"
-import { useCourseStore } from "~/stores/courseStore"
-
+<script setup lang="ts">
 const courseStore = useCourseStore()
 const { currentCourse, lessonProgress } = storeToRefs(courseStore)
 
@@ -12,8 +8,10 @@ const totalLessons = computed(() => currentCourse.value?.lessons?.length || 0)
 const completedLessons = computed(() => {
   if (!currentCourse.value) return 0
 
+  if (!currentCourse.value) return 0
+
   return currentCourse.value.lessons.filter(
-    lesson => lessonProgress.value[`${currentCourse.value.id}-${lesson.id}`]?.status === "completed"
+    lesson => lessonProgress.value[`${currentCourse.value?.id}-${lesson.id}`]?.status === "completed"
   ).length
 })
 

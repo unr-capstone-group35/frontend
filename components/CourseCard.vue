@@ -1,21 +1,15 @@
-<script setup>
-const props = defineProps({
-  courseId: {
-    type: String,
-    required: true
-  },
-  imagePath: {
-    type: String,
-    required: true
-  }
-})
+<script setup lang="ts">
+const props = defineProps<{
+  courseId: string
+  imagePath: string
+}>()
 
 const router = useRouter()
 const courseStore = useCourseStore()
 const { currentCourse, courseProgress } = storeToRefs(courseStore)
 
 const loading = ref(false)
-const error = ref(null)
+const error = ref("")
 
 // Computed properties
 const courseDisplayName = computed(() => {
@@ -92,7 +86,7 @@ const formatStatus = status => {
 const handleCourseSelect = async () => {
   try {
     loading.value = true
-    error.value = null
+    error.value = ""
 
     // Fetch course data
     await courseStore.fetchCourse(props.courseId)
@@ -112,7 +106,7 @@ const handleCourseSelect = async () => {
         lesson: firstLesson.id
       }
     })
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error accessing course:", err)
     error.value = "Unable to access course at this time"
   } finally {
@@ -178,7 +172,7 @@ const handleCourseSelect = async () => {
       </div>
 
       <!-- Error message -->
-      <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400">
+      <p v-if="error != ''" class="mt-2 text-sm text-red-600 dark:text-red-400">
         {{ error }}
       </p>
     </div>

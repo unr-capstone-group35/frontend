@@ -1,6 +1,4 @@
-<script setup>
-import { useAuthStore } from "~/stores/authStore"
-
+<script setup lang="ts">
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -67,7 +65,7 @@ const handleDashboardClick = () => {
         </div>
 
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300">
-          {{ authStore.user?.username || "User" }}
+          {{ authStore.username || "Unknown" }}
         </h2>
       </div>
 

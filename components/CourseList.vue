@@ -1,29 +1,25 @@
-<script setup>
-import { computed } from "vue"
-import { useRoute } from "vue-router"
-import { useLearn } from "~/composables/useLearn"
-import { storeToRefs } from "pinia"
-import { useCourseStore } from "~/stores/courseStore"
-import LessonList from "./LessonList.vue"
-
-const props = defineProps({
-  loading: Boolean,
-  error: String,
-  courses: {
-    type: Array,
-    required: true
+<script setup lang="ts">
+const props = withDefaults(
+  defineProps<{
+    loading: boolean
+    error: string
+    courses: Course[]
+  }>(),
+  {
+    loading: false,
+    error: ""
   }
-})
+)
 
 const route = useRoute()
 const courseStore = useCourseStore()
 const { currentCourse, courseProgress } = storeToRefs(courseStore)
 
-const { expandedCourse, toggleCourse, getLessonsForCourse, getCourseClasses } = useLearn()
+const { expandedCourseId, toggleCourse, getLessonsForCourse, getCourseClasses } = useLearn()
 
 // Compute active course based on route
 const activeCourse = computed(() => {
-  return props.courses.find(course => course.id === route.query.course)
+  return props.courses.find((course: Course) => course.id === (route.query.course as string))
 })
 
 // Calculate total and completed lessons
@@ -34,7 +30,11 @@ const totalLessons = computed(() => {
 const completedLessons = computed(() => {
   if (!activeCourse.value || !currentCourse.value?.lessons) return 0
 
-  return currentCourse.value.lessons.filter(lesson => courseStore.isLessonCompleted(activeCourse.value.id, lesson.id))
+  if (!activeCourse.value.id) {
+    return 0
+  }
+
+  return currentCourse.value.lessons.filter(lesson => courseStore.isLessonCompleted(activeCourse.value!.id, lesson.id))
     .length
 })
 
@@ -50,10 +50,6 @@ const progressBarColor = computed(() => {
   if (progressPercentage.value > 0) return "bg-blue-500"
   return "bg-gray-300"
 })
-
-function formatCourseName(name) {
-  return name.replace(/_/g, " ")
-}
 </script>
 <template>
   <div class="flex h-full flex-col">
@@ -93,12 +89,12 @@ function formatCourseName(name) {
             <div class="flex w-full flex-col">
               <div class="mb-2 flex items-center justify-between">
                 <span class="font-medium text-gray-900 dark:text-white">
-                  {{ formatCourseName(activeCourse.name) }}
+                  {{ activeCourse.name }}
                 </span>
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-gray-500"> {{ progressPercentage }}% </span>
                   <svg
-                    :class="['h-5 w-5 transition-transform', expandedCourse === activeCourse.id ? 'rotate-180' : '']"
+                    :class="['h-5 w-5 transition-transform', expandedCourseId === activeCourse.id ? 'rotate-180' : '']"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -119,7 +115,7 @@ function formatCourseName(name) {
           </button>
 
           <LessonList
-            v-if="expandedCourse === activeCourse.id"
+            v-if="expandedCourseId === activeCourse.id"
             :courseId="activeCourse.id"
             :lessons="getLessonsForCourse(activeCourse.id)"
           />

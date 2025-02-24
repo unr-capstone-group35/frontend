@@ -1,7 +1,4 @@
-<script setup>
-import { ref, computed } from "vue"
-import { useAuthStore } from "~/stores/authStore"
-
+<script setup lang="ts">
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const email = ref("")

@@ -1,6 +1,4 @@
 <script setup>
-import { ref, computed, watch, onMounted } from "vue"
-
 const props = defineProps({
   exercise: {
     type: Object,

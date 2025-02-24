@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   exercise: {
     type: Object,
@@ -29,7 +29,7 @@ const formatQuestion = computed(() => {
   return props.exercise.question.replace("_", "_____")
 })
 
-function handleInput(event) {
+function handleInput(event: any) {
   const value = event.target.value
   localAnswer.value = value
   emit("update-answer", value)
