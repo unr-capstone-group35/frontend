@@ -153,9 +153,9 @@ export function useLearn() {
   // composables/useLearn.js
 
   async function handleNextExercise() {
-    const nextExercise = courseStore.nextExercise(route.query.course, route.query.lesson, currentExercise.value?.id)
-
+    const nextExercise = await courseStore.nextExercise(route.query.course, route.query.lesson, currentExercise.value?.id)
     if (nextExercise) {
+      
       // If there's another exercise in this lesson, show it
       currentExercise.value = null
       await nextTick()
