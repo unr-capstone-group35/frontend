@@ -1,9 +1,8 @@
 // run pnpm test or
 // pnpm test:watch
 
-
 import { mount } from '@vue/test-utils'
-import MultipleChoice from './MultipleChoice.vue'
+import MultipleChoice from '@/components/questions/MultipleChoice.vue'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 describe('MultipleChoice Component', () => {
