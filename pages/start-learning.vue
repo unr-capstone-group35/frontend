@@ -28,7 +28,7 @@ onMounted(fetchCourses)
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div class="page-container">
     <main class="mx-auto max-w-7xl p-4 py-12 sm:p-6 sm:py-16 lg:p-12 lg:py-24">
       <!-- Loading State -->
       <div v-if="loading" class="flex min-h-[50vh] items-center justify-center">

@@ -7,7 +7,7 @@ const username = useAuthStore().username
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div class="page-container">
     <div class="mx-auto max-w-6xl px-4 py-12">
       <!-- Welcome Section with Profile Picture -->
       <div class="mb-12 text-center">
@@ -28,9 +28,7 @@ const username = useAuthStore().username
       <!-- Stats Grid -->
       <div class="mx-auto max-w-4xl">
         <div class="relative">
-          <!-- Background card with rotation -->
-          <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
-          <!-- Main content card -->
+          <div class="background-card"></div>
           <div class="card relative p-8">
             <!-- Stats Grid -->
             <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">

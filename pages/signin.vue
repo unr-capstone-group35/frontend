@@ -18,7 +18,7 @@ async function handleSignIn() {
 </script>
 
 <template>
-  <div class="flex h-[calc(100vh-115px)] flex-col bg-gray-100 dark:bg-gray-900">
+  <div class="page-container flex flex-col">
     <div class="flex w-full flex-1 items-center justify-center">
       <div class="card w-full max-w-md">
         <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">Sign In</h2>

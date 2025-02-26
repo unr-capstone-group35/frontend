@@ -25,9 +25,7 @@ const gameFeatures = ref([
 <template>
   <div>
     <!-- Start Learning Card -->
-    <section
-      class="flex h-[calc(100vh-35px)] items-start bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800"
-    >
+    <section class="page-container flex items-start">
       <div class="container mx-auto px-4 pt-20">
         <div class="mb-12 text-center">
           <span class="animate-gradient bg-gradient-text text-6xl font-bold">DevQuest</span>
@@ -58,8 +56,7 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-2 lg:w-1/2">
             <div class="relative">
-              <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
-              >
+              <div class="background-card"></div>
               <div class="card relative p-8">
                 <div class="space-y-4">
                   <div class="flex items-center gap-4">
@@ -135,7 +132,7 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-1 lg:w-1/2">
             <div class="relative">
-              <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
+              <div class="background-card"></div>
               <div class="card relative p-8">
                 <!-- Book graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
@@ -175,9 +172,7 @@ const gameFeatures = ref([
     </section>
 
     <!-- Game Mechanics Card -->
-    <section
-      class="flex h-screen items-center bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800"
-    >
+    <section class="bg-page-gradient flex h-screen items-center">
       <div class="container mx-auto px-4">
         <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
           <div class="order-2 text-center lg:order-1 lg:w-1/2 lg:text-left">
@@ -196,7 +191,7 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-2 lg:w-1/2">
             <div class="relative">
-              <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
+              <div class="background-card"></div>
               <div class="card relative p-8">
                 <!-- Controller graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">

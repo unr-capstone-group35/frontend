@@ -7,27 +7,44 @@
   html {
     @apply transition-colors duration-200; /* Smooth transition for theme changes */
   }
-  
+
   body {
-    @apply bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800; /* Default page background gradient */
+    @apply bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800;
   }
 
-  /* Typography defaults */
+  .h-page {
+    height: calc(100vh - 64px) !important;
+  }
+  
+  .min-h-page {
+    min-height: calc(100vh - 64px) !important;
+  }
+  
+  /* Page background gradient */
+  .bg-page-gradient {
+    @apply bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800;
+  }
+
+  /* use this for most pages*/
+  .page-container {
+    @apply min-h-page bg-page-gradient;
+  }
+
   h1 {
-    @apply mb-4 text-4xl font-bold text-gray-900 dark:text-white; /* Large headings */
+    @apply mb-4 text-4xl font-bold text-gray-900 dark:text-white;
   }
   
   h2 {
-    @apply mb-4 text-2xl font-bold text-gray-800 dark:text-white; /* Medium headings */
+    @apply mb-4 text-2xl font-bold text-gray-800 dark:text-white;
   }
   
   p {
-    @apply text-gray-600 dark:text-gray-300; /* Default paragraph text */
+    @apply text-gray-600 dark:text-gray-300;
   }
   
-  /* Primary colors - Design system color tokens */
+  /* Primary colors */
   .text-primary {
-    @apply text-emerald-600 dark:text-emerald-400; /* For primary text highlights */
+    @apply text-emerald-600 dark:text-emerald-400;
   }
   
   .bg-primary {
@@ -41,18 +58,19 @@
   .hover-primary {
     @apply hover:bg-emerald-700 dark:hover:bg-emerald-600; /* Hover state for primary buttons */
   }
-  
-  /* Component abstractions */
-  .card {
-    @apply rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800; /* Standard card component */
-  }
-  
-  /* Background accent variations */
-  .accent-bg-light {
-    @apply bg-gray-50 dark:bg-gray-700; /* Light background for subtle contrast */
-  }
-  
+
   .accent-gradient {
-    @apply bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900; /* Decorative gradient for accents */
+    @apply bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900;
   }
+  
+  
+  .card {
+    @apply rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800; 
+  }
+  
+  .background-card {
+    @apply accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl;
+  }
+  
+
 }

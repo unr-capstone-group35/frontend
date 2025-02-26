@@ -25,10 +25,10 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="min-h-page flex flex-col">
     <div class="flex flex-1 bg-gray-100 dark:bg-gray-900">
       <!-- Left Sidebar Container -->
-      <div class="relative flex h-screen transition-all duration-300" :class="getSidebarContainerClasses()">
+      <div class="h-page relative flex transition-all duration-300" :class="getSidebarContainerClasses()">
         <!-- Sidebar Content -->
         <aside
           class="h-full overflow-hidden bg-white shadow-md transition-all duration-300 dark:bg-gray-800"

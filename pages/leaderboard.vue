@@ -10,7 +10,7 @@ const leaderboardUsers = [
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="page-container flex">
     <div class="flex w-80 flex-col p-6">
       <div class="card">
         <!-- Current user(left card) -->
