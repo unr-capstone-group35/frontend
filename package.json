@@ -20,6 +20,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/tailwindcss": "^6.13.1",
     "prettier": "^3.5.2"
   },
