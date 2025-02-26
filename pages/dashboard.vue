@@ -7,7 +7,7 @@ const username = useAuthStore().username
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800">
+  <div class="min-h-screen">
     <div class="mx-auto max-w-6xl px-4 py-12">
       <!-- Welcome Section with Profile Picture -->
       <div class="mb-12 text-center">
@@ -29,19 +29,16 @@ const username = useAuthStore().username
       <div class="mx-auto max-w-4xl">
         <div class="relative">
           <!-- Background card with rotation -->
-          <div
-            class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900"
-          ></div>
-
+          <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
           <!-- Main content card -->
-          <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+          <div class="card relative p-8">
             <!-- Stats Grid -->
             <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
               <!-- Streak Card -->
               <div
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
               >
-                <div class="mb-2 text-xl text-emerald-600 dark:text-emerald-400">Daily Streak</div>
+                <div class="text-primary mb-2 text-xl">Daily Streak</div>
                 <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">days</div>
               </div>
@@ -50,7 +47,7 @@ const username = useAuthStore().username
               <div
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
               >
-                <div class="mb-2 text-xl text-emerald-600 dark:text-emerald-400">Total Points</div>
+                <div class="text-primary mb-2 text-xl">Total Points</div>
                 <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">points earned</div>
               </div>
@@ -59,7 +56,7 @@ const username = useAuthStore().username
               <div
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
               >
-                <div class="mb-2 text-xl text-emerald-600 dark:text-emerald-400">Exercises</div>
+                <div class="text-primary mb-2 text-xl">Exercises</div>
                 <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">completed</div>
               </div>
@@ -69,7 +66,7 @@ const username = useAuthStore().username
             <div class="mt-8 text-center">
               <NuxtLink
                 to="/start-learning"
-                class="inline-block transform rounded-xl bg-emerald-600 px-8 py-4 font-bold text-white shadow-md transition-all hover:scale-105 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                class="bg-primary hover-primary inline-block transform rounded-xl px-8 py-4 font-bold text-white shadow-md transition-all hover:scale-105"
               >
                 Continue Learning
               </NuxtLink>
@@ -77,12 +74,7 @@ const username = useAuthStore().username
 
             <!-- Quick Links -->
             <div class="mt-8 flex justify-center gap-4">
-              <NuxtLink
-                to="/leaderboard"
-                class="font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-500"
-              >
-                View Leaderboard
-              </NuxtLink>
+              <NuxtLink to="/leaderboard" class="text-primary font-medium"> View Leaderboard </NuxtLink>
             </div>
           </div>
         </div>

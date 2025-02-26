@@ -20,7 +20,7 @@ async function handleSignIn() {
 <template>
   <div class="flex h-[calc(100vh-115px)] flex-col bg-gray-100 dark:bg-gray-900">
     <div class="flex w-full flex-1 items-center justify-center">
-      <div class="w-full max-w-md rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
+      <div class="card w-full max-w-md">
         <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">Sign In</h2>
 
         <!-- Show error message if exists -->
@@ -94,7 +94,7 @@ async function handleSignIn() {
           <button
             type="submit"
             :disabled="isLoading"
-            class="w-full rounded-lg bg-emerald-600 px-6 py-3 font-bold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+            class="bg-primary hover-primary w-full rounded-lg px-6 py-3 font-bold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ isLoading ? "Signing in..." : "Sign In" }}
           </button>
@@ -102,9 +102,7 @@ async function handleSignIn() {
 
         <p class="mt-4 text-center text-gray-600 dark:text-gray-300">
           Don't have an account?
-          <NuxtLink to="/signup" class="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
-            Sign up
-          </NuxtLink>
+          <NuxtLink to="/signup" class="text-primary font-medium hover:underline"> Sign up </NuxtLink>
         </p>
       </div>
     </div>

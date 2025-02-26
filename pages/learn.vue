@@ -85,7 +85,7 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
           <span class="text-red-500">{{ courseStore.error }}</span>
         </div>
 
-        <div v-else-if="courseStore.currentLesson" class="rounded-lg bg-white p-10 shadow-md dark:bg-gray-800">
+        <div v-else-if="courseStore.currentLesson" class="card p-10">
           <div class="mb-8">
             <h2 class="mb-4 text-3xl font-semibold text-gray-800 dark:text-white">
               {{ courseStore.currentLesson.title }}

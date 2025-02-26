@@ -12,7 +12,7 @@ const leaderboardUsers = [
 <template>
   <div class="flex min-h-screen bg-gray-100 dark:bg-gray-900">
     <div class="flex w-80 flex-col p-6">
-      <div class="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+      <div class="card">
         <!-- Current user(left card) -->
         <div class="mb-8 flex flex-col items-center space-y-4">
           <div
@@ -22,7 +22,7 @@ const leaderboardUsers = [
               <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
             </svg>
           </div>
-          <h2 class="text-xl font-semibold text-emerald-600 dark:text-emerald-500">Your Points</h2>
+          <h2 class="text-primary text-xl font-semibold">Your Points</h2>
         </div>
 
         <!-- Stats Grid -->
@@ -46,7 +46,7 @@ const leaderboardUsers = [
       <!-- Moved Dashboard Link here -->
       <NuxtLink
         to="/dashboard"
-        class="mt-6 w-full rounded-lg bg-emerald-500 px-6 py-3 text-center font-semibold text-white shadow-md transition-colors hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+        class="bg-primary hover-primary mt-6 w-full rounded-lg px-6 py-3 text-center font-semibold text-white shadow-md transition-colors"
       >
         Back to Dashboard
       </NuxtLink>
@@ -55,7 +55,7 @@ const leaderboardUsers = [
     <!-- Leaderboard(right card)-->
     <div class="flex-1 p-6">
       <div class="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-        <h2 class="mb-6 text-2xl font-bold text-emerald-600 dark:text-emerald-500">Leaderboard</h2>
+        <h2 class="text-primary mb-6 text-2xl font-bold">Leaderboard</h2>
 
         <div class="space-y-4">
           <div

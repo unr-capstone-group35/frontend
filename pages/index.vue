@@ -44,7 +44,7 @@ const gameFeatures = ref([
             <div class="mx-auto flex max-w-md flex-col gap-4 sm:flex-row lg:mx-0">
               <NuxtLink
                 to="/start-learning"
-                class="flex-1 rounded-xl bg-emerald-600 px-8 py-4 font-bold text-white shadow-md transition-colors hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                class="bg-primary hover-primary flex-1 rounded-xl px-8 py-4 font-bold text-white shadow-md transition-colors"
               >
                 START LEARNING
               </NuxtLink>
@@ -58,10 +58,9 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-2 lg:w-1/2">
             <div class="relative">
-              <div
-                class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900"
-              ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
+              >
+              <div class="card relative p-8">
                 <div class="space-y-4">
                   <div class="flex items-center gap-4">
                     <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900">
@@ -75,7 +74,7 @@ const gameFeatures = ref([
 
                   <div class="space-y-3 font-mono text-sm">
                     <div class="p-2">
-                      <span class="text-emerald-600 dark:text-emerald-400">function </span>
+                      <span class="text-primary">function </span>
                       <span class="text-purple-600 dark:text-purple-400">learnToCode</span>
                       <span class="text-gray-900 dark:text-gray-300">()</span>
                       <span class="text-gray-900 dark:text-gray-300">{</span>
@@ -136,10 +135,8 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-1 lg:w-1/2">
             <div class="relative">
-              <div
-                class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-indigo-200 to-purple-100 dark:from-indigo-800 dark:to-purple-900"
-              ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
+              <div class="card relative p-8">
                 <!-- Book graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                   <path
@@ -199,10 +196,8 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-2 lg:w-1/2">
             <div class="relative">
-              <div
-                class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900"
-              ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div class="accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl"></div>
+              <div class="card relative p-8">
                 <!-- Controller graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                   <path
