@@ -1,31 +1,10 @@
 <script setup lang="ts">
-const isDark = ref(false)
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === "dark")
 
 const toggleTheme = () => {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.setAttribute("data-theme", "dark")
-    document.documentElement.classList.add("dark")
-  } else {
-    document.documentElement.setAttribute("data-theme", "light")
-    document.documentElement.classList.remove("dark")
-  }
-  // Save preference to localStorage
-  localStorage.setItem("theme", isDark.value ? "dark" : "light")
+  colorMode.preference = isDark.value ? "light" : "dark"
 }
-
-onMounted(() => {
-  // Check for saved theme preference or system preference
-  const savedTheme = localStorage.getItem("theme")
-  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-
-  isDark.value = savedTheme === "dark" || (!savedTheme && systemDark)
-
-  if (isDark.value) {
-    document.documentElement.setAttribute("data-theme", "dark")
-    document.documentElement.classList.add("dark")
-  }
-})
 
 const route = useRoute()
 const isMenuOpen = ref(false)

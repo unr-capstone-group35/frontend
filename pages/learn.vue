@@ -25,10 +25,10 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="min-h-page flex flex-col">
     <div class="flex flex-1 bg-gray-100 dark:bg-gray-900">
       <!-- Left Sidebar Container -->
-      <div class="relative flex h-screen transition-all duration-300" :class="getSidebarContainerClasses()">
+      <div class="h-page relative flex transition-all duration-300" :class="getSidebarContainerClasses()">
         <!-- Sidebar Content -->
         <aside
           class="h-full overflow-hidden bg-white shadow-md transition-all duration-300 dark:bg-gray-800"
@@ -85,7 +85,7 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
           <span class="text-red-500">{{ courseStore.error }}</span>
         </div>
 
-        <div v-else-if="courseStore.currentLesson" class="rounded-lg bg-white p-10 shadow-md dark:bg-gray-800">
+        <div v-else-if="courseStore.currentLesson" class="card p-10">
           <div class="mb-8">
             <h2 class="mb-4 text-3xl font-semibold text-gray-800 dark:text-white">
               {{ courseStore.currentLesson.title }}

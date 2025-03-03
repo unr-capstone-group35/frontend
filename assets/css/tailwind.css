@@ -1,3 +1,76 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@tailwind base;  
+@tailwind components; 
+@tailwind utilities;  
+
+
+@layer base {
+  html {
+    @apply transition-colors duration-200; /* Smooth transition for theme changes */
+  }
+
+  body {
+    @apply bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800;
+  }
+
+  .h-page {
+    height: calc(100vh - 64px) !important;
+  }
+  
+  .min-h-page {
+    min-height: calc(100vh - 64px) !important;
+  }
+  
+  /* Page background gradient */
+  .bg-page-gradient {
+    @apply bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800;
+  }
+
+  /* use this for most pages*/
+  .page-container {
+    @apply min-h-page bg-page-gradient;
+  }
+
+  h1 {
+    @apply mb-4 text-4xl font-bold text-gray-900 dark:text-white;
+  }
+  
+  h2 {
+    @apply mb-4 text-2xl font-bold text-gray-800 dark:text-white;
+  }
+  
+  p {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+  
+  /* Primary colors */
+  .text-primary {
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+  
+  .bg-primary {
+    @apply bg-emerald-600 dark:bg-emerald-500; /* For primary buttons and interactive elements */
+  }
+  
+  .border-primary {
+    @apply border-emerald-600 dark:border-emerald-500; /* For borders that use the primary brand color */
+  }
+  
+  .hover-primary {
+    @apply hover:bg-emerald-700 dark:hover:bg-emerald-600; /* Hover state for primary buttons */
+  }
+
+  .accent-gradient {
+    @apply bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900;
+  }
+  
+  
+  .card {
+    @apply rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800; 
+  }
+  
+  .background-card {
+    @apply accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl;
+  }
+  
+
+}

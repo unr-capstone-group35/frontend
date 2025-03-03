@@ -65,9 +65,9 @@ async function handleSignUp() {
 </script>
 
 <template>
-  <div class="flex h-[calc(100vh-58px)] flex-col bg-gray-100 dark:bg-gray-900">
+  <div class="page-container flex flex-col">
     <div class="flex w-full flex-1 items-center justify-center">
-      <div class="w-full max-w-md rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
+      <div class="card w-full max-w-md">
         <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">Sign Up</h2>
 
         <!-- Show API error message if exists -->

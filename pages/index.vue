@@ -25,9 +25,7 @@ const gameFeatures = ref([
 <template>
   <div>
     <!-- Start Learning Card -->
-    <section
-      class="flex h-[calc(100vh-35px)] items-start bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800"
-    >
+    <section class="page-container flex items-start">
       <div class="container mx-auto px-4 pt-20">
         <div class="mb-12 text-center">
           <span class="animate-gradient bg-gradient-text text-6xl font-bold">DevQuest</span>
@@ -44,7 +42,7 @@ const gameFeatures = ref([
             <div class="mx-auto flex max-w-md flex-col gap-4 sm:flex-row lg:mx-0">
               <NuxtLink
                 to="/start-learning"
-                class="flex-1 rounded-xl bg-emerald-600 px-8 py-4 font-bold text-white shadow-md transition-colors hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                class="bg-primary hover-primary flex-1 rounded-xl px-8 py-4 font-bold text-white shadow-md transition-colors"
               >
                 START LEARNING
               </NuxtLink>
@@ -58,10 +56,8 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-2 lg:w-1/2">
             <div class="relative">
-              <div
-                class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900"
-              ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div class="background-card"></div>
+              <div class="card relative p-8">
                 <div class="space-y-4">
                   <div class="flex items-center gap-4">
                     <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900">
@@ -75,7 +71,7 @@ const gameFeatures = ref([
 
                   <div class="space-y-3 font-mono text-sm">
                     <div class="p-2">
-                      <span class="text-emerald-600 dark:text-emerald-400">function </span>
+                      <span class="text-primary">function </span>
                       <span class="text-purple-600 dark:text-purple-400">learnToCode</span>
                       <span class="text-gray-900 dark:text-gray-300">()</span>
                       <span class="text-gray-900 dark:text-gray-300">{</span>
@@ -136,10 +132,8 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-1 lg:w-1/2">
             <div class="relative">
-              <div
-                class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-indigo-200 to-purple-100 dark:from-indigo-800 dark:to-purple-900"
-              ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div class="background-card"></div>
+              <div class="card relative p-8">
                 <!-- Book graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                   <path
@@ -178,9 +172,7 @@ const gameFeatures = ref([
     </section>
 
     <!-- Game Mechanics Card -->
-    <section
-      class="flex h-screen items-center bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800"
-    >
+    <section class="bg-page-gradient flex h-screen items-center">
       <div class="container mx-auto px-4">
         <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
           <div class="order-2 text-center lg:order-1 lg:w-1/2 lg:text-left">
@@ -199,10 +191,8 @@ const gameFeatures = ref([
           </div>
           <div class="order-1 lg:order-2 lg:w-1/2">
             <div class="relative">
-              <div
-                class="absolute inset-0 -rotate-3 transform rounded-2xl bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900"
-              ></div>
-              <div class="relative rounded-2xl bg-white p-8 shadow-lg dark:bg-gray-800">
+              <div class="background-card"></div>
+              <div class="card relative p-8">
                 <!-- Controller graphic -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
                   <path

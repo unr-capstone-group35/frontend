@@ -28,11 +28,11 @@ onMounted(fetchCourses)
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800">
+  <div class="page-container">
     <main class="mx-auto max-w-7xl p-4 py-12 sm:p-6 sm:py-16 lg:p-12 lg:py-24">
       <!-- Loading State -->
       <div v-if="loading" class="flex min-h-[50vh] items-center justify-center">
-        <div class="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-500"></div>
+        <div class="border-primary h-12 w-12 animate-spin rounded-full border-b-2"></div>
       </div>
 
       <!-- Error State -->
@@ -42,7 +42,7 @@ onMounted(fetchCourses)
         </p>
         <button
           @click="fetchCourses"
-          class="mt-4 rounded-lg bg-emerald-500 px-4 py-2 text-white transition-colors hover:bg-emerald-600"
+          class="bg-primary hover-primary mt-4 rounded-lg px-4 py-2 text-white transition-colors"
         >
           Retry
         </button>
@@ -53,8 +53,8 @@ onMounted(fetchCourses)
         <!-- Programming Basics Section -->
         <section class="flex flex-col gap-8 border-b border-gray-200 pb-12 dark:border-gray-700 lg:flex-row">
           <div class="lg:w-2/5">
-            <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white">Programming Fundamentals</h2>
-            <p class="mb-6 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+            <h2 class="mb-6 text-4xl font-bold">Programming Fundamentals</h2>
+            <p class="mb-6 text-lg leading-relaxed">
               Start your coding journey here. Learn variables, functions, loops, and essential programming concepts
               through interactive exercises and practical examples.
             </p>
@@ -72,8 +72,8 @@ onMounted(fetchCourses)
         <!-- Data Structures Section -->
         <section class="flex flex-col gap-8 border-b border-gray-200 pb-12 dark:border-gray-700 lg:flex-row">
           <div class="lg:w-2/5">
-            <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white">Data Structures</h2>
-            <p class="mb-6 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+            <h2 class="mb-6 text-4xl font-bold">Data Structures</h2>
+            <p class="mb-6 text-lg leading-relaxed">
               Learn how to organize and store data efficiently. Master fundamental data structures used in modern
               software development.
             </p>
@@ -91,8 +91,8 @@ onMounted(fetchCourses)
         <!-- Algorithms Section -->
         <section class="flex flex-col gap-8 lg:flex-row">
           <div class="lg:w-2/5">
-            <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white">Algorithms</h2>
-            <p class="mb-6 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+            <h2 class="mb-6 text-4xl font-bold">Algorithms</h2>
+            <p class="mb-6 text-lg leading-relaxed">
               Master essential algorithms and computational problem-solving. Learn to analyze and implement efficient
               solutions to complex problems.
             </p>
@@ -110,10 +110,8 @@ onMounted(fetchCourses)
         <!-- Empty State -->
         <section v-if="!courses || Object.keys(courses).length === 0" class="py-12 text-center">
           <div class="mx-auto max-w-md">
-            <h3 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">No Courses Available</h3>
-            <p class="text-gray-600 dark:text-gray-400">
-              We're currently preparing course content. Please check back later.
-            </p>
+            <h3 class="mb-4 text-xl font-semibold">No Courses Available</h3>
+            <p>We're currently preparing course content. Please check back later.</p>
           </div>
         </section>
       </div>
