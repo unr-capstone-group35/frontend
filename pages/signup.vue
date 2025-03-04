@@ -67,7 +67,7 @@ async function handleSignUp() {
 <template>
   <div class="page-container flex flex-col">
     <div class="flex w-full flex-1 items-center justify-center">
-      <div class="card w-full max-w-md">
+      <div class="card w-full max-w-md p-6">
         <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">Sign Up</h2>
 
         <!-- Show API error message if exists -->

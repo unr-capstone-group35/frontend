@@ -60,7 +60,9 @@ const gameFeatures = ref([
               <div class="card relative p-8">
                 <div class="space-y-4">
                   <div class="flex items-center gap-4">
-                    <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900">
+                    <div
+                      class="flex h-16 w-16 items-center justify-center rounded-lg bg-emerald-400 dark:bg-emerald-800"
+                    >
                       <span class="text-3xl">💻</span>
                     </div>
                     <div class="flex-1">
@@ -114,7 +116,7 @@ const gameFeatures = ref([
       class="flex h-screen items-center bg-gradient-to-b from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950"
     >
       <div class="container mx-auto px-4">
-        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
+        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-20 lg:flex-row">
           <div class="order-2 text-center lg:order-2 lg:w-1/2 lg:text-left">
             <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">What You'll Learn</h2>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">

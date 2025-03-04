@@ -34,29 +34,29 @@ const username = useAuthStore().username
             <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
               <!-- Streak Card -->
               <div
-                class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
+                class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-600"
               >
                 <div class="text-primary mb-2 text-xl">Daily Streak</div>
                 <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">days</div>
+                <div class="mt-1 text-sm text-gray-500 dark:text-gray-200">days</div>
               </div>
 
               <!-- Points Card -->
               <div
-                class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
+                class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-600"
               >
                 <div class="text-primary mb-2 text-xl">Total Points</div>
                 <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">points earned</div>
+                <div class="mt-1 text-sm text-gray-500 dark:text-gray-200">points earned</div>
               </div>
 
               <!-- Exercises Card -->
               <div
-                class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-700"
+                class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-600"
               >
                 <div class="text-primary mb-2 text-xl">Exercises</div>
                 <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">completed</div>
+                <div class="mt-1 text-sm text-gray-500 dark:text-gray-200">completed</div>
               </div>
             </div>
 

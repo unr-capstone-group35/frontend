@@ -26,7 +26,7 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
 
 <template>
   <div class="min-h-page flex flex-col">
-    <div class="flex flex-1 bg-gray-100 dark:bg-gray-900">
+    <div class="flex flex-1">
       <!-- Left Sidebar Container -->
       <div class="h-page relative flex transition-all duration-300" :class="getSidebarContainerClasses()">
         <!-- Sidebar Content -->
@@ -76,7 +76,9 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
       </div>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-y-auto p-8 transition-all duration-300">
+      <main
+        class="flex-1 overflow-y-auto bg-gradient-to-b from-slate-100 to-slate-200 p-8 transition-all duration-300 dark:from-gray-950 dark:to-gray-900"
+      >
         <div v-if="courseStore.loading" class="text-center">
           <span class="text-gray-500">Loading content...</span>
         </div>
@@ -85,7 +87,7 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
           <span class="text-red-500">{{ courseStore.error }}</span>
         </div>
 
-        <div v-else-if="courseStore.currentLesson" class="card p-10">
+        <div v-else-if="courseStore.currentLesson" class="rounded-lg bg-white p-10 dark:bg-gray-800">
           <div class="mb-8">
             <h2 class="mb-4 text-3xl font-semibold text-gray-800 dark:text-white">
               {{ courseStore.currentLesson.title }}

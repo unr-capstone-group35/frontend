@@ -12,11 +12,11 @@ const leaderboardUsers = [
 <template>
   <div class="page-container flex">
     <div class="flex w-80 flex-col p-6">
-      <div class="card">
+      <div class="rounded-lg bg-white p-6 dark:bg-gray-800">
         <!-- Current user(left card) -->
         <div class="mb-8 flex flex-col items-center space-y-4">
           <div
-            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
+            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200 dark:bg-gray-600"
           >
             <svg class="h-16 w-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
@@ -27,18 +27,18 @@ const leaderboardUsers = [
 
         <!-- Stats Grid -->
         <div class="mb-6 grid grid-cols-2 gap-4">
-          <div class="flex flex-col items-center rounded-lg bg-gray-100 p-3 dark:bg-gray-700">
-            <div class="text-sm text-gray-800 dark:text-gray-300">Streak</div>
+          <div class="flex flex-col items-center rounded-lg bg-gray-100 p-3 dark:bg-gray-600">
+            <div class="text-sm text-gray-800 dark:text-gray-200">Streak</div>
             <div class="text-xl font-bold text-black dark:text-white">0</div>
           </div>
-          <div class="flex flex-col items-center rounded-lg bg-gray-100 p-3 dark:bg-gray-700">
-            <div class="text-sm text-gray-800 dark:text-gray-300">Points</div>
+          <div class="flex flex-col items-center rounded-lg bg-gray-100 p-3 dark:bg-gray-600">
+            <div class="text-sm text-gray-800 dark:text-gray-200">Points</div>
             <div class="text-xl font-bold text-black dark:text-white">0</div>
           </div>
         </div>
 
-        <div class="flex flex-col items-center rounded-lg bg-gray-100 p-3 dark:bg-gray-700">
-          <div class="text-sm text-gray-800 dark:text-gray-300">Exercises Completed</div>
+        <div class="flex flex-col items-center rounded-lg bg-gray-100 p-3 dark:bg-gray-600">
+          <div class="text-sm text-gray-800 dark:text-gray-200">Exercises Completed</div>
           <div class="text-xl font-bold text-black dark:text-white">0</div>
         </div>
       </div>
@@ -62,7 +62,7 @@ const leaderboardUsers = [
             v-for="(user, index) in leaderboardUsers"
             :key="index"
             :class="[
-              'flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-700',
+              'flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-600',
               {
                 'border-2 border-yellow-500': index === 0,
                 'border-2 border-gray-300': index === 1,
@@ -71,8 +71,8 @@ const leaderboardUsers = [
             ]"
           >
             <div class="flex items-center space-x-4">
-              <span class="text-lg font-semibold text-gray-700 dark:text-gray-300">{{ index + 1 }}</span>
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-600">
+              <span class="text-lg font-semibold text-gray-700 dark:text-white">{{ index + 1 }}</span>
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-500">
                 <svg class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fill-rule="evenodd"
@@ -81,9 +81,9 @@ const leaderboardUsers = [
                   />
                 </svg>
               </div>
-              <span class="text-gray-800 dark:text-gray-300">{{ user.name }}</span>
+              <span class="text-gray-800 dark:text-white">{{ user.name }}</span>
             </div>
-            <span class="font-semibold text-gray-700 dark:text-gray-300">{{ user.points }} points</span>
+            <span class="font-semibold text-gray-700 dark:text-white">{{ user.points }} points</span>
           </div>
         </div>
       </div>
