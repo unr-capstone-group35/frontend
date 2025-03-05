@@ -14,22 +14,35 @@ const error = ref("")
 
 const courseInitial = computed(() => courseStore.courses[props.courseId].name.charAt(0))
 
+const courseDifficulty = computed((): { text: string; bgClass: string } => {
+  const difficulties: { [key: string]: { text: string; bgClass: string } } = {
+    algorithms: { text: "Hard", bgClass: "bg-red-500" },
+    data_structures: { text: "Medium", bgClass: "bg-yellow-400" },
+    programming_basics: { text: "Easy", bgClass: "bg-emerald-500" }
+  }
+  return difficulties[props.courseId] || { text: "Medium", bgClass: "bg-yellow-400" }
+})
+
 const courseBgColor = computed((): string => {
   const colors: { [key: string]: string } = {
-    algorithms: "#4F46E5",
-    data_structures: "#0891B2",
-    programming_basics: "#059669"
+    algorithms: "#EF4444",
+    data_structures: "#3B82F6",
+    programming_basics: "#10B981"
   }
   return colors[props.courseId] || "#6366F1"
 })
 
 const courseIconColor = computed((): string => {
   const colors: { [key: string]: string } = {
-    algorithms: "#6366F1",
-    data_structures: "#0EA5E9",
-    programming_basics: "#10B981"
+    algorithms: "#F87171",
+    data_structures: "#60A5FA",
+    programming_basics: "#34D399"
   }
   return colors[props.courseId] || "#818CF8"
+})
+
+const buttonBgColor = computed((): string => {
+  return "bg-blue-600 hover:bg-blue-700"
 })
 
 const progress = computed(() => {
@@ -127,30 +140,50 @@ const handleCourseSelect = async () => {
 
       <!-- Course metadata -->
       <div class="flex items-center justify-between">
-        <!-- Lesson count -->
-        <span class="text-sm text-gray-500 dark:text-gray-400">
-          {{ courseStore.courses[courseId].lessonAmount }} lessons
-        </span>
+        <!-- Lesson count and difficulty label -->
+        <div class="flex items-center space-x-3">
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            {{ courseStore.courses[courseId].lessonAmount }} lessons
+          </span>
+          <span class="rounded-full px-3 py-1 text-sm font-medium text-white" :class="courseDifficulty.bgClass">
+            {{ courseDifficulty.text }}
+          </span>
+        </div>
 
         <!-- Progress indicator if user has started the course -->
         <div v-if="progress" class="flex items-center gap-2">
           <div class="h-2 w-20 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
             <div
-              class="h-full bg-emerald-500 transition-all duration-300"
+              class="h-full transition-all duration-300"
+              :class="{
+                'bg-emerald-500': courseId === 'programming_basics',
+                'bg-blue-500': courseId === 'data_structures',
+                'bg-red-500': courseId === 'algorithms',
+                'bg-indigo-500': !['programming_basics', 'data_structures', 'algorithms'].includes(courseId)
+              }"
               :style="{ width: `${progressPercentage}%` }"
             ></div>
           </div>
           <span class="text-sm text-gray-500 dark:text-gray-400"> {{ progressPercentage }}% </span>
         </div>
 
-        <!-- Course status -->
+        <!-- Start Course Button -->
+        <button
+          v-if="courseStatus === 'not_started'"
+          @click="handleCourseSelect"
+          class="rounded-full px-3 py-1 text-sm font-medium text-white transition-colors"
+          :class="buttonBgColor"
+        >
+          Start Course
+        </button>
+
+        <!-- Course status (for in progress/completed) -->
         <span
-          v-if="courseStatus"
+          v-else
           class="rounded-full px-3 py-1 text-sm"
           :class="{
             'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100': courseStatus === 'completed',
-            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': courseStatus === 'in_progress',
-            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100': courseStatus === 'not_started'
+            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': courseStatus === 'in_progress'
           }"
         >
           {{ formatStatus(courseStatus) }}

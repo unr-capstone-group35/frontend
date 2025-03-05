@@ -33,6 +33,11 @@ const handleDashboardClick = () => {
   close()
   router.push("/dashboard")
 }
+
+const handleGlossaryClick = () => {
+  close()
+  router.push("/glossary")
+}
 </script>
 
 <template>
@@ -96,6 +101,13 @@ const handleDashboardClick = () => {
           class="block w-full rounded-lg bg-emerald-600 px-4 py-2 text-center text-white transition duration-150 ease-in-out hover:bg-emerald-700"
         >
           Dashboard
+        </button>
+
+        <button
+          @click="handleGlossaryClick"
+          class="block w-full rounded-lg bg-purple-600 px-4 py-2 text-center text-white transition duration-150 ease-in-out hover:bg-purple-700"
+        >
+          Glossary
         </button>
 
         <button

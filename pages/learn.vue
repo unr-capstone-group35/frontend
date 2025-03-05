@@ -4,6 +4,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const {
   sidebarOpen,
   currentExercise,
@@ -22,6 +23,11 @@ onMounted(initialize)
 
 // Watch for route changes
 watch(() => route.query, updateCurrentExercise, { immediate: true })
+
+// Navigate to glossary
+const navigateToGlossary = () => {
+  router.push("/glossary")
+}
 </script>
 
 <template>
@@ -77,8 +83,24 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
 
       <!-- Main Content -->
       <main
-        class="flex-1 overflow-y-auto bg-gradient-to-b from-slate-100 to-slate-200 p-8 transition-all duration-300 dark:from-gray-950 dark:to-gray-900"
+        class="relative flex-1 overflow-y-auto bg-gradient-to-b from-slate-100 to-slate-200 p-8 transition-all duration-300 dark:from-gray-950 dark:to-gray-900"
       >
+        <!-- Glossary Button -->
+        <div class="absolute right-12 top-12">
+          <!-- Updated button -->
+          <button
+            @click="navigateToGlossary"
+            class="flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-2 text-white transition-colors hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
+              />
+            </svg>
+            Glossary
+          </button>
+        </div>
+
         <div v-if="courseStore.loading" class="text-center">
           <span class="text-gray-500">Loading content...</span>
         </div>
