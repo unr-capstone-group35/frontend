@@ -459,6 +459,142 @@ const glossaryItems = ref([
     explanation: "This adds a bidirectional edge between vertices A and B in the graph.",
     category: "Data Structures",
     isExampleVisible: false
+  },
+  //Algorithms
+  {
+    term: "Algorithm",
+    definition: "A step-by-step procedure or set of rules for solving a specific problem or performing a computation.",
+    example:
+      "function binarySearch(arr, target) {\n  let left = 0;\n  let right = arr.length - 1;\n  \n  while (left <= right) {\n    let mid = Math.floor((left + right) / 2);\n    if (arr[mid] === target) return mid;\n    if (arr[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}",
+    explanation: "This binary search algorithm efficiently finds a target value in a sorted array.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Time Complexity",
+    definition: "A measure of the amount of time an algorithm takes to run as a function of the length of the input.",
+    example:
+      "// O(n) - Linear Time\nfunction findMax(arr) {\n  let max = arr[0];\n  for (let i = 1; i < arr.length; i++) {\n    if (arr[i] > max) max = arr[i];\n  }\n  return max;\n}",
+    explanation: "This function runs in O(n) time because it examines each element in the array exactly once.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Space Complexity",
+    definition: "A measure of the amount of memory an algorithm uses relative to the size of the input.",
+    example:
+      "// O(n) space complexity\nfunction createDoubles(arr) {\n  let result = [];\n  for (let i = 0; i < arr.length; i++) {\n    result.push(arr[i] * 2);\n  }\n  return result;\n}",
+    explanation:
+      "This function has O(n) space complexity because it creates a new array proportional to the input size.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Big O Notation",
+    definition:
+      "A mathematical notation that describes the limiting behavior of a function when the argument tends towards a particular value or infinity.",
+    example:
+      "// O(1) - Constant time\nfunction getFirst(arr) {\n  return arr[0];\n}\n\n// O(n) - Linear time\nfunction sum(arr) {\n  let total = 0;\n  for (let num of arr) total += num;\n  return total;\n}",
+    explanation:
+      "Big O notation classifies algorithms by their efficiency: O(1) is constant time, O(n) is linear time, and so on.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Binary Search",
+    definition:
+      "A search algorithm that finds the position of a target value within a sorted array by repeatedly dividing the search interval in half.",
+    example:
+      "function binarySearch(arr, target) {\n  let left = 0;\n  let right = arr.length - 1;\n  \n  while (left <= right) {\n    let mid = Math.floor((left + right) / 2);\n    if (arr[mid] === target) return mid;\n    if (arr[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}",
+    explanation:
+      "Binary search operates on a sorted array and has O(log n) time complexity, making it much faster than linear search for large datasets.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Linear Search",
+    definition:
+      "A simple search algorithm that checks each element of a list sequentially until a match is found or the entire list has been searched.",
+    example:
+      "function linearSearch(arr, target) {\n  for (let i = 0; i < arr.length; i++) {\n    if (arr[i] === target) return i;\n  }\n  return -1;\n}",
+    explanation: "Linear search has O(n) time complexity and works on both sorted and unsorted arrays.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Bubble Sort",
+    definition:
+      "A simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order.",
+    example:
+      "function bubbleSort(arr) {\n  for (let i = 0; i < arr.length; i++) {\n    for (let j = 0; j < arr.length - i - 1; j++) {\n      if (arr[j] > arr[j + 1]) {\n        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];\n      }\n    }\n  }\n  return arr;\n}",
+    explanation: "Bubble sort has O(n²) time complexity in the worst case, making it inefficient for large datasets.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Merge Sort",
+    definition:
+      "A divide-and-conquer sorting algorithm that divides the input array into two halves, recursively sorts them, and then merges the sorted halves.",
+    example:
+      "function mergeSort(arr) {\n  if (arr.length <= 1) return arr;\n  \n  const mid = Math.floor(arr.length / 2);\n  const left = mergeSort(arr.slice(0, mid));\n  const right = mergeSort(arr.slice(mid));\n  \n  return merge(left, right);\n}",
+    explanation:
+      "Merge sort has O(n log n) time complexity, making it efficient for large datasets, though it requires additional space.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Quick Sort",
+    definition:
+      "A divide-and-conquer sorting algorithm that selects a 'pivot' element and partitions the array around it, then recursively sorts the sub-arrays.",
+    example:
+      "function quickSort(arr) {\n  if (arr.length <= 1) return arr;\n  \n  const pivot = arr[0];\n  const left = [];\n  const right = [];\n  \n  for (let i = 1; i < arr.length; i++) {\n    if (arr[i] < pivot) left.push(arr[i]);\n    else right.push(arr[i]);\n  }\n  \n  return [...quickSort(left), pivot, ...quickSort(right)];\n}",
+    explanation: "Quick sort has an average time complexity of O(n log n) but can degrade to O(n²) in the worst case.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Recursion",
+    definition:
+      "A problem-solving approach where a function calls itself to solve smaller instances of the same problem.",
+    example:
+      "function factorial(n) {\n  // Base case\n  if (n <= 1) return 1;\n  \n  // Recursive case\n  return n * factorial(n - 1);\n}",
+    explanation:
+      "This factorial function uses recursion with a base case (n <= 1) and a recursive case that calls itself with a smaller input.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Divide and Conquer",
+    definition:
+      "An algorithmic paradigm that breaks a problem into smaller subproblems, solves each subproblem independently, and combines their solutions.",
+    example:
+      "// Merge sort is a classic divide and conquer algorithm\nfunction mergeSort(arr) {\n  // Base case: arrays of length 0 or 1 are sorted\n  if (arr.length <= 1) return arr;\n  \n  // Divide the problem\n  const mid = Math.floor(arr.length / 2);\n  const left = mergeSort(arr.slice(0, mid));\n  const right = mergeSort(arr.slice(mid));\n  \n  // Combine the solutions\n  return merge(left, right);\n}",
+    explanation:
+      "Divide and conquer breaks down problems into manageable parts, often using recursion, and is the basis for efficient algorithms like merge sort.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Dynamic Programming",
+    definition:
+      "A method for solving complex problems by breaking them down into simpler subproblems and storing their solutions to avoid redundant calculations.",
+    example:
+      "// Fibonacci using dynamic programming\nfunction fibonacci(n) {\n  const memo = [0, 1];\n  \n  for (let i = 2; i <= n; i++) {\n    memo[i] = memo[i-1] + memo[i-2];\n  }\n  \n  return memo[n];\n}",
+    explanation:
+      "This function efficiently calculates Fibonacci numbers by storing previously computed values, avoiding the exponential time complexity of naive recursion.",
+    category: "Algorithms",
+    isExampleVisible: false
+  },
+  {
+    term: "Memoization",
+    definition:
+      "An optimization technique used primarily in dynamic programming where results of expensive function calls are stored and reused when the same inputs occur again.",
+    example:
+      "function fibMemo(n, memo = {}) {\n  // Check if already computed\n  if (n in memo) return memo[n];\n  \n  // Base cases\n  if (n <= 1) return n;\n  \n  // Store result before returning\n  memo[n] = fibMemo(n-1, memo) + fibMemo(n-2, memo);\n  return memo[n];\n}",
+    explanation:
+      "This recursive Fibonacci function uses memoization to store and reuse previously calculated values, dramatically improving performance.",
+    category: "Algorithms",
+    isExampleVisible: false
   }
 ])
 
