@@ -217,6 +217,7 @@ const showCopyNotification = ref(false)
 
 // Glossary data
 const glossaryItems = ref([
+  // terms for prototype(mix of all 3)
   {
     term: "Variable",
     definition:
@@ -260,6 +261,7 @@ const glossaryItems = ref([
     category: "Algorithms",
     isExampleVisible: false
   },
+  // additional basics
   {
     term: "Program",
     definition: "A set of instructions written in a programming language that tells a computer what tasks to perform.",
@@ -349,6 +351,113 @@ const glossaryItems = ref([
     example: "let i = 0;\nwhile (i < 3) {\n  console.log(i);\n  i++;\n}",
     explanation: "This while loop outputs 0, 1, and 2, continuing until i is no longer less than 3.",
     category: "Basics",
+    isExampleVisible: false
+  },
+  // Data Structures
+  {
+    term: "Data Structure",
+    definition:
+      "A specialized format for organizing, processing, retrieving and storing data to suit particular purposes.",
+    example: "// Examples include arrays, linked lists, stacks, etc.\nlet array = [1, 2, 3];\nlet map = new Map();",
+    explanation:
+      "This example shows two common data structures: an array for sequential data and a Map for key-value pairs.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Linked List",
+    definition:
+      "A linear data structure where elements are stored in nodes, with each node containing data and a reference to the next node.",
+    example:
+      "class Node {\n  constructor(data) {\n    this.data = data;\n    this.next = null;\n  }\n}\n\nlet head = new Node(1);\nhead.next = new Node(2);",
+    explanation: "This creates a simple linked list with two nodes containing values 1 and 2.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Stack",
+    definition:
+      "A linear data structure that follows the Last-In-First-Out (LIFO) principle, where elements are added and removed from the same end.",
+    example:
+      "let stack = [];\n\n// Push elements\nstack.push(1);\nstack.push(2);\n\n// Pop element\nlet top = stack.pop(); // Returns 2",
+    explanation: "Using an array as a stack: elements are pushed onto the top and popped off in reverse order.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Queue",
+    definition:
+      "A linear data structure that follows the First-In-First-Out (FIFO) principle, where elements are added at the rear and removed from the front.",
+    example:
+      "let queue = [];\n\n// Enqueue elements\nqueue.push(1);\nqueue.push(2);\n\n// Dequeue element\nlet front = queue.shift(); // Returns 1",
+    explanation: "Using an array as a queue: elements are added to the end and removed from the front.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Tree",
+    definition:
+      "A hierarchical data structure consisting of nodes, with a root node and subtrees of children nodes, representing parent-child relationships.",
+    example:
+      "class TreeNode {\n  constructor(value) {\n    this.value = value;\n    this.left = null;\n    this.right = null;\n  }\n}\n\nlet root = new TreeNode(1);\nroot.left = new TreeNode(2);\nroot.right = new TreeNode(3);",
+    explanation: "This creates a simple binary tree with a root node (1) and two child nodes (2 and 3).",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Binary Tree",
+    definition:
+      "A tree data structure in which each node has at most two children, referred to as left child and right child.",
+    example:
+      "class Node {\n  constructor(data) {\n    this.data = data;\n    this.left = null;\n    this.right = null;\n  }\n}",
+    explanation: "This defines a node in a binary tree, where each node can have up to two children.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Graph",
+    definition:
+      "A non-linear data structure consisting of vertices (or nodes) connected by edges, representing relationships between objects.",
+    example:
+      "// Adjacency list representation\nlet graph = {\n  A: ['B', 'C'],\n  B: ['A', 'D'],\n  C: ['A', 'D'],\n  D: ['B', 'C']\n};",
+    explanation: "This example shows a simple undirected graph with 4 vertices (A, B, C, D) using an adjacency list.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Array Index",
+    definition:
+      "A numeric position that identifies an element's location within an array, starting from zero for the first element.",
+    example:
+      "let fruits = ['apple', 'banana', 'cherry'];\nlet firstFruit = fruits[0]; // 'apple'\nlet lastFruit = fruits[2]; // 'cherry'",
+    explanation: "Accessing array elements using their index: 0 for the first element, 1 for the second, and so on.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Dynamic Array",
+    definition:
+      "An array that can resize itself automatically when elements are added or removed, allowing for flexible storage.",
+    example:
+      "let dynamicArray = [];\n\n// Add elements beyond initial capacity\nfor (let i = 0; i < 10; i++) {\n  dynamicArray.push(i);\n}",
+    explanation: "JavaScript arrays are dynamic by default, automatically resizing when new elements are added.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Vertex",
+    definition: "A fundamental unit or node in a graph data structure that represents an entity or point.",
+    example: "// Graph with vertices A, B, C\nlet graph = {\n  A: [],\n  B: [],\n  C: []\n};",
+    explanation: "This example defines a graph with three vertices but no connections between them yet.",
+    category: "Data Structures",
+    isExampleVisible: false
+  },
+  {
+    term: "Edge",
+    definition: "A connection between two vertices in a graph that represents a relationship or link.",
+    example: "// Adding edges to connect vertices\ngraph.A.push('B'); // A -> B\ngraph.B.push('A'); // B -> A",
+    explanation: "This adds a bidirectional edge between vertices A and B in the graph.",
+    category: "Data Structures",
     isExampleVisible: false
   }
 ])
