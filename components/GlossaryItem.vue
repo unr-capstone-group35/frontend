@@ -1,101 +1,155 @@
 <template>
-  <div class="relative mx-auto max-w-[900px] p-6 font-sans">
-    <h1 class="mb-6 text-center text-4xl font-bold text-emerald-500">📚 Programming Glossary</h1>
+  <div
+    class="min-h-page flex-1 overflow-y-auto bg-gradient-to-b from-slate-100 to-slate-200 p-8 transition-all duration-300 dark:from-gray-950 dark:to-gray-900"
+  >
+    <div class="relative mx-auto max-w-[900px] p-6 font-sans">
+      <h1 class="mb-6 text-center text-4xl font-bold !text-emerald-500">📚 Programming Glossary</h1>
+      <div class="mb-4 flex items-center justify-between">
+        <div class="relative max-w-[700px] flex-grow">
+          <div class="search-icon">🔍</div>
+          <input
+            type="text"
+            v-model="searchTerm"
+            placeholder="Search terms..."
+            class="w-full rounded-lg border border-gray-300 bg-white px-9 py-2.5 text-base text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+          <button
+            v-if="searchTerm"
+            @click="searchTerm = ''"
+            class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer border-none bg-transparent p-0 text-base text-gray-400 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
 
-    <div class="mb-4 flex items-center justify-between">
-      <div class="relative max-w-[700px] flex-grow">
-        <div class="search-icon">🔍</div>
-        <input
-          type="text"
-          v-model="searchTerm"
-          placeholder="Search terms..."
-          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-9 py-2.5 text-base text-slate-50 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-        />
+        <!-- Toggle view mode -->
+        <div class="ml-4 flex">
+          <button
+            @click="toggleView('compact')"
+            :class="['view-btn', { active: viewMode === 'compact' }]"
+            title="Compact View"
+          >
+            <span>☰</span>
+          </button>
+          <button @click="toggleView('card')" :class="['view-btn', { active: viewMode === 'card' }]" title="Card View">
+            <span>☷</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Category filter tabs -->
+      <div class="mb-5 flex gap-2 overflow-x-auto pb-2">
         <button
-          v-if="searchTerm"
-          @click="searchTerm = ''"
-          class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer border-none bg-transparent p-0 text-base text-slate-400 hover:text-slate-50"
+          @click="setActiveCategory('All')"
+          :class="[
+            'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
+            activeCategory === 'All'
+              ? 'border-teal-800 bg-teal-800 text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+          ]"
         >
-          ✕
+          All
+        </button>
+
+        <button
+          @click="setActiveCategory('Basics')"
+          :class="[
+            'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
+            activeCategory === 'Basics'
+              ? 'border-emerald-500 bg-emerald-500 text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+          ]"
+        >
+          Basics
+        </button>
+
+        <button
+          @click="setActiveCategory('Data Structures')"
+          :class="[
+            'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
+            activeCategory === 'Data Structures'
+              ? 'border-blue-700 bg-blue-700 text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+          ]"
+        >
+          Data Structures
+        </button>
+
+        <button
+          @click="setActiveCategory('Algorithms')"
+          :class="[
+            'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
+            activeCategory === 'Algorithms'
+              ? 'border-red-700 bg-red-700 text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+          ]"
+        >
+          Algorithms
         </button>
       </div>
 
-      <!-- Toggle view mode -->
-      <div class="ml-4 flex">
-        <button
-          @click="toggleView('compact')"
-          :class="['view-btn', { active: viewMode === 'compact' }]"
-          title="Compact View"
+      <div v-if="viewMode === 'compact'">
+        <!-- Glossary items -->
+        <div
+          v-for="(item, index) in filteredGlossaryItems"
+          :key="index"
+          class="mb-4 overflow-hidden rounded-lg border border-gray-300 bg-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
         >
-          <span>☰</span>
-        </button>
-        <button @click="toggleView('card')" :class="['view-btn', { active: viewMode === 'card' }]" title="Card View">
-          <span>☷</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Category filter tabs -->
-    <div class="mb-5 flex gap-2 overflow-x-auto pb-2">
-      <button
-        @click="setActiveCategory('All')"
-        :class="[
-          'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 text-slate-50 transition-all duration-200 hover:bg-slate-700',
-          activeCategory === 'All' ? 'border-teal-800 bg-teal-800 text-white' : 'border-slate-700 bg-slate-800'
-        ]"
-      >
-        All
-      </button>
-
-      <button
-        @click="setActiveCategory('Basics')"
-        :class="[
-          'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 text-slate-50 transition-all duration-200 hover:bg-slate-700',
-          activeCategory === 'Basics' ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-700 bg-slate-800'
-        ]"
-      >
-        Basics
-      </button>
-
-      <button
-        @click="setActiveCategory('Data Structures')"
-        :class="[
-          'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 text-slate-50 transition-all duration-200 hover:bg-slate-700',
-          activeCategory === 'Data Structures'
-            ? 'border-blue-700 bg-blue-700 text-white'
-            : 'border-slate-700 bg-slate-800'
-        ]"
-      >
-        Data Structures
-      </button>
-
-      <button
-        @click="setActiveCategory('Algorithms')"
-        :class="[
-          'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 text-slate-50 transition-all duration-200 hover:bg-slate-700',
-          activeCategory === 'Algorithms' ? 'border-red-700 bg-red-700 text-white' : 'border-slate-700 bg-slate-800'
-        ]"
-      >
-        Algorithms
-      </button>
-    </div>
-
-    <div v-if="viewMode === 'compact'">
-      <!-- Glossary items -->
-      <div
-        v-for="(item, index) in filteredGlossaryItems"
-        :key="index"
-        class="mb-4 overflow-hidden rounded-lg border border-slate-700 bg-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-      >
-        <div class="flex items-center border-b border-slate-700 p-4">
-          <div class="w-[120px] min-w-[120px] pr-4">
-            <div class="pl-0.5 font-semibold text-slate-50">{{ item.term }}</div>
+          <div class="flex items-center border-b border-gray-200 p-4 dark:border-gray-700">
+            <div class="w-[120px] min-w-[120px] pr-4">
+              <div class="pl-0.5 font-semibold text-gray-800 dark:text-white">{{ item.term }}</div>
+            </div>
+            <div class="flex-grow px-2 pr-6 text-gray-600 dark:text-gray-300">{{ item.definition }}</div>
+            <div class="flex w-[120px] min-w-[120px] items-center justify-end gap-3 pr-2">
+              <span
+                :class="[
+                  'whitespace-nowrap rounded px-1.5 py-0.5 text-xs',
+                  item.category === 'Basics'
+                    ? 'bg-emerald-500 text-white'
+                    : item.category === 'Data Structures'
+                      ? 'bg-blue-700 text-white'
+                      : 'bg-red-700 text-white'
+                ]"
+                >{{ item.category === "Data Structures" ? "Data Structs" : item.category }}</span
+              >
+              <button @click="toggleExample(index)" class="toggle-btn" :class="{ active: item.isExampleVisible }">
+                <span class="toggle-arrow">{{ item.isExampleVisible ? "▲" : "▼" }}</span>
+              </button>
+            </div>
           </div>
-          <div class="flex-grow px-2 pr-6 text-slate-300">{{ item.definition }}</div>
-          <div class="flex w-[120px] min-w-[120px] items-center justify-end gap-3 pr-2">
+          <div
+            v-if="item.isExampleVisible"
+            class="border-t border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-700"
+          >
+            <div class="mb-4 overflow-hidden rounded bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+              <div
+                class="flex items-center justify-between border-b border-gray-300 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800"
+              >
+                <span>Example</span>
+                <button @click="copyToClipboard(item.example)" class="copy-btn" title="Copy to clipboard">📋</button>
+              </div>
+              <pre class="code-pre"><code>{{ item.example }}</code></pre>
+            </div>
+            <div v-if="item.explanation" class="mb-4 rounded bg-white p-3 dark:bg-gray-800">
+              <h4 class="mb-2 mt-0 text-sm text-gray-800 dark:text-white">Explanation:</h4>
+              <p class="m-0 text-sm leading-6 text-gray-600 dark:text-gray-300">{{ item.explanation }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card view mode -->
+      <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-for="(item, index) in filteredGlossaryItems"
+          :key="index"
+          class="flex h-full flex-col overflow-hidden rounded-lg border border-gray-300 bg-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
+        >
+          <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
+            <h3 class="m-0 text-lg text-gray-800 dark:text-white">{{ item.term }}</h3>
             <span
               :class="[
-                'whitespace-nowrap rounded px-1.5 py-0.5 text-xs',
+                'rounded px-1.5 py-0.5 text-xs',
                 item.category === 'Basics'
                   ? 'bg-emerald-500 text-white'
                   : item.category === 'Data Structures'
@@ -104,83 +158,45 @@
               ]"
               >{{ item.category === "Data Structures" ? "Data Structs" : item.category }}</span
             >
-            <button @click="toggleExample(index)" class="toggle-btn" :class="{ active: item.isExampleVisible }">
-              <span class="toggle-arrow">{{ item.isExampleVisible ? "▲" : "▼" }}</span>
-            </button>
           </div>
-        </div>
-        <div v-if="item.isExampleVisible" class="border-t border-slate-700 bg-slate-700 p-4">
-          <div class="mb-4 overflow-hidden rounded bg-slate-900 text-slate-200">
-            <div class="flex items-center justify-between border-b border-slate-700 bg-slate-800 px-3 py-2">
-              <span>Example</span>
-              <button @click="copyToClipboard(item.example)" class="copy-btn" title="Copy to clipboard">📋</button>
+          <div class="flex flex-grow flex-col p-4">
+            <p class="mb-4 mt-0 flex-grow text-gray-600 dark:text-gray-300">{{ item.definition }}</p>
+            <div class="mb-4 flex items-center">
+              <button @click="toggleExample(index)" class="toggle-btn" :class="{ active: item.isExampleVisible }">
+                {{ item.isExampleVisible ? "Hide" : "Show" }}
+              </button>
             </div>
-            <pre><code>{{ item.example }}</code></pre>
-          </div>
-          <div v-if="item.explanation" class="mb-4 rounded bg-slate-800 p-3">
-            <h4 class="mb-2 mt-0 text-sm text-slate-50">Explanation:</h4>
-            <p class="m-0 text-sm leading-6 text-slate-300">{{ item.explanation }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card view mode -->
-    <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <div
-        v-for="(item, index) in filteredGlossaryItems"
-        :key="index"
-        class="flex h-full flex-col overflow-hidden rounded-lg border border-slate-700 bg-slate-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-      >
-        <div class="flex items-center justify-between border-b border-slate-700 p-4">
-          <h3 class="m-0 text-lg text-slate-50">{{ item.term }}</h3>
-          <span
-            :class="[
-              'rounded px-1.5 py-0.5 text-xs',
-              item.category === 'Basics'
-                ? 'bg-emerald-500 text-white'
-                : item.category === 'Data Structures'
-                  ? 'bg-blue-700 text-white'
-                  : 'bg-red-700 text-white'
-            ]"
-            >{{ item.category === "Data Structures" ? "Data Structs" : item.category }}</span
-          >
-        </div>
-        <div class="flex flex-grow flex-col p-4">
-          <p class="mb-4 mt-0 flex-grow text-slate-300">{{ item.definition }}</p>
-          <div class="mb-4 flex items-center">
-            <button @click="toggleExample(index)" class="toggle-btn" :class="{ active: item.isExampleVisible }">
-              {{ item.isExampleVisible ? "Hide" : "Show" }}
-            </button>
-          </div>
-          <div v-if="item.isExampleVisible" class="mt-4 border-t border-slate-600 pt-4">
-            <div class="mb-4 overflow-hidden rounded bg-slate-900 text-slate-200">
-              <div class="flex items-center justify-between border-b border-slate-700 bg-slate-800 px-3 py-2">
-                <span>Example</span>
-                <button @click="copyToClipboard(item.example)" class="copy-btn" title="Copy to clipboard">📋</button>
+            <div v-if="item.isExampleVisible" class="mt-4 border-t border-gray-300 pt-4 dark:border-gray-600">
+              <div class="mb-4 overflow-hidden rounded bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+                <div
+                  class="flex items-center justify-between border-b border-gray-300 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <span>Example</span>
+                  <button @click="copyToClipboard(item.example)" class="copy-btn" title="Copy to clipboard">📋</button>
+                </div>
+                <pre class="code-pre"><code>{{ item.example }}</code></pre>
               </div>
-              <pre><code>{{ item.example }}</code></pre>
-            </div>
-            <div v-if="item.explanation" class="mb-4 rounded bg-slate-800 p-3">
-              <h4 class="mb-2 mt-0 text-sm text-slate-50">Explanation:</h4>
-              <p class="m-0 text-sm leading-6 text-slate-300">{{ item.explanation }}</p>
+              <div v-if="item.explanation" class="mb-4 rounded bg-white p-3 dark:bg-gray-800">
+                <h4 class="mb-2 mt-0 text-sm text-gray-800 dark:text-white">Explanation:</h4>
+                <p class="m-0 text-sm leading-6 text-gray-600 dark:text-gray-300">{{ item.explanation }}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Empty state when no results -->
-    <div v-if="filteredGlossaryItems.length === 0" class="py-10 text-center text-slate-400">
-      <p>No matching terms found. Try adjusting your search.</p>
-    </div>
+      <!-- Empty state when no results -->
+      <div v-if="filteredGlossaryItems.length === 0" class="py-10 text-center text-gray-500 dark:text-gray-400">
+        <p>No matching terms found. Try adjusting your search.</p>
+      </div>
 
-    <!-- Resullt stats -->
-    <div class="mt-6 text-center text-sm text-slate-500">
-      <p>Showing {{ filteredGlossaryItems.length }} of {{ glossaryItems.length }} terms</p>
-    </div>
+      <!-- Result stats -->
+      <div class="mt-6 text-center text-sm text-gray-500 dark:text-gray-500">
+        <p>Showing {{ filteredGlossaryItems.length }} of {{ glossaryItems.length }} terms</p>
+      </div>
 
-    <div v-if="showCopyNotification" class="copy-notification">Copied to clipboard!</div>
+      <div v-if="showCopyNotification" class="copy-notification">Copied to clipboard!</div>
+    </div>
   </div>
 </template>
 
@@ -214,7 +230,7 @@ const glossaryItems = ref([
     term: "Function",
     definition:
       "A reusable block of code that performs a specific task when called and can accept inputs and return outputs.",
-    example: "function add(a, b) { return a + b; }",
+    example: "function add(a, b) {\n  return a + b;\n}",
     explanation: 'This function named "add" takes two parameters (a and b) and returns their sum.',
     category: "Basics",
     isExampleVisible: false
@@ -230,7 +246,7 @@ const glossaryItems = ref([
   {
     term: "Object",
     definition: "A collection of key-value pairs that represent properties and their values.",
-    example: 'person = { name: "John", age: 30 }',
+    example: 'person = {\n  name: "John",\n  age: 30\n}',
     explanation: 'This object has two properties: "name" with value "John" and "age" with value 30.',
     category: "Data Structures",
     isExampleVisible: false
@@ -305,13 +321,19 @@ watch([searchTerm, activeCategory], () => {
 }
 
 .view-btn {
-  background-color: #1e293b;
-  border: 1px solid #334155;
-  color: #94a3b8;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
   padding: 8px 12px;
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.2s;
+}
+
+.dark .view-btn {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #94a3b8;
 }
 
 .view-btn:first-child {
@@ -323,6 +345,10 @@ watch([searchTerm, activeCategory], () => {
 }
 
 .view-btn:hover {
+  background-color: #f8fafc;
+}
+
+.dark .view-btn:hover {
   background-color: #273549;
 }
 
@@ -343,11 +369,20 @@ watch([searchTerm, activeCategory], () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: #64748b;
   min-width: 32px;
 }
 
+.dark .toggle-btn {
+  color: #94a3b8;
+}
+
 .toggle-btn:hover {
+  color: #0f172a;
+  background-color: #f1f5f9;
+}
+
+.dark .toggle-btn:hover {
   color: #f8fafc;
   background-color: #334155;
 }
@@ -363,22 +398,33 @@ watch([searchTerm, activeCategory], () => {
 .copy-btn {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: #64748b;
   cursor: pointer;
   padding: 2px 4px;
   font-size: 0.875rem;
   transition: color 0.2s;
 }
 
+.dark .copy-btn {
+  color: #94a3b8;
+}
+
 .copy-btn:hover {
+  color: #0f172a;
+}
+
+.dark .copy-btn:hover {
   color: #f8fafc;
 }
 
-pre {
+pre.code-pre {
   margin: 0;
   padding: 12px;
   font-family: "Courier New", Courier, monospace;
   overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 .copy-notification {
