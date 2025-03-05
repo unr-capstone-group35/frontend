@@ -60,7 +60,7 @@ onMounted(fetchCourses)
             </p>
             <ul class="list-inside list-disc text-gray-600 dark:text-gray-300">
               <li>Master basic programming concepts</li>
-              <li>Write your first programs</li>
+              <li>Practice through interactive exercises</li>
               <li>Learn problem-solving techniques</li>
             </ul>
           </div>
