@@ -1,5 +1,4 @@
 <script setup>
-// Script section remains exactly the same
 import { ref, watch, onMounted } from "vue"
 import draggable from "vuedraggable/src/vuedraggable"
 
@@ -129,13 +128,19 @@ function getItemClasses(item, index) {
     >
       <template #item="{ element }">
         <div class="flex select-none items-center gap-4">
-          <!-- Drag Handle -->
+          <!-- Drag icon -->
           <div
-            class="handle cursor-grab p-2 text-gray-500 transition-colors hover:text-gray-700 active:cursor-grabbing dark:text-gray-400 dark:hover:text-gray-300"
+            class="handle cursor-grab p-2 text-gray-600 transition-colors hover:text-gray-950 active:cursor-grabbing dark:text-gray-300 dark:hover:text-gray-50"
             :class="{ 'cursor-not-allowed opacity-50': showFeedback }"
           >
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9h8M8 15h8" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                xx
+                d="M12 5v.01M12 12v.01M12 19v.01M19 5v.01M19 12v.01M19 19v.01M5 5v.01M5 12v.01M5 19v.01"
+              />
             </svg>
           </div>
 
