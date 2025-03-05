@@ -600,14 +600,19 @@ const glossaryItems = ref([
 
 // Filtered glossary items based on search and category
 const filteredGlossaryItems = computed(() => {
-  return glossaryItems.value.filter(item => {
-    const matchesSearch =
-      searchTerm.value === "" ||
-      item.term.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      item.definition.toLowerCase().includes(searchTerm.value.toLowerCase())
-    const matchesCategory = activeCategory.value === "All" || item.category === activeCategory.value
-    return matchesSearch && matchesCategory
-  })
+  return (
+    glossaryItems.value
+      .filter(item => {
+        const matchesSearch =
+          searchTerm.value === "" ||
+          item.term.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+          item.definition.toLowerCase().includes(searchTerm.value.toLowerCase())
+        const matchesCategory = activeCategory.value === "All" || item.category === activeCategory.value
+        return matchesSearch && matchesCategory
+      })
+      // filters alphabetically
+      .sort((a, b) => a.term.localeCompare(b.term))
+  )
 })
 
 // Toggle example visibility
