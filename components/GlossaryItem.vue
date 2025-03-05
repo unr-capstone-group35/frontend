@@ -259,6 +259,97 @@ const glossaryItems = ref([
       "This recursive function calculates the factorial of a number by calling itself with a smaller input until it reaches the base case.",
     category: "Algorithms",
     isExampleVisible: false
+  },
+  {
+    term: "Program",
+    definition: "A set of instructions written in a programming language that tells a computer what tasks to perform.",
+    example: "console.log('Hello, World!');",
+    explanation: "This simple program outputs the text 'Hello, World!' to the console.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "Bug",
+    definition:
+      "An error or flaw in a program that causes it to produce incorrect results or behave in unintended ways.",
+    example: "let total = 5;\ntotal = total + '5'; // Becomes '55' instead of 10",
+    explanation: "This bug occurs because the '+' operator with a string performs concatenation instead of addition.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "Debug",
+    definition: "The process of finding and resolving bugs or errors in a program.",
+    example: "console.log('Value:', myVariable); // Check current value",
+    explanation: "Using console.log to inspect variables is a common debugging technique.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "Code",
+    definition: "Text written in a programming language that specifies what actions a computer should perform.",
+    example: "let message = 'Hello';\nconsole.log(message);",
+    explanation: "This code creates a variable and then displays its value in the console.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "Integer",
+    definition: "A data type that represents whole numbers without any decimal or fractional parts.",
+    example: "let age = 25;",
+    explanation: "The variable 'age' is assigned an integer value of 25.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "String",
+    definition: "A data type that represents a sequence of characters, typically enclosed in quotes.",
+    example: 'let greeting = "Hello, world!";',
+    explanation: "The variable 'greeting' contains a string of 13 characters.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "Boolean",
+    definition: "A data type with only two possible values: true or false.",
+    example: "let isActive = true;\nlet isComplete = false;",
+    explanation: "The variables store boolean values that can be used in conditional statements.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "Conditional Statement",
+    definition:
+      "A programming structure that performs different actions based on whether a condition evaluates to true or false.",
+    example: "if (age >= 18) {\n  console.log('Adult');\n} else {\n  console.log('Minor');\n}",
+    explanation: "This code checks if the age is at least 18 and outputs either 'Adult' or 'Minor' accordingly.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "Loop",
+    definition: "A programming structure that repeats a sequence of instructions until a specific condition is met.",
+    example: "for (let i = 0; i < 3; i++) {\n  console.log(i);\n}",
+    explanation: "This for loop outputs the numbers 0, 1, and 2 by repeating the code block three times.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "For Loop",
+    definition:
+      "A control flow statement that iterates a specific number of times, based on a counter and a condition.",
+    example: "for (let i = 1; i <= 5; i++) {\n  console.log(i);\n}",
+    explanation: "This loop counts from 1 to 5, printing each number to the console.",
+    category: "Basics",
+    isExampleVisible: false
+  },
+  {
+    term: "While Loop",
+    definition: "A control flow statement that executes a block of code as long as a specified condition is true.",
+    example: "let i = 0;\nwhile (i < 3) {\n  console.log(i);\n  i++;\n}",
+    explanation: "This while loop outputs 0, 1, and 2, continuing until i is no longer less than 3.",
+    category: "Basics",
+    isExampleVisible: false
   }
 ])
 
