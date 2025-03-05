@@ -145,8 +145,7 @@ function tryMatch() {
           :key="`term-${term.originalIndex}`"
           class="rounded-lg border p-4 transition-all duration-200"
           :class="{
-            'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800':
-              !selectedTerm || selectedTerm !== term.originalIndex,
+            'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800': selectedTerm !== term.originalIndex,
             'border-blue-500 bg-blue-100 dark:border-blue-400 dark:bg-blue-800': selectedTerm === term.originalIndex,
             'opacity-50': isMatched(term.originalIndex, 'term'),
             'cursor-pointer': !isMatched(term.originalIndex, 'term')
@@ -170,8 +169,7 @@ function tryMatch() {
           :key="`def-${def.originalIndex}`"
           class="rounded-lg border p-4 transition-all duration-200"
           :class="{
-            'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800':
-              !selectedDefinition || selectedDefinition !== def.originalIndex,
+            'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800': selectedDefinition !== def.originalIndex,
             'border-blue-500 bg-blue-100 dark:border-blue-400 dark:bg-blue-800':
               selectedDefinition === def.originalIndex,
             'opacity-50': isMatched(def.originalIndex, 'definition'),
