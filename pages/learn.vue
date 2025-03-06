@@ -8,7 +8,11 @@ const router = useRouter()
 const {
   sidebarOpen,
   currentExercise,
+  currentLesson,
+  
   courseStore,
+  exerciseStore,
+  
   getSidebarContainerClasses,
   getSidebarContentClasses,
   toggleSidebar,
@@ -22,7 +26,14 @@ const {
 onMounted(initialize)
 
 // Watch for route changes
-watch(() => route.query, updateCurrentExercise, { immediate: true })
+watch(() => route.query, () => {
+  const courseId = route.query.course as string
+  const lessonId = route.query.lesson as string
+  
+  if (courseId && lessonId) {
+    updateCurrentExercise()
+  }
+}, { immediate: true })
 
 // Navigate to glossary
 const navigateToGlossary = () => {
@@ -58,7 +69,7 @@ const navigateToGlossary = () => {
             <CourseList
               :loading="courseStore.loading"
               :error="courseStore.error"
-              :courses="Object.values(courseStore.courses)"
+              :courses="courseStore.availableCourses"
             />
           </div>
         </aside>
@@ -87,7 +98,6 @@ const navigateToGlossary = () => {
       >
         <!-- Glossary Button -->
         <div class="absolute right-12 top-12">
-          <!-- Updated button -->
           <button
             @click="navigateToGlossary"
             class="flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-2 text-white transition-colors hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
@@ -105,17 +115,17 @@ const navigateToGlossary = () => {
           <span class="text-gray-500">Loading content...</span>
         </div>
 
-        <div v-else-if="courseStore.error != ''" class="text-center">
+        <div v-else-if="courseStore.error" class="text-center">
           <span class="text-red-500">{{ courseStore.error }}</span>
         </div>
 
-        <div v-else-if="courseStore.currentLesson" class="rounded-lg bg-white p-10 dark:bg-gray-800">
+        <div v-else-if="currentLesson" class="rounded-lg bg-white p-10 dark:bg-gray-800">
           <div class="mb-8">
             <h2 class="mb-4 text-3xl font-semibold text-gray-800 dark:text-white">
-              {{ courseStore.currentLesson.title }}
+              {{ currentLesson.title }}
             </h2>
             <p class="text-gray-600 dark:text-gray-300">
-              {{ courseStore.currentLesson.description }}
+              {{ currentLesson.description }}
             </p>
           </div>
 

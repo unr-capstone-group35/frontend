@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useCourseStore } from '~/stores/courseStore'
+import { useProgressStore } from '~/stores/progressStore'
+import type { Course } from '~/stores/courseStore'
+
 const props = withDefaults(
   defineProps<{
     loading: boolean
@@ -13,7 +17,8 @@ const props = withDefaults(
 
 const route = useRoute()
 const courseStore = useCourseStore()
-const { currentCourse, courseProgress } = storeToRefs(courseStore)
+const progressStore = useProgressStore()
+const { currentCourse } = storeToRefs(courseStore)
 
 const { expandedCourseId, toggleCourse, getLessonsForCourse, getCourseClasses } = useLearn()
 
@@ -34,14 +39,18 @@ const completedLessons = computed(() => {
     return 0
   }
 
-  return currentCourse.value.lessons.filter(lesson => courseStore.isLessonCompleted(activeCourse.value!.id, lesson.id))
-    .length
+  // Use the progress store to check if lessons are completed
+  return currentCourse.value.lessons.filter(lesson => 
+    progressStore.isLessonCompleted(activeCourse.value!.id, lesson.id)
+  ).length
 })
 
 // Calculate progress percentage
 const progressPercentage = computed(() => {
-  if (!totalLessons.value) return 0
-  return Math.round((completedLessons.value / totalLessons.value) * 100)
+  if (!activeCourse.value) return 0
+  
+  // Use the course store's calculation method
+  return courseStore.calculateCourseProgress(activeCourse.value.id)
 })
 
 // Progress bar color based on completion
@@ -118,6 +127,27 @@ const progressBarColor = computed(() => {
             v-if="expandedCourseId === activeCourse.id"
             :courseId="activeCourse.id"
             :lessons="getLessonsForCourse(activeCourse.id)"
+          />
+        </div>
+        
+        <!-- Other courses section -->
+        <div v-for="course in props.courses.filter(c => c.id !== activeCourse?.id)" :key="course.id">
+          <button @click="toggleCourse(course.id)" :class="getCourseClasses(course.id)">
+            <span class="font-medium text-gray-900 dark:text-white">{{ course.name }}</span>
+            <svg
+              :class="['h-5 w-5 transition-transform', expandedCourseId === course.id ? 'rotate-180' : '']"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <LessonList
+            v-if="expandedCourseId === course.id"
+            :courseId="course.id"
+            :lessons="getLessonsForCourse(course.id)"
           />
         </div>
       </div>

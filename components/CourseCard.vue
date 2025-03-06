@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useCourseStore } from '~/stores/courseStore'
+import { useProgressStore } from '~/stores/progressStore'
+import type { Status } from '~/stores/progressStore'
+
 const props = defineProps<{
   courseId: string
   imagePath: string
@@ -6,13 +10,15 @@ const props = defineProps<{
 
 const router = useRouter()
 const courseStore = useCourseStore()
+const progressStore = useProgressStore()
 
 const loading = ref(false)
 const error = ref("")
 
 // Computed properties
+const course = computed(() => courseStore.courses[props.courseId])
 
-const courseInitial = computed(() => courseStore.courses[props.courseId].name.charAt(0))
+const courseInitial = computed(() => course.value?.name.charAt(0) || '')
 
 const courseDifficulty = computed((): { text: string; bgClass: string } => {
   const difficulties: { [key: string]: { text: string; bgClass: string } } = {
@@ -46,23 +52,17 @@ const buttonBgColor = computed((): string => {
 })
 
 const progress = computed(() => {
-  return courseStore.courseProgress[props.courseId]
+  return progressStore.getCourseProgress(props.courseId)
 })
 
 const progressPercentage = computed(() => {
-  if (!progress.value) return 0
-  const completed =
-    courseStore.courses[props.courseId].lessons?.filter(lesson =>
-      courseStore.isLessonCompleted(props.courseId, lesson.id)
-    ).length || 0
-  return Math.round((completed / courseStore.courses[props.courseId].lessonAmount) * 100) || 0
+  // Use the course store's calculation method
+  return courseStore.calculateCourseProgress(props.courseId)
 })
 
-const courseStatus = computed(() => {
+const courseStatus = computed((): Status => {
   if (!progress.value) return "not_started"
-  if (progress.value.completedAt) return "completed"
-  if (progress.value.startedAt) return "in_progress"
-  return "not_started"
+  return progress.value.status || "not_started"
 })
 
 // Utility functions
@@ -84,16 +84,13 @@ const handleCourseSelect = async () => {
     // Fetch course data
     await courseStore.fetchCourse(props.courseId)
 
-    if (!courseStore.courses[props.courseId].lessons) {
+    const currentCourse = courseStore.courses[props.courseId]
+    if (!currentCourse?.lessons || currentCourse.lessons.length === 0) {
       throw new Error("No lessons available in this course")
     }
 
-    if (!courseStore.courses[props.courseId].lessons![0]) {
-      throw new Error("First lesson not available in this course")
-    }
-
     // Get first lesson
-    const firstLesson = courseStore.courses[props.courseId].lessons![0]
+    const firstLesson = currentCourse.lessons[0]
 
     // Navigate to learn page
     await router.push({
@@ -119,7 +116,7 @@ const handleCourseSelect = async () => {
   >
     <!-- Course Image -->
     <div class="relative h-40 w-full bg-gray-100 dark:bg-gray-700">
-      <img :src="imagePath" :alt="courseStore.courses[courseId].name" class="h-40 w-full object-cover" />
+      <img :src="imagePath" :alt="course?.name" class="h-40 w-full object-cover" />
       <!-- Loading overlay -->
       <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-gray-900/20 dark:bg-gray-900/40">
         <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-emerald-500"></div>
@@ -132,10 +129,10 @@ const handleCourseSelect = async () => {
     >
       <!-- Course title and description -->
       <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-        {{ courseStore.courses[courseId].name }}
+        {{ course?.name }}
       </h3>
       <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
-        {{ courseStore.courses[courseId].description }}
+        {{ course?.description }}
       </p>
 
       <!-- Course metadata -->
@@ -143,7 +140,7 @@ const handleCourseSelect = async () => {
         <!-- Lesson count and difficulty label -->
         <div class="flex items-center space-x-3">
           <span class="text-sm text-gray-500 dark:text-gray-400">
-            {{ courseStore.courses[courseId].lessonAmount }} lessons
+            {{ course?.lessonAmount }} lessons
           </span>
           <span class="rounded-full px-3 py-1 text-sm font-medium text-white" :class="courseDifficulty.bgClass">
             {{ courseDifficulty.text }}
