@@ -10,11 +10,11 @@ const progressStore = useProgressStore()
 
 const loading = ref(false)
 const error = ref("")
-const localProgress = ref<CourseProgress | null>(null)
-const courseLoaded = ref(false)
+const dataLoaded = ref(false)
 
 // Computed properties
 const course = computed(() => courseStore.courses[props.courseId])
+const progress = computed(() => progressStore.getCourseProgress(props.courseId))
 
 const courseDifficulty = computed((): { text: string; bgClass: string } => {
   const difficulties: { [key: string]: { text: string; bgClass: string } } = {
@@ -29,30 +29,37 @@ const buttonBgColor = computed((): string => {
   return "bg-blue-600 hover:bg-blue-700"
 })
 
-// Fetch both course and progress data
-const fetchCourseData = async () => {
+// Load all required data
+const loadCourseData = async () => {
   try {
-    await courseStore.fetchCourse(props.courseId)
-    courseLoaded.value = true
+    loading.value = true
+    error.value = ""
     
-    localProgress.value = await progressStore.fetchCourseProgress(props.courseId)
+    await courseStore.fetchCourse(props.courseId)
+    
+    await progressStore.fetchCourseProgress(props.courseId)
+    
+    if (course.value?.lessons) {
+      for (const lesson of course.value.lessons) {
+        await progressStore.fetchLessonProgress(props.courseId, lesson.id)
+      }
+    }
+    
+    dataLoaded.value = true
   } catch (err) {
-    console.error(`Error fetching data for ${props.courseId}:`, err)
+    console.error(`Error loading course data for ${props.courseId}:`, err)
     error.value = "Failed to load course data"
+  } finally {
+    loading.value = false
   }
 }
 
-// Access progress data with fallback to store value
-const progress = computed(() => {
-  return localProgress.value || progressStore.getCourseProgress(props.courseId)
-})
-
-// Calculate progress percentage - using course store's method
+// Use the course store method to calculate progress
 const progressPercentage = computed(() => {
-  if (!courseLoaded.value || !course.value?.lessons) {
-    return progress.value?.progressPercentage || 0
+  if (dataLoaded.value && course.value?.lessons) {
+    return courseStore.calculateCourseProgress(props.courseId)
   }
-  return courseStore.calculateCourseProgress(props.courseId)
+  return progress.value?.progressPercentage || 0
 })
 
 const courseStatus = computed((): Status => {
@@ -75,11 +82,9 @@ const handleCourseSelect = async () => {
   try {
     loading.value = true
     error.value = ""
-
-    if (!courseLoaded.value) {
-      await courseStore.fetchCourse(props.courseId)
-    }
-
+    
+    await courseStore.fetchCourse(props.courseId)
+    
     const currentCourse = courseStore.courses[props.courseId]
     if (!currentCourse?.lessons || currentCourse.lessons.length === 0) {
       throw new Error("No lessons available in this course")
@@ -104,7 +109,8 @@ const handleCourseSelect = async () => {
   }
 }
 
-onMounted(fetchCourseData)
+// Load data on component mount
+onMounted(loadCourseData)
 </script>
 
 <template>
