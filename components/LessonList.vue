@@ -4,7 +4,7 @@ const props = defineProps<{
   lessons: Lesson[]
 }>()
 
-const { courseStore, selectLesson, canAccessLesson, getLessonClasses } = useLearn()
+const { progressStore, selectLesson, canAccessLesson, getLessonClasses } = useLearn()
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const { courseStore, selectLesson, canAccessLesson, getLessonClasses } = useLear
       :class="getLessonClasses(lesson.id)"
     >
       <span>{{ lesson.title }}</span>
-      <span v-if="courseStore.isLessonCompleted(courseId, lesson.id)" class="ml-2 text-emerald-500"> ✓ </span>
+      <span v-if="progressStore.isLessonCompleted(courseId, lesson.id)" class="ml-2 text-emerald-500"> ✓ </span>
     </button>
   </div>
 </template>
