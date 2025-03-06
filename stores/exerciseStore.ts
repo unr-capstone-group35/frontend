@@ -1,8 +1,4 @@
 // stores/exercise.ts
-import { defineStore } from 'pinia'
-import { useProgressStore } from './progressStore'
-import { useLessonStore } from './lessonStore'
-import type { Exercise } from './courseStore'
 
 type ExerciseState = {
   currentExerciseId: string | null

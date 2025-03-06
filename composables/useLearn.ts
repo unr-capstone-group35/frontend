@@ -1,9 +1,4 @@
 // composables/useLearn.ts
-import { useCourseStore } from '~/stores/courseStore'
-import { useLessonStore } from '~/stores/lessonStore'
-import { useExerciseStore } from '~/stores/exerciseStore'
-import { useProgressStore } from '~/stores/progressStore'
-import type { Status } from '~/stores/progressStore'
 
 export function useLearn() {
   const router = useRouter()

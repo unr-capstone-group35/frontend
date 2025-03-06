@@ -1,8 +1,4 @@
 // stores/course.ts
-import { defineStore } from 'pinia'
-import { useProgressStore } from './progressStore'
-import type { Status } from './progressStore'
-import { useLessonStore } from './lessonStore'
 
 export type Course = {
   id: string

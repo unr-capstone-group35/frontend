@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useCourseStore } from '~/stores/courseStore'
-import { useProgressStore } from '~/stores/progressStore'
-import type { Course } from '~/stores/courseStore'
 
 const props = withDefaults(
   defineProps<{
