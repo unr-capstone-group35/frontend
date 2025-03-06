@@ -267,6 +267,7 @@ export function useLearn() {
     getLessonStatus: lessonStore.getLessonStatus,
     calculateCourseProgress: courseStore.calculateCourseProgress,
     canAccessLesson: courseStore.canAccessLesson,
+    isLessonCompleted: progressStore.isLessonCompleted,
     getLessonsForCourse: (courseId: string) => {
       return courseStore.courses[courseId]?.lessons || []
     },

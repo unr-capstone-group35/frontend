@@ -56,7 +56,6 @@ const progress = computed(() => {
 })
 
 const progressPercentage = computed(() => {
-  // Use the course store's calculation method
   return courseStore.calculateCourseProgress(props.courseId)
 })
 

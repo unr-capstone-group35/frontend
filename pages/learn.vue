@@ -9,8 +9,10 @@ const {
   sidebarOpen,
   currentExercise,
   currentLesson,
+  currentCourse,
   
   courseStore,
+  progressStore,
   exerciseStore,
   
   getSidebarContainerClasses,
@@ -19,7 +21,13 @@ const {
   handleAnswerSubmit,
   handleNextExercise,
   updateCurrentExercise,
-  initialize
+  calculateCourseProgress,
+  getLessonsForCourse,
+  isLessonCompleted,
+  canAccessLesson,
+  getLessonClasses,
+  initialize,
+  selectLesson
 } = useLearn()
 
 // Initialize
@@ -39,6 +47,33 @@ watch(() => route.query, () => {
 const navigateToGlossary = () => {
   router.push("/glossary")
 }
+
+// Compute total and completed lessons
+const totalLessons = computed(() => {
+  return currentCourse.value?.lessons?.length || 0
+})
+
+const completedLessons = computed(() => {
+  if (!currentCourse.value?.id || !currentCourse.value?.lessons) return 0
+  
+  const courseId = currentCourse.value.id
+  return currentCourse.value.lessons.filter(lesson => 
+    isLessonCompleted(courseId, lesson.id)
+  ).length
+})
+
+// Calculate progress percentage
+const progressPercentage = computed(() => {
+  if (!currentCourse.value?.id) return 0
+  return calculateCourseProgress(currentCourse.value.id)
+})
+
+// Progress bar color based on completion
+const progressBarColor = computed(() => {
+  if (progressPercentage.value === 100) return "bg-green-500"
+  if (progressPercentage.value > 0) return "bg-blue-500"
+  return "bg-gray-300"
+})
 </script>
 
 <template>
@@ -65,12 +100,58 @@ const navigateToGlossary = () => {
                 </button>
               </div>
             </div>
+            
+            <!-- Course Progress Section -->
+            <div v-if="currentCourse" class="border-b px-6 py-4 dark:border-gray-700">
+              <div class="space-y-4">
+                <h3 class="font-medium text-gray-900 dark:text-white">{{ currentCourse.name }}</h3>
+                <div class="mb-2 flex items-center justify-between">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Course Progress</span>
+                  <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {{ completedLessons }} of {{ totalLessons }} lessons
+                  </span>
+                </div>
 
-            <CourseList
-              :loading="courseStore.loading"
-              :error="courseStore.error"
-              :courses="courseStore.availableCourses"
-            />
+                <!-- Overall Progress Bar -->
+                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    class="h-full transition-all duration-300 ease-in-out"
+                    :class="progressBarColor"
+                    :style="{ width: `${progressPercentage}%` }"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lesson List (Always Expanded) -->
+            <div v-if="currentCourse?.id" class="flex-1 overflow-y-auto">
+              <div class="space-y-2 bg-gray-50 p-4 dark:bg-gray-800/50">
+                <template v-if="currentCourse">
+                  <button
+                    v-for="lesson in getLessonsForCourse(currentCourse.id)"
+                    :key="lesson.id"
+                    @click="selectLesson(currentCourse.id, lesson.id)"
+                    :disabled="!canAccessLesson(currentCourse.id, lesson.id)"
+                    :class="getLessonClasses(lesson.id)"
+                  >
+                    <span>{{ lesson.title }}</span>
+                    <span v-if="isLessonCompleted(currentCourse.id, lesson.id)" class="ml-2 text-emerald-500"> ✓ </span>
+                  </button>
+                </template>
+              </div>
+            </div>
+            
+            <div v-else-if="courseStore.loading" class="p-6 text-center">
+              <span class="text-gray-500">Loading course...</span>
+            </div>
+            
+            <div v-else-if="courseStore.error" class="p-6 text-center">
+              <span class="text-red-500">{{ courseStore.error }}</span>
+            </div>
+            
+            <div v-else class="p-6 text-center text-gray-500">
+              Select a course to begin
+            </div>
           </div>
         </aside>
 
