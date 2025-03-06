@@ -101,7 +101,7 @@ export const useCourseStore = defineStore('course', {
             name: courseInfo.name,
             description: courseInfo.description,
             lessonAmount: courseInfo.lessonAmount,
-            lessons: undefined // Lessons will be loaded on demand
+            lessons: undefined
           }
         }
         

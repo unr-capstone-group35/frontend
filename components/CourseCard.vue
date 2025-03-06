@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const props = defineProps<{
   courseId: string
   imagePath: string
@@ -11,11 +10,11 @@ const progressStore = useProgressStore()
 
 const loading = ref(false)
 const error = ref("")
+const localProgress = ref<CourseProgress | null>(null)
+const courseLoaded = ref(false)
 
 // Computed properties
 const course = computed(() => courseStore.courses[props.courseId])
-
-const courseInitial = computed(() => course.value?.name.charAt(0) || '')
 
 const courseDifficulty = computed((): { text: string; bgClass: string } => {
   const difficulties: { [key: string]: { text: string; bgClass: string } } = {
@@ -26,33 +25,33 @@ const courseDifficulty = computed((): { text: string; bgClass: string } => {
   return difficulties[props.courseId] || { text: "Medium", bgClass: "bg-yellow-400" }
 })
 
-const courseBgColor = computed((): string => {
-  const colors: { [key: string]: string } = {
-    algorithms: "#EF4444",
-    data_structures: "#3B82F6",
-    programming_basics: "#10B981"
-  }
-  return colors[props.courseId] || "#6366F1"
-})
-
-const courseIconColor = computed((): string => {
-  const colors: { [key: string]: string } = {
-    algorithms: "#F87171",
-    data_structures: "#60A5FA",
-    programming_basics: "#34D399"
-  }
-  return colors[props.courseId] || "#818CF8"
-})
-
 const buttonBgColor = computed((): string => {
   return "bg-blue-600 hover:bg-blue-700"
 })
 
+// Fetch both course and progress data
+const fetchCourseData = async () => {
+  try {
+    await courseStore.fetchCourse(props.courseId)
+    courseLoaded.value = true
+    
+    localProgress.value = await progressStore.fetchCourseProgress(props.courseId)
+  } catch (err) {
+    console.error(`Error fetching data for ${props.courseId}:`, err)
+    error.value = "Failed to load course data"
+  }
+}
+
+// Access progress data with fallback to store value
 const progress = computed(() => {
-  return progressStore.getCourseProgress(props.courseId)
+  return localProgress.value || progressStore.getCourseProgress(props.courseId)
 })
 
+// Calculate progress percentage - using course store's method
 const progressPercentage = computed(() => {
+  if (!courseLoaded.value || !course.value?.lessons) {
+    return progress.value?.progressPercentage || 0
+  }
   return courseStore.calculateCourseProgress(props.courseId)
 })
 
@@ -77,8 +76,9 @@ const handleCourseSelect = async () => {
     loading.value = true
     error.value = ""
 
-    // Fetch course data
-    await courseStore.fetchCourse(props.courseId)
+    if (!courseLoaded.value) {
+      await courseStore.fetchCourse(props.courseId)
+    }
 
     const currentCourse = courseStore.courses[props.courseId]
     if (!currentCourse?.lessons || currentCourse.lessons.length === 0) {
@@ -103,6 +103,8 @@ const handleCourseSelect = async () => {
     loading.value = false
   }
 }
+
+onMounted(fetchCourseData)
 </script>
 
 <template>
@@ -157,13 +159,13 @@ const handleCourseSelect = async () => {
               :style="{ width: `${progressPercentage}%` }"
             ></div>
           </div>
-          <span class="text-sm text-gray-500 dark:text-gray-400"> {{ progressPercentage }}% </span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">{{ progressPercentage }}%</span>
         </div>
 
         <!-- Start Course Button -->
         <button
           v-if="courseStatus === 'not_started'"
-          @click="handleCourseSelect"
+          @click.stop="handleCourseSelect"
           class="rounded-full px-3 py-1 text-sm font-medium text-white transition-colors"
           :class="buttonBgColor"
         >
