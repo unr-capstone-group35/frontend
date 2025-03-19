@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useExerciseStore } from '~/stores/exerciseStore'
+
 const props = defineProps({
   exercise: {
     type: Object,
@@ -12,6 +14,7 @@ const props = defineProps({
 
 const emit = defineEmits(["next-exercise"])
 
+const exerciseStore = useExerciseStore()
 const isCorrect = ref(false)
 const showFeedback = ref(false)
 const selectedAnswer = ref(null)
@@ -97,6 +100,9 @@ function handleNextExercise() {
 function retryQuestion() {
   showFeedback.value = false
   selectedAnswer.value = null
+  
+  // Reset the current exercise state in the store
+  exerciseStore.resetCurrentExercise()
 }
 </script>
 

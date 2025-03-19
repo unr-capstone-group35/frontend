@@ -1,24 +1,23 @@
 <script setup lang="ts">
 const courseStore = useCourseStore()
-const { currentCourse, lessonProgress } = storeToRefs(courseStore)
+const progressStore = useProgressStore()
+const { currentCourse } = storeToRefs(courseStore)
 
 // Calculate total and completed lessons
 const totalLessons = computed(() => currentCourse.value?.lessons?.length || 0)
 
 const completedLessons = computed(() => {
-  if (!currentCourse.value) return 0
-
-  if (!currentCourse.value) return 0
-
+  if (!currentCourse.value || !currentCourse.value.lessons) return 0
+  
   return currentCourse.value.lessons.filter(
-    lesson => lessonProgress.value[`${currentCourse.value?.id}-${lesson.id}`]?.status === "completed"
+    lesson => currentCourse.value && progressStore.isLessonCompleted(currentCourse.value.id, lesson.id)
   ).length
 })
 
 // Calculate progress percentage
 const progressPercentage = computed(() => {
-  if (!totalLessons.value) return 0
-  return Math.round((completedLessons.value / totalLessons.value) * 100)
+  if (!totalLessons.value || !currentCourse.value) return 0
+  return courseStore.calculateCourseProgress(currentCourse.value.id)
 })
 
 // Progress bar color based on completion

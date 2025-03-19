@@ -4,29 +4,81 @@ definePageMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const {
   sidebarOpen,
   currentExercise,
+  currentLesson,
+  currentCourse,
+  
   courseStore,
+  progressStore,
+  exerciseStore,
+  
   getSidebarContainerClasses,
   getSidebarContentClasses,
   toggleSidebar,
   handleAnswerSubmit,
   handleNextExercise,
   updateCurrentExercise,
-  initialize
+  calculateCourseProgress,
+  getLessonsForCourse,
+  isLessonCompleted,
+  canAccessLesson,
+  getLessonClasses,
+  initialize,
+  selectLesson
 } = useLearn()
 
 // Initialize
 onMounted(initialize)
 
 // Watch for route changes
-watch(() => route.query, updateCurrentExercise, { immediate: true })
+watch(() => route.query, () => {
+  const courseId = route.query.course as string
+  const lessonId = route.query.lesson as string
+  
+  if (courseId && lessonId) {
+    updateCurrentExercise()
+  }
+}, { immediate: true })
+
+// Navigate to glossary
+const navigateToGlossary = () => {
+  router.push("/glossary")
+}
+
+// Compute total and completed lessons
+const totalLessons = computed(() => {
+  return currentCourse.value?.lessons?.length || 0
+})
+
+const completedLessons = computed(() => {
+  if (!currentCourse.value?.id || !currentCourse.value?.lessons) return 0
+  
+  const courseId = currentCourse.value.id
+  return currentCourse.value.lessons.filter(lesson => 
+    isLessonCompleted(courseId, lesson.id)
+  ).length
+})
+
+// Calculate progress percentage
+const progressPercentage = computed(() => {
+  if (!currentCourse.value?.id) return 0
+  return calculateCourseProgress(currentCourse.value.id)
+})
+
+// Progress bar color based on completion
+const progressBarColor = computed(() => {
+  if (progressPercentage.value === 100) return "bg-green-500"
+  if (progressPercentage.value > 0) return "bg-blue-500"
+  return "bg-gray-300"
+})
 </script>
 
 <template>
   <div class="min-h-page flex flex-col">
-    <div class="flex flex-1 bg-gray-100 dark:bg-gray-900">
+    <div class="flex flex-1">
       <!-- Left Sidebar Container -->
       <div class="h-page relative flex transition-all duration-300" :class="getSidebarContainerClasses()">
         <!-- Sidebar Content -->
@@ -48,12 +100,58 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
                 </button>
               </div>
             </div>
+            
+            <!-- Course Progress Section -->
+            <div v-if="currentCourse" class="border-b px-6 py-4 dark:border-gray-700">
+              <div class="space-y-4">
+                <h3 class="font-medium text-gray-900 dark:text-white">{{ currentCourse.name }}</h3>
+                <div class="mb-2 flex items-center justify-between">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Course Progress</span>
+                  <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {{ completedLessons }} of {{ totalLessons }} lessons
+                  </span>
+                </div>
 
-            <CourseList
-              :loading="courseStore.loading"
-              :error="courseStore.error"
-              :courses="Object.values(courseStore.courses)"
-            />
+                <!-- Overall Progress Bar -->
+                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    class="h-full transition-all duration-300 ease-in-out"
+                    :class="progressBarColor"
+                    :style="{ width: `${progressPercentage}%` }"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lesson List (Always Expanded) -->
+            <div v-if="currentCourse?.id" class="flex-1 overflow-y-auto">
+              <div class="space-y-2 bg-gray-50 p-4 dark:bg-gray-800/50">
+                <template v-if="currentCourse">
+                  <button
+                    v-for="lesson in getLessonsForCourse(currentCourse.id)"
+                    :key="lesson.id"
+                    @click="selectLesson(currentCourse.id, lesson.id)"
+                    :disabled="!canAccessLesson(currentCourse.id, lesson.id)"
+                    :class="getLessonClasses(lesson.id)"
+                  >
+                    <span>{{ lesson.title }}</span>
+                    <span v-if="isLessonCompleted(currentCourse.id, lesson.id)" class="ml-2 text-emerald-500"> ✓ </span>
+                  </button>
+                </template>
+              </div>
+            </div>
+            
+            <div v-else-if="courseStore.loading" class="p-6 text-center">
+              <span class="text-gray-500">Loading course...</span>
+            </div>
+            
+            <div v-else-if="courseStore.error" class="p-6 text-center">
+              <span class="text-red-500">{{ courseStore.error }}</span>
+            </div>
+            
+            <div v-else class="p-6 text-center text-gray-500">
+              Select a course to begin
+            </div>
           </div>
         </aside>
 
@@ -76,22 +174,39 @@ watch(() => route.query, updateCurrentExercise, { immediate: true })
       </div>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-y-auto p-8 transition-all duration-300">
+      <main
+        class="relative flex-1 overflow-y-auto bg-gradient-to-b from-slate-100 to-slate-200 p-8 transition-all duration-300 dark:from-gray-950 dark:to-gray-900"
+      >
+        <!-- Glossary Button -->
+        <div class="absolute right-12 top-12">
+          <button
+            @click="navigateToGlossary"
+            class="flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-2 text-white transition-colors hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
+              />
+            </svg>
+            Glossary
+          </button>
+        </div>
+
         <div v-if="courseStore.loading" class="text-center">
           <span class="text-gray-500">Loading content...</span>
         </div>
 
-        <div v-else-if="courseStore.error != ''" class="text-center">
+        <div v-else-if="courseStore.error" class="text-center">
           <span class="text-red-500">{{ courseStore.error }}</span>
         </div>
 
-        <div v-else-if="courseStore.currentLesson" class="card p-10">
+        <div v-else-if="currentLesson" class="rounded-lg bg-white p-10 dark:bg-gray-800">
           <div class="mb-8">
             <h2 class="mb-4 text-3xl font-semibold text-gray-800 dark:text-white">
-              {{ courseStore.currentLesson.title }}
+              {{ currentLesson.title }}
             </h2>
             <p class="text-gray-600 dark:text-gray-300">
-              {{ courseStore.currentLesson.description }}
+              {{ currentLesson.description }}
             </p>
           </div>
 

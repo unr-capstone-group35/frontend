@@ -9,12 +9,17 @@ const { courses } = storeToRefs(courseStore)
 const loading = ref(true)
 const error = ref("")
 
-// Fetch courses
+// Fetch courses - just the basic course info
 const fetchCourses = async () => {
   try {
     loading.value = true
     error.value = ""
+    
+    // Fetch basic course info - this is lightweight and doesn't include all lesson details
     await courseStore.fetchCourses()
+    
+    // Don't try to load all course details here - let the CourseCard components handle that
+    // This makes the dashboard load faster
   } catch (err: any) {
     console.error("Error fetching courses:", err)
     error.value = "Unable to load courses. Please try again later."
@@ -60,7 +65,7 @@ onMounted(fetchCourses)
             </p>
             <ul class="list-inside list-disc text-gray-600 dark:text-gray-300">
               <li>Master basic programming concepts</li>
-              <li>Write your first programs</li>
+              <li>Practice through interactive exercises</li>
               <li>Learn problem-solving techniques</li>
             </ul>
           </div>

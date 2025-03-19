@@ -1,14 +1,24 @@
+// composables/useLearn.ts
+
 export function useLearn() {
   const router = useRouter()
   const route = useRoute()
+  
+  // Stores
   const courseStore = useCourseStore()
-  const { currentCourse, currentLesson, courseProgress } = storeToRefs(courseStore)
+  const lessonStore = useLessonStore()
+  const exerciseStore = useExerciseStore()
+  const progressStore = useProgressStore()
+  
+  // Reactive references from stores
+  const { currentCourse } = storeToRefs(courseStore)
+  const { currentLesson } = storeToRefs(lessonStore)
+  const { currentExercise, isCorrect } = storeToRefs(exerciseStore)
 
   // Navigation state
   const sidebarOpen = ref<boolean>(true)
   const expandedCourseId = ref<string>("")
   const expandedLessonId = ref<string>("")
-  const currentExercise = ref<Exercise | null>(null)
 
   // Navigation methods
   function getSidebarContainerClasses() {
@@ -24,57 +34,22 @@ export function useLearn() {
   }
 
   async function toggleCourse(courseId: string) {
-    expandedCourseId.value = courseId
-    expandedLessonId.value = ""
-    if (expandedCourseId.value != "") {
-      await courseStore.fetchCourse(courseId)
-      await courseStore.fetchCourseProgress(courseId)
+    if (expandedCourseId.value === courseId) {
+      expandedCourseId.value = ""
+    } else {
+      expandedCourseId.value = courseId
+      expandedLessonId.value = ""
+      
+      // Load course data if not already loaded
+      if (expandedCourseId.value !== "") {
+        await courseStore.fetchCourse(courseId)
+      }
     }
   }
 
   function toggleLesson(lessonId: string) {
-    expandedLessonId.value = lessonId
+    expandedLessonId.value = expandedLessonId.value === lessonId ? "" : lessonId
   }
-
-  // Progress tracking
-  function getCourseProgress(courseId: string) {
-    try {
-      if (!courseProgress.value || !courseProgress.value[courseId]) {
-        return 0
-      }
-      return Math.round(courseProgress.value[courseId].progressPercentage || 0)
-    } catch (error) {
-      console.error(`Error fetching course progress for ${courseId}:`, error)
-      return 0
-    }
-  }
-
-  function canAccessLesson(courseId: string, lessonId: string) {
-    const lessons = currentCourse.value?.lessons || []
-
-    // First lesson is always accessible
-    if (lessons[0]?.id === lessonId) return true
-
-    const lessonIndex = lessons.findIndex(l => l.id === lessonId)
-    if (lessonIndex <= 0) return false
-
-    // Check all previous lessons up to this one
-    // If ANY previous lesson is completed, all lessons up to that point are accessible
-    for (let i = lessonIndex - 1; i >= 0; i--) {
-      if (courseStore.isLessonCompleted(courseId, lessons[i].id)) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  const getLessonsForCourse = computed(() => (courseId: string) => {
-    if (!currentCourse.value || currentCourse.value.id !== courseId) {
-      return []
-    }
-    return currentCourse.value.lessons || []
-  })
 
   // UI state
   function isActiveCourse(courseId: string) {
@@ -86,11 +61,11 @@ export function useLearn() {
   }
 
   function isActiveExercise(exerciseId: string) {
-    return route.query.exercise === exerciseId
+    return currentExercise.value?.id === exerciseId
   }
 
   function getCourseClasses(courseId: string) {
-    const progress = getCourseProgress(courseId)
+    const progress = courseStore.calculateCourseProgress(courseId)
     const baseClasses = "w-full flex items-center justify-between p-4 rounded-lg"
     const activeClasses = "bg-emerald-100 dark:bg-emerald-900/50"
     const inactiveClasses = "hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -115,84 +90,55 @@ export function useLearn() {
   // Exercise management
   async function handleAnswerSubmit(answer: any) {
     if (!currentExercise.value) return false
-    const courseId = route.query.course as string
-    const lessonId = route.query.lesson as string
-
+    
     try {
-      console.log("Submitting answer:", {
-        course: courseId,
-        lesson: lessonId,
-        exercise: currentExercise.value.id,
-        answer
-      })
-
-      const result = await courseStore.submitExerciseAttempt(courseId, lessonId, currentExercise.value.id, answer)
-
-      if (!result) {
-        throw new Error("result is undefined")
-      }
-
-      if (result.isCorrect) {
-        // Update lesson progress
-        await courseStore.updateLessonProgress(courseId, lessonId, "completed")
-
-        // Force refresh of course progress
-        await courseStore.fetchCourseProgress(courseId)
-
-        // Force refresh of current lesson progress
-        await courseStore.fetchLessonProgress(courseId, lessonId)
-      }
-
-      return result.isCorrect
+      return await exerciseStore.submitAnswer(answer)
     } catch (error) {
       console.error("Error submitting answer:", error)
       return false
     }
   }
 
-  // composables/useLearn.js
-
   async function handleNextExercise() {
     const courseId = route.query.course as string
     const lessonId = route.query.lesson as string
+    
     if (!currentExercise.value?.id) {
       console.error("Current exercise does not exist")
       return
     }
-    const nextExercise = await courseStore.nextExercise(courseId, lessonId, currentExercise.value?.id)
-
+    
+    // Try to get the next exercise in the current lesson
+    const nextExercise = await exerciseStore.nextExercise()
+    
     if (nextExercise) {
       // If there's another exercise in this lesson, show it
-      currentExercise.value = null
-      await nextTick()
-      currentExercise.value = nextExercise
+      return nextExercise
     } else {
       try {
         // Mark current lesson as completed
-        await courseStore.updateLessonProgress(courseId, lessonId, "completed")
-
-        // Update course progress in store
-        await courseStore.fetchCourseProgress(courseId)
-
+        await lessonStore.markLessonCompleted(courseId, lessonId)
+        
         // Find the next lesson
-        const lessons = currentCourse.value?.lessons || []
-        const currentLessonIndex = lessons.findIndex(lesson => lesson.id === route.query.lesson)
-
-        // Check if there's a next lesson
-        if (currentLessonIndex !== -1 && currentLessonIndex < lessons.length - 1) {
-          const nextLesson = lessons[currentLessonIndex + 1]
-
-          // Immediately navigate to next lesson since current lesson is completed
+        const nextLesson = courseStore.getNextLesson(lessonId)
+        
+        // If there's a next lesson, navigate to it
+        if (nextLesson) {
           await selectLesson(courseId, nextLesson.id)
-
-          if (!currentLesson.value) {
-            throw new Error("current lesson does not exist")
+          
+          // After selecting a lesson, wait for the next tick
+          // to ensure currentLesson is updated
+          await nextTick()
+          
+          // Now we can safely work with currentLesson
+          const lesson = currentLesson.value
+          if (lesson && lesson.exercises && lesson.exercises.length > 0) {
+            exerciseStore.setCurrentExercise(lesson.exercises[0].id)
           }
-
-          // Reset exercise state for new lesson
-          if (currentLesson.value?.exercises?.length > 0) {
-            currentExercise.value = currentLesson.value.exercises[0]
-          }
+        } else {
+          // No next lesson, we've completed the course
+          console.log("Course completed!")
+          // Could navigate to a completion screen or dashboard
         }
       } catch (error) {
         console.error("Error handling next exercise:", error)
@@ -200,28 +146,18 @@ export function useLearn() {
     }
   }
 
-  async function refreshCourseProgress(courseId: string) {
-    try {
-      // Fetch overall course progress
-      await courseStore.fetchCourseProgress(courseId)
-
-      // Fetch progress for current lesson if one is selected
-      if (route.query.lesson) {
-        await courseStore.fetchLessonProgress(courseId, route.query.lesson as string)
-      }
-    } catch (error) {
-      console.error("Error refreshing course progress:", error)
-    }
-  }
-
   async function selectLesson(courseId: string, lessonId: string) {
     console.log("Selecting lesson:", { courseId, lessonId })
 
     try {
-      await courseStore.fetchLesson(courseId, lessonId)
+      // Fetch lesson data
+      await lessonStore.fetchLesson(courseId, lessonId)
+      
+      // Update UI state
       expandedCourseId.value = courseId
       expandedLessonId.value = lessonId
 
+      // Update route
       await router.push({
         path: "/learn",
         query: {
@@ -230,41 +166,66 @@ export function useLearn() {
         }
       })
 
+      // Mark lesson as in progress if it's not already completed
+      const status = lessonStore.getLessonStatus(courseId, lessonId)
+      if (status === 'not_started') {
+        await lessonStore.markLessonInProgress(courseId, lessonId)
+      }
+
+      // Set the first exercise as current
       updateCurrentExercise()
+      
+      return true
     } catch (error) {
       console.error("Error selecting lesson:", error)
+      return false
     }
   }
 
   function updateCurrentExercise() {
     if (!currentLesson.value) {
-      console.error("current lesson does not exist")
+      console.error("Current lesson does not exist")
       return
     }
-    if (currentLesson.value?.exercises?.length > 0) {
-      currentExercise.value = currentLesson.value.exercises[0]
+    
+    if (currentLesson.value.exercises?.length > 0) {
+      exerciseStore.setCurrentExercise(currentLesson.value.exercises[0].id)
     }
   }
 
+  // Initialization
   async function initialize() {
     const courseId = route.query.course as string
     const lessonId = route.query.lesson as string
+    const exerciseId = route.query.exercise as string
 
     try {
+      // Load all courses
       await courseStore.fetchCourses()
 
-      if (courseId != "") {
+      // If course ID is provided in the route
+      if (courseId) {
+        // Load the course
         await courseStore.fetchCourse(courseId)
         expandedCourseId.value = courseId
 
-        // Load course progress
-        await courseStore.fetchCourseProgress(courseId)
-
-        if (route.query.lesson) {
-          await courseStore.fetchLesson(courseId, lessonId)
-          await courseStore.fetchLessonProgress(courseId, lessonId)
+        // If lesson ID is provided in the route
+        if (lessonId) {
+          // Load the lesson
+          await lessonStore.fetchLesson(courseId, lessonId)
           expandedLessonId.value = lessonId
-          updateCurrentExercise()
+          
+          // If exercise ID is provided in the route, set it as current
+          if (exerciseId && currentLesson.value) {
+            const exerciseExists = currentLesson.value.exercises.some(ex => ex.id === exerciseId)
+            if (exerciseExists) {
+              exerciseStore.setCurrentExercise(exerciseId)
+            } else {
+              updateCurrentExercise() // Fall back to first exercise
+            }
+          } else {
+            updateCurrentExercise() // No exercise specified, use first one
+          }
         }
       }
     } catch (error) {
@@ -277,10 +238,18 @@ export function useLearn() {
     sidebarOpen,
     expandedCourseId,
     expandedLessonId,
-    currentExercise,
+    
+    // Store references
     courseStore,
+    lessonStore,
+    exerciseStore,
+    progressStore,
+    
+    // Reactive store properties
     currentCourse,
     currentLesson,
+    currentExercise,
+    isCorrect,
 
     // Navigation
     getSidebarContainerClasses,
@@ -290,9 +259,13 @@ export function useLearn() {
     toggleLesson,
 
     // Progress
-    getCourseProgress,
-    canAccessLesson,
-    getLessonsForCourse,
+    getLessonStatus: lessonStore.getLessonStatus,
+    calculateCourseProgress: courseStore.calculateCourseProgress,
+    canAccessLesson: courseStore.canAccessLesson,
+    isLessonCompleted: progressStore.isLessonCompleted,
+    getLessonsForCourse: (courseId: string) => {
+      return courseStore.courses[courseId]?.lessons || []
+    },
 
     // UI
     isActiveCourse,

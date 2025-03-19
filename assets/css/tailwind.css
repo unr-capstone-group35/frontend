@@ -22,8 +22,8 @@
   
   /* Page background gradient */
   .bg-page-gradient {
-    @apply bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800;
-  }
+    @apply bg-gradient-to-b from-slate-100 dark:from-gray-950 to-green-50 dark:to-gray-800;
+  } 
 
   /* use this for most pages*/
   .page-container {
@@ -48,24 +48,24 @@
   }
   
   .bg-primary {
-    @apply bg-emerald-600 dark:bg-emerald-500; /* For primary buttons and interactive elements */
+    @apply bg-emerald-500 dark:bg-emerald-600; /* For primary buttons and interactive elements */
   }
   
   .border-primary {
-    @apply border-emerald-600 dark:border-emerald-500; /* For borders that use the primary brand color */
+    @apply border-emerald-500 dark:border-emerald-500; /* For borders that use the primary brand color */
   }
   
   .hover-primary {
-    @apply hover:bg-emerald-700 dark:hover:bg-emerald-600; /* Hover state for primary buttons */
+    @apply hover:bg-emerald-700 dark:hover:bg-emerald-800; /* Hover state for primary buttons */
   }
 
   .accent-gradient {
-    @apply bg-gradient-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900;
+    @apply bg-gradient-to-br from-emerald-400 to-emerald-700 dark:from-emerald-800 dark:to-emerald-600;
   }
   
   
   .card {
-    @apply rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800; 
+    @apply rounded-xl bg-gradient-to-b from-slate-50 dark:from-gray-700 to-slate-300 dark:to-gray-800;
   }
   
   .background-card {

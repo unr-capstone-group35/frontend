@@ -24,3 +24,7 @@ logs
 !.env.example
 
 .DS_Store
+
+# Local organize script and directory
+organize_backend.sh
+ze_frontend_directory/

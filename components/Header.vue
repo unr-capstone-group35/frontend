@@ -22,7 +22,7 @@ const toggleMenu = () => {
 
 <template>
   <div>
-    <header class="w-full border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <header class="w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
       <nav class="flex items-center justify-between px-12 py-3">
         <NuxtLink to="/" class="flex items-center gap-2">
           <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400">DevQuest</span>

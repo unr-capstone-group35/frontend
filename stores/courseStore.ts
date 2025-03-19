@@ -1,35 +1,11 @@
-export type Status = "not_started" | "in_progress" | "completed"
+// stores/course.ts
 
-export type CourseProgress = {
-  id: number
-  userId: number
-  courseName: string
-  startedAt: string
-  lastAccessedAt: string
-  completedAt: string
-  progressPercentage: number
-}
-
-export type LessonProgress = {
-  id: number
-  userId: number
-  courseName: number
-  lessonId: number
-  status: Status
-  startedAt: string
-  completedAt: string
-}
-
-export type ExerciseAttempt = {
-  id: number
-  userId: number
-  courseName: string
-  lessonId: string
-  exerciseId: string
-  attemptNumber: number
-  answer: string
-  isCorrect: boolean
-  attemptedAt: string
+export type Course = {
+  id: string
+  name: string
+  description: string
+  lessonAmount: number
+  lessons: Lesson[] | undefined
 }
 
 export type Lesson = {
@@ -41,197 +17,84 @@ export type Lesson = {
 
 export type Exercise = {
   id: string
+  type: string
+  question: string
+  [key: string]: any // For additional exercise-specific properties
 }
 
-export type Course = {
-  id: string
-  name: string
-  description: string
-  lessonAmount: number
-  lessons: Lesson[] | undefined
-}
-
-type State = {
+type CourseState = {
   courses: Record<string, Course>
-  currentCourse: Course | null
-  currentLesson: Lesson | null
-  lessonProgress: Record<string, LessonProgress>
-  courseProgress: Record<string, CourseProgress>
+  currentCourseId: string | null
   loading: boolean
   error: string
 }
 
-export const useCourseStore = defineStore("course", {
-  state: (): State => ({
+export const useCourseStore = defineStore('course', {
+  state: (): CourseState => ({
     courses: {},
-    currentCourse: null,
-    currentLesson: null,
-    lessonProgress: {},
-    courseProgress: {},
+    currentCourseId: null,
     loading: false,
-    error: ""
+    error: ''
   }),
 
   getters: {
-    isLessonCompleted: state => (courseId: string, lessonId: string) => {
-      return state.lessonProgress[`${courseId}-${lessonId}`]?.status === "completed"
+    // Get current course
+    currentCourse: (state): Course | null => {
+      if (!state.currentCourseId) return null
+      return state.courses[state.currentCourseId] || null
     },
-
-    currentExercises: state => {
-      return state.currentLesson?.exercises || []
+    
+    // Get all available courses
+    availableCourses: (state): Course[] => {
+      return Object.values(state.courses)
     },
-
-    getCourseProgress: state => (courseId: string) => {
-      // Check if we have current course data
-      if (!state.currentCourse?.lessons || state.currentCourse.lessons.length === 0) {
+    
+    // Calculate course completion percentage
+    calculateCourseProgress: (state) => (courseId: string): number => {
+      const course = state.courses[courseId]
+      const progressStore = useProgressStore()
+      
+      if (!course || !course.lessons || course.lessons.length === 0) {
         return 0
       }
-
-      // Calculate total and completed lessons
-      const totalLessons = state.currentCourse.lessons.length
-      const completedLessons = state.currentCourse.lessons.reduce((count, lesson) => {
-        const isCompleted = state.lessonProgress[`${courseId}-${lesson.id}`]?.status === "completed"
-        return isCompleted ? count + 1 : count
-      }, 0)
-
-      // Return rounded percentage
+      
+      const totalLessons = course.lessons.length
+      let completedLessons = 0
+      
+      course.lessons.forEach(lesson => {
+        if (progressStore.isLessonCompleted(courseId, lesson.id)) {
+          completedLessons++
+        }
+      })
+      
       return Math.round((completedLessons / totalLessons) * 100)
     },
-
-    getNextLesson: state => (currentLessonId: string) => {
-      if (!state.currentCourse?.lessons) return null
-
-      const currentIndex = state.currentCourse.lessons.findIndex(lesson => lesson.id === currentLessonId)
-
-      if (currentIndex !== -1 && currentIndex < state.currentCourse.lessons.length - 1) {
-        return state.currentCourse.lessons[currentIndex + 1]
-      }
-
-      return null
+    
+    // Check if a course is accessible (all are available as of Mar 5th 2025)
+    isCourseAccessible: () => (courseId: string): boolean => {
+      return true
     }
   },
 
   actions: {
-    // GET /api/courses/${courseId}/lessons/${lessonId}/progress
-    async fetchLessonProgress(courseId: string, lessonId: string) {
-      try {
-        const getLessonProgressResponse = await useNuxtApp().$api<LessonProgress>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`,
-          {
-            method: "GET"
-          }
-        )
-
-        this.lessonProgress[`${courseId}-${lessonId}`] = getLessonProgressResponse
-        return getLessonProgressResponse
-      } catch (error: any) {
-        this.error = error.message
-        console.error(this.error)
-        return null
-      }
-    },
-    async nextExercise(courseId: string, lessonId: string, currentExerciseId: string) {
-      if (!this.currentLesson || !this.currentLesson.exercises) {
-        return null
-      }
-
-      const exercises = this.currentLesson.exercises
-      if (!currentExerciseId) {
-        return exercises[0] || null
-      }
-
-      const currentIndex = exercises.findIndex(ex => ex.id === currentExerciseId)
-      if (currentIndex === -1 || currentIndex === exercises.length - 1) {
-        // Only mark lesson as completed if this was the last exercise
-        if (currentIndex === exercises.length - 1) {
-          await this.updateLessonProgress(courseId, lessonId, "completed")
-        }
-        return null
-      }
-
-      return exercises[currentIndex + 1]
-    },
-
-    // POST /api/courses/${courseId}/lessons/${lessonId}/exercises/${exerciseId}/attempt
-    async submitExerciseAttempt(courseId: string, lessonId: string, exerciseId: string, answer: string) {
-      type AttemptResponse = {
-        isCorrect: boolean
-      }
-      try {
-        console.log("Submitting exercise attempt:", {
-          courseId,
-          lessonId,
-          exerciseId,
-          answer: JSON.stringify(answer)
-        })
-
-        this.error = ""
-
-        const attemptResponse = await useNuxtApp().$api<AttemptResponse>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/exercises/${exerciseId}/attempt`,
-          {
-            method: "POST",
-            body: JSON.stringify({ answer })
-          }
-        )
-
-        if (attemptResponse.isCorrect) {
-          // Only mark as completed if this is the last exercise
-          if (!this.currentLesson) {
-            throw new Error("currentLesson not defined")
-            return
-          }
-          const isLastExercise =
-            this.currentLesson?.exercises.findIndex(ex => ex.id === exerciseId) ===
-            this.currentLesson?.exercises?.length - 1
-
-          await this.updateLessonProgress(courseId, lessonId, isLastExercise ? "completed" : "in_progress")
-
-          await this.fetchCourseProgress(courseId)
-        }
-
-        return attemptResponse
-      } catch (error: any) {
-        this.error = error.message
-        console.error(this.error)
-        throw error
-      }
-    },
-
-    // GET /api/courses/${formattedId}/progress
-    async fetchCourseProgress(courseId: string) {
-      try {
-        const lessonProgress = await useNuxtApp().$api<LessonProgress>(
-          `http://localhost:8080/api/courses/${courseId}/progress`,
-          { method: "GET" }
-        )
-        // fix this, its assigning courseProgress to lessonProgress?
-        // this.courseProgress[formattedId] = {
-        //   ...lessonProgress,
-        //   progressPercentage: 0 //fix this later
-        // }
-      } catch (error: any) {
-        this.error = error.message
-        console.error(this.error)
-        this.courseProgress[courseId] = {} as CourseProgress
-      }
-    },
-    // GET /api/courses
+    // Fetch all available courses
     async fetchCourses() {
+      this.loading = true
+      this.error = ''
+      
       type CourseInfo = {
         id: string
         name: string
         description: string
         lessonAmount: number
       }
+      
       try {
-        this.loading = true
-        this.error = ""
-
-        const courseInfos = await useNuxtApp().$api<CourseInfo[]>("http://localhost:8080/api/courses", {
-          method: "GET"
+        const courseInfos = await useNuxtApp().$api<CourseInfo[]>('http://localhost:8080/api/courses', {
+          method: 'GET'
         })
-
+        
+        // Update courses in the store
         for (const courseInfo of courseInfos) {
           this.courses[courseInfo.id] = {
             id: courseInfo.id,
@@ -241,124 +104,118 @@ export const useCourseStore = defineStore("course", {
             lessons: undefined
           }
         }
+        
+        return courseInfos
       } catch (error: any) {
-        this.error = error.message
+        this.error = error.message || 'Failed to fetch courses'
         console.error(this.error)
         throw error
       } finally {
         this.loading = false
       }
     },
-
-    // GET /api/courses/${formattedId}
+    
+    // Fetch a single course with all its lessons
     async fetchCourse(courseId: string) {
       this.loading = true
-      this.error = ""
+      this.error = ''
+      
       try {
-        console.log(`Requesting course with formatted ID: ${courseId}`)
-
+        console.log(`Requesting course with ID: ${courseId}`)
+        
         const courseResponse = await useNuxtApp().$api<Course>(`http://localhost:8080/api/courses/${courseId}`, {
-          method: "GET"
+          method: 'GET'
         })
-
+        
         console.log(`Received course data for ${courseId}:`, courseResponse)
-
-        console.log(courseResponse.lessons)
+        
         if (!courseResponse || !courseResponse.lessons) {
-          throw new Error("Invalid course data received")
+          throw new Error('Invalid course data received')
         }
-
+        
+        // Update course in the store
         this.courses[courseResponse.id] = {
           id: courseResponse.id,
           name: courseResponse.name,
           description: courseResponse.description,
-          lessonAmount: courseResponse.lessons.length || this.courses[courseResponse.id].lessonAmount,
-          lessons: courseResponse.lessons || undefined
+          lessonAmount: courseResponse.lessons.length || this.courses[courseResponse.id]?.lessonAmount || 0,
+          lessons: courseResponse.lessons
         }
-
-        this.currentCourse = this.courses[courseResponse.id]
-
-        // Only try to fetch progress if course fetch was successful
-        try {
-          await this.fetchCourseProgress(courseId)
-        } catch (progressError) {
-          console.warn("Could not fetch course progress:", progressError)
-          // Don't fail the whole operation if progress fetch fails
-        }
+        
+        // Set as current course
+        this.currentCourseId = courseResponse.id
+        
+        // Initialize lesson store with the course's lessons
+        const lessonStore = useLessonStore()
+        lessonStore.initializeLessons(courseResponse.id, courseResponse.lessons)
+        
+        // Fetch course progress
+        const progressStore = useProgressStore()
+        await progressStore.fetchCourseProgress(courseId)
+        
+        return courseResponse
       } catch (error: any) {
-        this.error = error.message
+        this.error = error.message || `Failed to fetch course ${courseId}`
         console.error(this.error)
         throw error
       } finally {
         this.loading = false
       }
     },
-
-    // GET /api/courses/${formattedId}/lessons/${lessonId}
-    async fetchLesson(courseId: string, lessonId: string) {
-      try {
-        this.loading = true
-        this.error = ""
-
-        console.log(`Requesting lesson ${lessonId} from course ${courseId}`)
-
-        const lessonData = await useNuxtApp().$api<Lesson>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}`,
-          {
-            method: "GET"
-          }
-        )
-
-        console.log(`Received lesson data:`, lessonData)
-
-        this.currentLesson = lessonData
-
-        // Try to fetch lesson progress after successful lesson fetch
-        try {
-          await this.fetchLessonProgress(courseId, lessonId)
-        } catch (progressError) {
-          console.warn("Could not fetch lesson progress:", progressError)
-          // Don't fail the whole operation if progress fetch fails
-        }
-      } catch (error: any) {
-        this.error = error.message
-        console.error(this.error)
-        throw error
-      } finally {
-        this.loading = false
+    
+    // Get a lesson from the current course (without API call)
+    getLesson(lessonId: string): Lesson | null {
+      if (!this.currentCourse || !this.currentCourse.lessons) {
+        return null
       }
+      
+      return this.currentCourse.lessons.find(lesson => lesson.id === lessonId) || null
     },
-
-    async updateLessonProgress(courseId: string, lessonId: string, status: Status) {
-      try {
-        // Only allow completion if this is the last exercise
-        if (status === "completed") {
-          if (!this.currentLesson) {
-            throw new Error("current lesson does not exist")
-          }
-          // currentExercise is in useLearn, not sure how this ever worked:
-          const currentExerciseIndex = this.currentLesson?.exercises.findIndex(ex => ex.id === this.currentExercise?.id)
-
-          if (currentExerciseIndex !== this.currentLesson.exercises.length - 1) {
-            // If not the last exercise, mark as in_progress instead
-            status = "in_progress"
-          }
-        }
-
-        this.error = ""
-
-        await useNuxtApp().$api(`http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`, {
-          method: "POST",
-          body: JSON.stringify({ status })
-        })
-
-        await this.fetchLessonProgress(courseId, lessonId)
-        await this.fetchCourseProgress(courseId)
-      } catch (error: any) {
-        this.error = error.message
-        console.error(this.error)
-        throw error
+    
+    // Find the next lesson in sequence
+    getNextLesson(currentLessonId: string): Lesson | null {
+      if (!this.currentCourse || !this.currentCourse.lessons) {
+        return null
       }
+      
+      const currentIndex = this.currentCourse.lessons.findIndex(
+        lesson => lesson.id === currentLessonId
+      )
+      
+      if (currentIndex === -1 || currentIndex >= this.currentCourse.lessons.length - 1) {
+        return null
+      }
+      
+      return this.currentCourse.lessons[currentIndex + 1]
+    },
+    
+    // Determine if a lesson is accessible based on prerequisites
+    canAccessLesson(courseId: string, lessonId: string): boolean {
+      const course = this.courses[courseId]
+      if (!course || !course.lessons) return false
+      
+      const progressStore = useProgressStore()
+      
+      // Find the lesson index
+      const lessonIndex = course.lessons.findIndex(l => l.id === lessonId)
+      
+      // First lesson is always accessible
+      if (lessonIndex === 0) return true
+      
+      // For other lessons, check if the previous lesson is completed
+      if (lessonIndex > 0) {
+        const previousLesson = course.lessons[lessonIndex - 1]
+        return progressStore.isLessonCompleted(courseId, previousLesson.id)
+      }
+      
+      return false
+    },
+    
+    // Clear course data (useful for logout or reset)
+    clearCourseData() {
+      this.courses = {}
+      this.currentCourseId = null
+      this.error = ''
     }
   }
 })
