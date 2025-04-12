@@ -4,6 +4,15 @@ definePageMeta({
 })
 
 const username = useAuthStore().username
+const showProfilePicSelector = ref(false)
+
+// Initialize profile picture store
+const profilePicStore = useProfilePicStore()
+
+// Handle edit profile pic button click
+const handleProfilePicEdit = () => {
+  showProfilePicSelector.value = true
+}
 </script>
 
 <template>
@@ -13,13 +22,7 @@ const username = useAuthStore().username
       <div class="mb-12 text-center">
         <!-- Profile Picture -->
         <div class="mb-6 flex justify-center">
-          <div
-            class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-emerald-200 bg-gray-200 dark:border-emerald-800 dark:bg-gray-700"
-          >
-            <svg class="h-20 w-20 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-            </svg>
-          </div>
+          <ProfilePic size="xl" :editable="true" @editClick="handleProfilePicEdit" />
         </div>
         <h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">Welcome back, {{ username }}!</h1>
         <p class="text-lg text-gray-600 dark:text-gray-300">Track your progress and continue your learning journey</p>
@@ -78,5 +81,8 @@ const username = useAuthStore().username
         </div>
       </div>
     </div>
+
+    <!-- Profile Picture Selector Dialog -->
+    <ProfilePicSelector v-model="showProfilePicSelector" />
   </div>
 </template>
