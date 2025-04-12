@@ -10,11 +10,11 @@ const {
   currentExercise,
   currentLesson,
   currentCourse,
-  
+
   courseStore,
   progressStore,
   exerciseStore,
-  
+
   getSidebarContainerClasses,
   getSidebarContentClasses,
   toggleSidebar,
@@ -34,14 +34,18 @@ const {
 onMounted(initialize)
 
 // Watch for route changes
-watch(() => route.query, () => {
-  const courseId = route.query.course as string
-  const lessonId = route.query.lesson as string
-  
-  if (courseId && lessonId) {
-    updateCurrentExercise()
-  }
-}, { immediate: true })
+watch(
+  () => route.query,
+  () => {
+    const courseId = route.query.course as string
+    const lessonId = route.query.lesson as string
+
+    if (courseId && lessonId) {
+      updateCurrentExercise()
+    }
+  },
+  { immediate: true }
+)
 
 // Navigate to glossary
 const navigateToGlossary = () => {
@@ -55,11 +59,9 @@ const totalLessons = computed(() => {
 
 const completedLessons = computed(() => {
   if (!currentCourse.value?.id || !currentCourse.value?.lessons) return 0
-  
+
   const courseId = currentCourse.value.id
-  return currentCourse.value.lessons.filter(lesson => 
-    isLessonCompleted(courseId, lesson.id)
-  ).length
+  return currentCourse.value.lessons.filter(lesson => isLessonCompleted(courseId, lesson.id)).length
 })
 
 // Calculate progress percentage
@@ -100,7 +102,7 @@ const progressBarColor = computed(() => {
                 </button>
               </div>
             </div>
-            
+
             <!-- Course Progress Section -->
             <div v-if="currentCourse" class="border-b px-6 py-4 dark:border-gray-700">
               <div class="space-y-4">
@@ -140,18 +142,16 @@ const progressBarColor = computed(() => {
                 </template>
               </div>
             </div>
-            
+
             <div v-else-if="courseStore.loading" class="p-6 text-center">
               <span class="text-gray-500">Loading course...</span>
             </div>
-            
+
             <div v-else-if="courseStore.error" class="p-6 text-center">
               <span class="text-red-500">{{ courseStore.error }}</span>
             </div>
-            
-            <div v-else class="p-6 text-center text-gray-500">
-              Select a course to begin
-            </div>
+
+            <div v-else class="p-6 text-center text-gray-500">Select a course to begin</div>
           </div>
         </aside>
 

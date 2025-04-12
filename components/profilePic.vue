@@ -43,43 +43,48 @@ const profilePic = computed(() => {
   return option ? option.src : "/images/profilepics/default.png"
 })
 
-// Size classes for responsive design
+// Size classes for responsive design - MODIFIED SCALING VALUES EVEN SMALLER
 const sizeClasses = computed(() => {
   switch (props.size) {
     case "xs":
       return {
         container: "h-8 w-8",
-        imgSize: "h-full w-full object-cover",
+        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
         icon: "h-5 w-5",
-        editButton: "bottom-0 right-0 h-3 w-3"
+        editButton: "bottom-0 right-0 h-3 w-3",
+        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
       }
     case "sm":
       return {
         container: "h-10 w-10",
-        imgSize: "h-full w-full object-cover",
+        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
         icon: "h-6 w-6",
-        editButton: "bottom-0 right-0 h-4 w-4"
+        editButton: "bottom-0 right-0 h-4 w-4",
+        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
       }
     case "lg":
       return {
         container: "h-16 w-16",
-        imgSize: "h-full w-full object-cover",
+        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
         icon: "h-10 w-10",
-        editButton: "bottom-0 right-0 h-6 w-6"
+        editButton: "bottom-0 right-0 h-6 w-6",
+        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
       }
     case "xl":
       return {
         container: "h-24 w-24",
-        imgSize: "h-full w-full object-cover",
+        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
         icon: "h-16 w-16",
-        editButton: "bottom-0 right-0 h-7 w-7"
+        editButton: "bottom-0 right-0 h-7 w-7",
+        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
       }
     default: // md
       return {
         container: "h-12 w-12",
-        imgSize: "h-full w-full object-cover",
+        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
         icon: "h-8 w-8",
-        editButton: "bottom-0 right-0 h-5 w-5"
+        editButton: "bottom-0 right-0 h-5 w-5",
+        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
       }
   }
 })
@@ -120,7 +125,7 @@ onMounted(() => {
         v-if="profilePic && !imageError"
         :src="profilePic"
         :alt="'Profile picture'"
-        :class="[isDefault ? 'h-[95%] w-[95%] scale-125 transform object-contain' : sizeClasses.imgSize]"
+        :class="[isDefault ? sizeClasses.imgScale : sizeClasses.imgSize]"
         @error="handleImageError"
         @load="handleImageLoad"
       />

@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+
 
 export const useProfilePicStore = defineStore('profilePic', {
   state: () => ({
@@ -25,7 +25,7 @@ export const useProfilePicStore = defineStore('profilePic', {
       
       if (state.currentProfilePic === 'custom') {
         // For custom uploads, we need to fetch from the API with a cache buster
-        return `/api/users/profilepic?type=image&t=${Date.now()}`
+        return `http://localhost:8080/api/users/profilepic?type=image&t=${Date.now()}`
       }
       
       const option = state.profilePicOptions.find(opt => opt.id === state.currentProfilePic)
@@ -38,8 +38,20 @@ export const useProfilePicStore = defineStore('profilePic', {
     async fetchUserProfilePic() {
       this.isLoading = true
       try {
-        // Use fetch directly to avoid issues with useAPI
-        const response = await fetch('/api/users/profilepic')
+        const authStore = useAuthStore()
+        const token = authStore.token
+        
+        // Use the correct backend URL
+        const response = await fetch('http://localhost:8080/api/users/profilepic', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile picture')
+        }
+        
         const data = await response.json()
         this.currentProfilePic = data.profilePicId || 'default'
         return this.currentProfilePic
@@ -56,11 +68,15 @@ export const useProfilePicStore = defineStore('profilePic', {
     async updateProfilePic(picId: string) {
       this.isLoading = true
       try {
-        // Use fetch directly to avoid issues with useAPI
-        const response = await fetch('/api/users/profilepic', {
+        const authStore = useAuthStore()
+        const token = authStore.token
+        
+        // Use the correct backend URL
+        const response = await fetch('http://localhost:8080/api/users/profilepic', {
           method: 'PUT',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({ profilePicId: picId })
         })
@@ -86,9 +102,15 @@ export const useProfilePicStore = defineStore('profilePic', {
         const formData = new FormData()
         formData.append('profilePic', file)
         
-        // Use fetch directly to avoid issues with useAPI
-        const response = await fetch('/api/users/profilepic/upload', {
+        const authStore = useAuthStore()
+        const token = authStore.token
+        
+        // Use the correct backend URL
+        const response = await fetch('http://localhost:8080/api/users/profilepic/upload', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           body: formData
         })
         

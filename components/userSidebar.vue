@@ -9,6 +9,12 @@ const props = defineProps({
 const emit = defineEmits(["close"])
 const router = useRouter()
 const authStore = useAuthStore()
+const profilePicStore = useProfilePicStore()
+
+// Load profile pic data
+onMounted(() => {
+  profilePicStore.fetchUserProfilePic()
+})
 
 const close = () => {
   emit("close")
@@ -61,13 +67,8 @@ const handleGlossaryClick = () => {
 
       <!-- Profile -->
       <div class="mb-8 flex flex-col items-center space-y-4">
-        <div
-          class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
-        >
-          <svg class="h-16 w-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-          </svg>
-        </div>
+        <!-- Use ProfilePic component instead of DIV-->
+        <ProfilePic size="xl" />
 
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300">
           {{ authStore.username || "Unknown" }}

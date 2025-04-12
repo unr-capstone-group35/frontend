@@ -1,5 +1,13 @@
 <script setup lang="ts">
-// add functionality once back-end/database complete
+import { ref, onMounted, watch } from "vue"
+import { useProfilePicStore } from "~/stores/profilePicStore"
+import { useAuthStore } from "~/stores/authStore"
+import { onBeforeRouteEnter } from "vue-router"
+
+// State to force re-render of profile pics
+const profilePicUpdateTrigger = ref(Date.now())
+
+// Sample data - to be replaced with API call later
 const leaderboardUsers = [
   { name: "You", points: 100 },
   { name: "User_23", points: 80 },
@@ -7,6 +15,40 @@ const leaderboardUsers = [
   { name: "User_12", points: 20 },
   { name: "User_87", points: 10 }
 ]
+
+const authStore = useAuthStore()
+const profilePicStore = useProfilePicStore()
+
+// This will update the profile picture whenever this page is shown
+// Either on initial mount or when returning to this page
+onMounted(() => {
+  refreshProfilePic()
+})
+
+// Helper function to determine if a user is the current user
+const isCurrentUser = (name: string) => {
+  return name === "You" || name === authStore.username
+}
+
+// Force refresh of profile pic
+const refreshProfilePic = async () => {
+  await profilePicStore.fetchUserProfilePic()
+  // Update the trigger to force a re-render of components
+  profilePicUpdateTrigger.value = Date.now()
+}
+
+// Watch for route changes - whenever we navigate to this page, refresh the profile pic
+if (process.client) {
+  const route = useRoute()
+  watch(
+    () => route.path,
+    () => {
+      if (route.path === "/leaderboard") {
+        refreshProfilePic()
+      }
+    }
+  )
+}
 </script>
 
 <template>
@@ -15,13 +57,8 @@ const leaderboardUsers = [
       <div class="rounded-lg bg-white p-6 dark:bg-gray-800">
         <!-- Current user(left card) -->
         <div class="mb-8 flex flex-col items-center space-y-4">
-          <div
-            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200 dark:bg-gray-600"
-          >
-            <svg class="h-16 w-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-            </svg>
-          </div>
+          <!-- Use ProfilePic component with key to force re-render when the profile pic changes -->
+          <ProfilePic :key="`profile-pic-${profilePicUpdateTrigger}`" size="xl" />
           <h2 class="text-primary text-xl font-semibold">Your Points</h2>
         </div>
 
@@ -72,7 +109,13 @@ const leaderboardUsers = [
           >
             <div class="flex items-center space-x-4">
               <span class="text-lg font-semibold text-gray-700 dark:text-white">{{ index + 1 }}</span>
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-500">
+
+              <!-- Use ProfilePic for current user with key to force re-render when profile changes,
+                   default icon for others -->
+              <div v-if="isCurrentUser(user.name)" class="flex-shrink-0">
+                <ProfilePic :key="`leaderboard-${index}-${profilePicUpdateTrigger}`" size="sm" />
+              </div>
+              <div v-else class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-500">
                 <svg class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fill-rule="evenodd"
@@ -81,6 +124,7 @@ const leaderboardUsers = [
                   />
                 </svg>
               </div>
+
               <span class="text-gray-800 dark:text-white">{{ user.name }}</span>
             </div>
             <span class="font-semibold text-gray-700 dark:text-white">{{ user.points }} points</span>

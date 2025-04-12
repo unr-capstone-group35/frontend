@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue"
-import { useProfilePicStore } from "~/stores/profilePicStore"
-
 const props = defineProps({
   modelValue: {
     type: Boolean,
