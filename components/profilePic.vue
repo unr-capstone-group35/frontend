@@ -30,6 +30,9 @@ const authStore = useAuthStore() // Import auth store to get the token
 
 const activePicId = computed(() => props.profilePicId || profilePicStore.currentProfilePic || "default")
 
+// Get the custom image version from store
+const customImageVersion = computed(() => profilePicStore.customImageVersion)
+
 const isDefault = computed(() => activePicId.value === "default")
 const isCustom = computed(() => activePicId.value === "custom")
 
@@ -88,8 +91,15 @@ const loadCustomProfileImage = async () => {
     const token = authStore.token
     console.log("Loading custom profile image with auth token")
 
-    // Create a fetch request with authentication
-    const response = await fetch(`http://localhost:8080/api/users/profilepic?type=image&t=${Date.now()}`, {
+    // Clean up previous object URL if it exists
+    if (imageUrl.value) {
+      URL.revokeObjectURL(imageUrl.value)
+      imageUrl.value = null
+    }
+
+    // Create a fetch request with authentication - use version parameter
+    const version = profilePicStore.customImageVersion
+    const response = await fetch(`http://localhost:8080/api/users/profilepic?type=image&v=${version}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -107,7 +117,7 @@ const loadCustomProfileImage = async () => {
 
     // Set the image URL
     imageUrl.value = url
-    console.log("Custom image loaded successfully")
+    console.log("Custom image loaded successfully with version:", version)
     imageError.value = false
   } catch (error) {
     console.error("Error loading custom profile image:", error)
@@ -115,15 +125,28 @@ const loadCustomProfileImage = async () => {
   }
 }
 
-// Clean up object URLs when component is unmounted
+// Handle profile-pic-updated event
+const handleProfilePicUpdated = (event: CustomEvent) => {
+  console.log("Profile pic updated event received:", event.detail)
+  if (event.detail.type === "custom" && isCustom.value) {
+    // Force reload the custom image
+    loadCustomProfileImage()
+  }
+}
+
+// Clean up object URLs and event listeners when component is unmounted
 onUnmounted(() => {
   if (imageUrl.value) {
     URL.revokeObjectURL(imageUrl.value)
   }
+  window.removeEventListener("profile-pic-updated", handleProfilePicUpdated as EventListener)
 })
 
-// Load profile pic on mount
+// Load profile pic on mount and set up event listener
 onMounted(() => {
+  // Set up event listener for custom profile pic updates
+  window.addEventListener("profile-pic-updated", handleProfilePicUpdated as EventListener)
+
   if (!props.profilePicId && !profilePicStore.currentProfilePic) {
     profilePicStore.fetchUserProfilePic().then(() => {
       // If it's a custom pic, load it with authentication
@@ -137,10 +160,15 @@ onMounted(() => {
   }
 })
 
-// Watch for changes to activePicId
-watch(activePicId, newVal => {
-  if (newVal === "custom") {
-    loadCustomProfileImage()
+// Watch for changes to activePicId and customImageVersion
+watch([activePicId, customImageVersion], ([newPicId, newVersion], [oldPicId, oldVersion]) => {
+  console.log(`ProfilePic watch triggered - ID: ${oldPicId} -> ${newPicId}, Version: ${oldVersion} -> ${newVersion}`)
+
+  if (newPicId === "custom") {
+    // If switching to custom or custom version changed, reload the image
+    if (oldPicId !== "custom" || newVersion !== oldVersion) {
+      loadCustomProfileImage()
+    }
   }
 })
 </script>

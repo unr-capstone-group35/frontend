@@ -13,6 +13,7 @@ export const useProfilePicStore = defineStore('profilePic', {
       { id: "default", src: "/images/profilepics/default.png", label: "Default" }
     ],
     currentProfilePic: null as string | null,
+    customImageVersion: 0, // Add version to track custom image updates
     isLoading: false
   }),
   
@@ -27,8 +28,8 @@ export const useProfilePicStore = defineStore('profilePic', {
       }
       
       if (state.currentProfilePic === 'custom') {
-        // For custom uploads, we need to fetch from the API with a cache buster
-        const url = `http://localhost:8080/api/users/profilepic?type=image&t=${Date.now()}`;
+        // For custom uploads, we need to fetch from the API with a version parameter
+        const url = `http://localhost:8080/api/users/profilepic?type=image&v=${state.customImageVersion}`;
         console.log("Using custom profile pic URL:", url);
         return url;
       }
@@ -143,7 +144,15 @@ export const useProfilePicStore = defineStore('profilePic', {
         console.log("Upload response data:", data);
         
         this.currentProfilePic = 'custom';
-        console.log("Set currentProfilePic to 'custom'");
+        // Increment version to force reload in all components
+        this.customImageVersion++;
+        console.log("Set currentProfilePic to 'custom' with version:", this.customImageVersion);
+        
+        const event = new CustomEvent('profile-pic-updated', { 
+          detail: { type: 'custom', version: this.customImageVersion } 
+        });
+        window.dispatchEvent(event);
+        
         return true;
       } catch (error) {
         console.error('Error uploading profile pic:', error);
