@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia'
 
 export const useProfilePicStore = defineStore('profilePic', {
   state: () => ({
@@ -13,32 +14,92 @@ export const useProfilePicStore = defineStore('profilePic', {
       { id: "shark", src: "/images/profilepics/shark.png", label: "Shark" },
       { id: "default", src: "/images/profilepics/default.png", label: "Default" }
     ],
-    currentProfilePic: null,
+    currentProfilePic: null as string | null,
     isLoading: false
   }),
   
+  getters: {
+    // Get the URL for the current profile pic
+    currentProfilePicUrl: (state) => {
+      if (!state.currentProfilePic) return '/images/profilepics/default.png'
+      
+      if (state.currentProfilePic === 'custom') {
+        // For custom uploads, we need to fetch from the API with a cache buster
+        return `/api/users/profilepic?type=image&t=${Date.now()}`
+      }
+      
+      const option = state.profilePicOptions.find(opt => opt.id === state.currentProfilePic)
+      return option ? option.src : '/images/profilepics/default.png'
+    }
+  },
+  
   actions: {
+    // Fetch the user's profile pic ID from the API
     async fetchUserProfilePic() {
       this.isLoading = true
       try {
-        const { data } = await useAPI().get('/api/users/profilepic')
+        // Use fetch directly to avoid issues with useAPI
+        const response = await fetch('/api/users/profilepic')
+        const data = await response.json()
         this.currentProfilePic = data.profilePicId || 'default'
+        return this.currentProfilePic
       } catch (error) {
         console.error('Error fetching profile pic:', error)
         this.currentProfilePic = 'default'
+        return 'default'
       } finally {
         this.isLoading = false
       }
     },
     
-    async updateProfilePic(picId) {
+    // Update the user's profile pic ID
+    async updateProfilePic(picId: string) {
       this.isLoading = true
       try {
-        await useAPI().put('/api/users/profilepic', { profilePicId: picId })
+        // Use fetch directly to avoid issues with useAPI
+        const response = await fetch('/api/users/profilepic', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ profilePicId: picId })
+        })
+        
+        if (!response.ok) {
+          throw new Error('Failed to update profile picture')
+        }
+        
         this.currentProfilePic = picId
         return true
       } catch (error) {
         console.error('Error updating profile pic:', error)
+        return false
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    // Upload a custom profile picture
+    async uploadCustomProfilePic(file: File) {
+      this.isLoading = true
+      try {
+        const formData = new FormData()
+        formData.append('profilePic', file)
+        
+        // Use fetch directly to avoid issues with useAPI
+        const response = await fetch('/api/users/profilepic/upload', {
+          method: 'POST',
+          body: formData
+        })
+        
+        if (!response.ok) {
+          throw new Error('Failed to upload profile picture')
+        }
+        
+        this.currentProfilePic = 'custom'
+        return true
+      } catch (error) {
+        console.error('Error uploading profile pic:', error)
         return false
       } finally {
         this.isLoading = false

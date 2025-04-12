@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ref, computed, onMounted } from "vue"
+import { useProfilePicStore } from "~/stores/profilePicStore"
+
 const props = defineProps({
   size: {
     type: String,

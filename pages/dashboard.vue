@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import { ref } from "vue"
+import { useAuthStore } from "~/stores/authStore"
+import { useProfilePicStore } from "~/stores/profilePicStore"
+import ProfilePic from "~/components/ProfilePic.vue"
+import ProfilePicSelector from "~/components/ProfilePicSelector.vue"
+
 definePageMeta({
   middleware: ["auth"]
 })
