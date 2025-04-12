@@ -23,14 +23,23 @@ const emit = defineEmits(["editClick"])
 // Component state
 const imageError = ref(false)
 const isLoading = ref(false)
+const imageUrl = ref<string | null>(null)
 
 const profilePicStore = useProfilePicStore()
+const authStore = useAuthStore() // Import auth store to get the token
 
 const activePicId = computed(() => props.profilePicId || profilePicStore.currentProfilePic || "default")
 
 const isDefault = computed(() => activePicId.value === "default")
+const isCustom = computed(() => activePicId.value === "custom")
 
+// For standard profile pictures
 const profilePic = computed(() => {
+  // Don't use this for custom images
+  if (isCustom.value) {
+    return null
+  }
+
   const option = profilePicStore.profilePicOptions.find(opt => opt.id === activePicId.value)
   return option ? option.src : "/images/profilepics/default.png"
 })
@@ -43,17 +52,9 @@ const containerClass = computed(() => {
 })
 
 const imageClass = computed(() => {
-  // Base image class with appropriate scaling
-  const baseClass = isDefault.value ? "transform object-contain" : "object-contain"
+  const baseClass = "transform object-contain"
 
-  // Scale percentages based on size and type
-  const scaleClass = isDefault.value
-    ? props.small
-      ? "h-[65%] w-[65%]"
-      : "h-[70%] w-[70%]"
-    : props.small
-      ? "h-[70%] w-[70%]"
-      : "h-[75%] w-[75%]"
+  const scaleClass = props.small ? "h-[65%] w-[65%]" : "h-[70%] w-[70%]"
 
   return `${baseClass} ${scaleClass}`
 })
@@ -65,10 +66,12 @@ const editButtonClass = computed(() => {
 
 // Image error handling
 const handleImageError = () => {
+  console.error("Image loading error for:", isCustom.value ? "custom image" : profilePic.value)
   imageError.value = true
 }
 
 const handleImageLoad = () => {
+  console.log("Image loaded successfully:", isCustom.value ? "custom image" : profilePic.value)
   imageError.value = false
 }
 
@@ -77,10 +80,67 @@ const handleEditClick = () => {
   emit("editClick")
 }
 
-// Load profile pic on mount if not already specified
+// Custom method to load custom profile images with authentication
+const loadCustomProfileImage = async () => {
+  if (!isCustom.value) return
+
+  try {
+    const token = authStore.token
+    console.log("Loading custom profile image with auth token")
+
+    // Create a fetch request with authentication
+    const response = await fetch(`http://localhost:8080/api/users/profilepic?type=image&t=${Date.now()}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    if (!response.ok) {
+      console.error("Failed to load custom profile image:", response.status)
+      imageError.value = true
+      return
+    }
+
+    // Convert the response to a blob and create an object URL
+    const blob = await response.blob()
+    const url = URL.createObjectURL(blob)
+
+    // Set the image URL
+    imageUrl.value = url
+    console.log("Custom image loaded successfully")
+    imageError.value = false
+  } catch (error) {
+    console.error("Error loading custom profile image:", error)
+    imageError.value = true
+  }
+}
+
+// Clean up object URLs when component is unmounted
+onUnmounted(() => {
+  if (imageUrl.value) {
+    URL.revokeObjectURL(imageUrl.value)
+  }
+})
+
+// Load profile pic on mount
 onMounted(() => {
   if (!props.profilePicId && !profilePicStore.currentProfilePic) {
-    profilePicStore.fetchUserProfilePic()
+    profilePicStore.fetchUserProfilePic().then(() => {
+      // If it's a custom pic, load it with authentication
+      if (profilePicStore.currentProfilePic === "custom") {
+        loadCustomProfileImage()
+      }
+    })
+  } else if (isCustom.value) {
+    // If already set to custom, load it immediately
+    loadCustomProfileImage()
+  }
+})
+
+// Watch for changes to activePicId
+watch(activePicId, newVal => {
+  if (newVal === "custom") {
+    loadCustomProfileImage()
   }
 })
 </script>
@@ -94,11 +154,21 @@ onMounted(() => {
         'flex items-center justify-center overflow-hidden rounded-full border border-gray-300 bg-gray-200 dark:border-gray-600 dark:bg-gray-700'
       ]"
     >
-      <!-- If there's a selected profile pic and no error loading it -->
+      <!-- Standard profile pic -->
       <img
-        v-if="profilePic && !imageError"
+        v-if="!isCustom && profilePic && !imageError"
         :src="profilePic"
         :alt="'Profile picture'"
+        :class="imageClass"
+        @error="handleImageError"
+        @load="handleImageLoad"
+      />
+
+      <!-- Custom profile pic loaded with authentication -->
+      <img
+        v-else-if="isCustom && imageUrl && !imageError"
+        :src="imageUrl"
+        :alt="'Custom profile picture'"
         :class="imageClass"
         @error="handleImageError"
         @load="handleImageLoad"

@@ -15,6 +15,8 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const isUploadOption = ref(false)
 const selectedPicId = ref<string | null>(null)
 const selectedPicSrc = ref<string | null>(null)
+const uploadFile = ref<File | null>(null)
+const uploadError = ref<string | null>(null)
 
 // Store
 const profilePicStore = useProfilePicStore()
@@ -22,7 +24,16 @@ const profilePicOptions = computed(() => profilePicStore.profilePicOptions)
 
 // Initialize the selected pic to the current one
 const getActivePicId = computed(() => {
-  return selectedPicId.value || profilePicStore.currentProfilePic || "default"
+  const id = selectedPicId.value || profilePicStore.currentProfilePic || "default"
+  console.log(
+    "Current active pic ID:",
+    id,
+    "Selected:",
+    selectedPicId.value,
+    "Store:",
+    profilePicStore.currentProfilePic
+  )
+  return id
 })
 
 // Watch for model changes to reset state
@@ -31,14 +42,19 @@ watch(
   newVal => {
     if (newVal) {
       // When opening, reset to current pic
+      console.log("Modal opened, setting selected pic to store value:", profilePicStore.currentProfilePic)
       selectedPicId.value = profilePicStore.currentProfilePic
       isUploadOption.value = false
+      uploadedImage.value = null
+      uploadFile.value = null
+      uploadError.value = null
     }
   }
 )
 
 // Close the modal
 const closeModal = () => {
+  console.log("Closing modal, current store profile pic:", profilePicStore.currentProfilePic)
   emit("update:modelValue", false)
 }
 
@@ -49,13 +65,16 @@ const preventClose = (e: Event) => {
 
 // Select a picture
 const selectPicture = (id: string, src: string) => {
+  console.log("Selected picture:", id, src)
   selectedPicId.value = id
   selectedPicSrc.value = src
   isUploadOption.value = false
+  uploadError.value = null
 }
 
 // Select the upload option
 const selectUploadOption = () => {
+  console.log("Selected upload option")
   isUploadOption.value = true
   selectedPicId.value = "upload"
   if (fileInput.value) {
@@ -66,23 +85,32 @@ const selectUploadOption = () => {
 // Handle file upload
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
+  uploadError.value = null
+
   if (target && target.files && target.files.length > 0) {
     const file = target.files[0]
+    console.log("File selected:", file.name, "Type:", file.type, "Size:", file.size)
 
     // Validation - only accept images under 2MB
     if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file")
+      console.error("Invalid file type:", file.type)
+      uploadError.value = "Please upload an image file"
       return
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      alert("Image size cannot exceed 2MB")
+      console.error("File too large:", file.size)
+      uploadError.value = "Image size cannot exceed 2MB"
       return
     }
+
+    // Store the file for later upload
+    uploadFile.value = file
 
     // Create a preview
     const reader = new FileReader()
     reader.onload = e => {
+      console.log("Preview created")
       uploadedImage.value = e.target?.result as string
     }
     reader.readAsDataURL(file)
@@ -91,28 +119,42 @@ const handleFileUpload = (event: Event) => {
 
 // Apply the selection
 const applySelection = async () => {
+  console.log("Applying selection, isUploadOption:", isUploadOption.value, "selectedPicId:", selectedPicId.value)
   isSubmitting.value = true
+  uploadError.value = null
 
   try {
     // Different handling based on whether it's a predefined pic or upload
-    if (isUploadOption.value && fileInput.value?.files?.length) {
-      // For Phase 1, we'll just use predefined pics
-      // This will be implemented in Phase 2
-      alert("Custom image uploads will be available soon!")
-      isSubmitting.value = false
-      return
-    } else if (selectedPicId.value) {
-      // Update with predefined pic
-      const success = await profilePicStore.updateProfilePic(selectedPicId.value)
+    if (isUploadOption.value && uploadFile.value) {
+      // Upload the custom image
+      console.log("Uploading custom image:", uploadFile.value.name)
+      const success = await profilePicStore.uploadCustomProfilePic(uploadFile.value)
+      console.log("Upload result:", success)
+
       if (success) {
+        console.log("Custom image uploaded successfully, currentProfilePic now:", profilePicStore.currentProfilePic)
+        // Verify the URL is being generated correctly
+        console.log("Custom image URL:", profilePicStore.currentProfilePicUrl)
         closeModal()
       } else {
-        alert("Failed to update profile picture. Please try again.")
+        uploadError.value = "Failed to upload image. Please try again."
+      }
+    } else if (selectedPicId.value) {
+      // Update with predefined pic
+      console.log("Updating to predefined pic:", selectedPicId.value)
+      const success = await profilePicStore.updateProfilePic(selectedPicId.value)
+      console.log("Update result:", success)
+
+      if (success) {
+        console.log("Profile pic updated successfully to:", profilePicStore.currentProfilePic)
+        closeModal()
+      } else {
+        uploadError.value = "Failed to update profile picture. Please try again."
       }
     }
   } catch (error) {
     console.error("Error applying selection:", error)
-    alert("An error occurred. Please try again.")
+    uploadError.value = "An error occurred. Please try again."
   } finally {
     isSubmitting.value = false
   }
@@ -140,6 +182,14 @@ const applySelection = async () => {
               </svg>
             </button>
           </div>
+        </div>
+
+        <!-- Error Message -->
+        <div
+          v-if="uploadError"
+          class="mx-4 mt-2 rounded-md bg-red-50 p-2 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400"
+        >
+          {{ uploadError }}
         </div>
 
         <!-- Picture Grid -->
@@ -229,9 +279,23 @@ const applySelection = async () => {
           </button>
           <button
             @click="applySelection"
-            class="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+            class="flex items-center rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-70"
             :disabled="isSubmitting"
           >
+            <svg
+              v-if="isSubmitting"
+              class="mr-1 h-4 w-4 animate-spin text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
             <span v-if="isSubmitting">Saving...</span>
             <span v-else>Apply</span>
           </button>
