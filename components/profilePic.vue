@@ -1,20 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue"
-import { useProfilePicStore } from "~/stores/profilePicStore"
-
 const props = defineProps({
-  size: {
-    type: String,
-    default: "md",
-    validator: (val: string) => ["xs", "sm", "md", "lg", "xl"].includes(val)
-  },
-  profilePicId: {
-    type: String,
-    default: null
+  small: {
+    type: Boolean,
+    default: false
   },
   editable: {
     type: Boolean,
     default: false
+  },
+  profilePicId: {
+    type: String,
+    default: null
   },
   userId: {
     type: Number,
@@ -28,65 +24,43 @@ const emit = defineEmits(["editClick"])
 const imageError = ref(false)
 const isLoading = ref(false)
 
-// Store
 const profilePicStore = useProfilePicStore()
 
-// If provided with a profilePicId, use that, otherwise use the one from the store
 const activePicId = computed(() => props.profilePicId || profilePicStore.currentProfilePic || "default")
 
-// Determine if we're using the default pic
 const isDefault = computed(() => activePicId.value === "default")
 
-// Get the image URL based on the active pic ID
 const profilePic = computed(() => {
   const option = profilePicStore.profilePicOptions.find(opt => opt.id === activePicId.value)
   return option ? option.src : "/images/profilepics/default.png"
 })
 
-// Size classes for responsive design - MODIFIED SCALING VALUES EVEN SMALLER
-const sizeClasses = computed(() => {
-  switch (props.size) {
-    case "xs":
-      return {
-        container: "h-8 w-8",
-        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
-        icon: "h-5 w-5",
-        editButton: "bottom-0 right-0 h-3 w-3",
-        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
-      }
-    case "sm":
-      return {
-        container: "h-10 w-10",
-        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
-        icon: "h-6 w-6",
-        editButton: "bottom-0 right-0 h-4 w-4",
-        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
-      }
-    case "lg":
-      return {
-        container: "h-16 w-16",
-        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
-        icon: "h-10 w-10",
-        editButton: "bottom-0 right-0 h-6 w-6",
-        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
-      }
-    case "xl":
-      return {
-        container: "h-24 w-24",
-        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
-        icon: "h-16 w-16",
-        editButton: "bottom-0 right-0 h-7 w-7",
-        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
-      }
-    default: // md
-      return {
-        container: "h-12 w-12",
-        imgSize: "h-[75%] w-[75%] object-contain", // Smaller for all images
-        icon: "h-8 w-8",
-        editButton: "bottom-0 right-0 h-5 w-5",
-        imgScale: "h-[70%] w-[70%] transform object-contain" // Even smaller for default icon
-      }
-  }
+// Container and image sizes based on small prop
+const containerClass = computed(() => {
+  return props.small
+    ? "h-10 w-10" // Small size for leaderboard
+    : "h-24 w-24" // Normal size for profile/dashboard
+})
+
+const imageClass = computed(() => {
+  // Base image class with appropriate scaling
+  const baseClass = isDefault.value ? "transform object-contain" : "object-contain"
+
+  // Scale percentages based on size and type
+  const scaleClass = isDefault.value
+    ? props.small
+      ? "h-[65%] w-[65%]"
+      : "h-[70%] w-[70%]"
+    : props.small
+      ? "h-[70%] w-[70%]"
+      : "h-[75%] w-[75%]"
+
+  return `${baseClass} ${scaleClass}`
+})
+
+// Edit button size
+const editButtonClass = computed(() => {
+  return props.small ? "absolute bottom-0 right-0 h-4 w-4" : "absolute bottom-0 right-0 h-7 w-7"
 })
 
 // Image error handling
@@ -116,7 +90,7 @@ onMounted(() => {
     <!-- Profile Picture Container -->
     <div
       :class="[
-        sizeClasses.container,
+        containerClass,
         'flex items-center justify-center overflow-hidden rounded-full border border-gray-300 bg-gray-200 dark:border-gray-600 dark:bg-gray-700'
       ]"
     >
@@ -125,13 +99,13 @@ onMounted(() => {
         v-if="profilePic && !imageError"
         :src="profilePic"
         :alt="'Profile picture'"
-        :class="[isDefault ? sizeClasses.imgScale : sizeClasses.imgSize]"
+        :class="imageClass"
         @error="handleImageError"
         @load="handleImageLoad"
       />
 
       <!-- Fallback SVG icon if image fails to load -->
-      <svg v-else :class="[sizeClasses.icon, 'text-gray-400']" fill="currentColor" viewBox="0 0 20 20">
+      <svg v-else :class="[small ? 'h-6 w-6' : 'h-16 w-16', 'text-gray-400']" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
       </svg>
     </div>
@@ -141,8 +115,8 @@ onMounted(() => {
       v-if="editable"
       @click.stop="handleEditClick"
       :class="[
-        sizeClasses.editButton,
-        'absolute flex items-center justify-center rounded-full bg-emerald-500 text-white shadow-md transition-colors hover:bg-emerald-600'
+        editButtonClass,
+        'flex items-center justify-center rounded-full bg-emerald-500 text-white shadow-md transition-colors hover:bg-emerald-600'
       ]"
       title="Change profile picture"
     >

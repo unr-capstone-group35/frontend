@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useProfilePicStore } from "~/stores/profilePicStore"
+
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -67,8 +69,8 @@ const handleGlossaryClick = () => {
 
       <!-- Profile -->
       <div class="mb-8 flex flex-col items-center space-y-4">
-        <!-- Use ProfilePic component instead of DIV-->
-        <ProfilePic size="xl" />
+        <!-- Use normal sized ProfilePic component -->
+        <ProfilePic />
 
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300">
           {{ authStore.username || "Unknown" }}

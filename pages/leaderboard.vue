@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue"
-import { useProfilePicStore } from "~/stores/profilePicStore"
+import { ref, watch, onMounted } from "vue"
 import { useAuthStore } from "~/stores/authStore"
-import { onBeforeRouteEnter } from "vue-router"
+import { useProfilePicStore } from "~/stores/profilePicStore"
 
-// State to force re-render of profile pics
 const profilePicUpdateTrigger = ref(Date.now())
 
 // Sample data - to be replaced with API call later
@@ -30,14 +28,11 @@ const isCurrentUser = (name: string) => {
   return name === "You" || name === authStore.username
 }
 
-// Force refresh of profile pic
 const refreshProfilePic = async () => {
   await profilePicStore.fetchUserProfilePic()
-  // Update the trigger to force a re-render of components
   profilePicUpdateTrigger.value = Date.now()
 }
 
-// Watch for route changes - whenever we navigate to this page, refresh the profile pic
 if (process.client) {
   const route = useRoute()
   watch(
@@ -53,12 +48,13 @@ if (process.client) {
 
 <template>
   <div class="page-container flex">
+    <!-- Left card - User stats -->
     <div class="flex w-80 flex-col p-6">
       <div class="rounded-lg bg-white p-6 dark:bg-gray-800">
         <!-- Current user(left card) -->
         <div class="mb-8 flex flex-col items-center space-y-4">
-          <!-- Use ProfilePic component with key to force re-render when the profile pic changes -->
-          <ProfilePic :key="`profile-pic-${profilePicUpdateTrigger}`" size="xl" />
+          <!-- Use normal sized ProfilePic component with key to force re-render when the profile pic changes -->
+          <ProfilePic :key="`profile-pic-${profilePicUpdateTrigger}`" />
           <h2 class="text-primary text-xl font-semibold">Your Points</h2>
         </div>
 
@@ -89,7 +85,7 @@ if (process.client) {
       </NuxtLink>
     </div>
 
-    <!-- Leaderboard(right card)-->
+    <!-- Leaderboard(right card) -->
     <div class="flex-1 p-6">
       <div class="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
         <h2 class="text-primary mb-6 text-2xl font-bold">Leaderboard</h2>
@@ -98,22 +94,20 @@ if (process.client) {
           <div
             v-for="(user, index) in leaderboardUsers"
             :key="index"
-            :class="[
-              'flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-600',
-              {
-                'border-2 border-yellow-500': index === 0,
-                'border-2 border-gray-300': index === 1,
-                'border-2 border-amber-600': index === 2
-              }
-            ]"
+            class="flex h-16 items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-600"
+            :class="{
+              'border-2 border-yellow-500': index === 0,
+              'border-2 border-gray-300': index === 1,
+              'border-2 border-amber-600': index === 2,
+              border: index > 2
+            }"
           >
             <div class="flex items-center space-x-4">
-              <span class="text-lg font-semibold text-gray-700 dark:text-white">{{ index + 1 }}</span>
+              <span class="w-8 text-center text-xl font-bold text-gray-700 dark:text-white">{{ index + 1 }}</span>
 
-              <!-- Use ProfilePic for current user with key to force re-render when profile changes,
-                   default icon for others -->
+              <!-- Use small ProfilePic for current user, default icon for others -->
               <div v-if="isCurrentUser(user.name)" class="flex-shrink-0">
-                <ProfilePic :key="`leaderboard-${index}-${profilePicUpdateTrigger}`" size="sm" />
+                <ProfilePic :key="`leaderboard-${index}-${profilePicUpdateTrigger}`" :small="true" />
               </div>
               <div v-else class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-500">
                 <svg class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -125,9 +119,10 @@ if (process.client) {
                 </svg>
               </div>
 
-              <span class="text-gray-800 dark:text-white">{{ user.name }}</span>
+              <span class="text-lg text-gray-800 dark:text-white">{{ user.name }}</span>
             </div>
-            <span class="font-semibold text-gray-700 dark:text-white">{{ user.points }} points</span>
+
+            <span class="text-lg font-semibold text-gray-700 dark:text-white">{{ user.points }} points</span>
           </div>
         </div>
       </div>

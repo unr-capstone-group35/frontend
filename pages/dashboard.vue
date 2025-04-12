@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue"
-import { useAuthStore } from "~/stores/authStore"
-import { useProfilePicStore } from "~/stores/profilePicStore"
-import ProfilePic from "~/components/ProfilePic.vue"
-import ProfilePicSelector from "~/components/ProfilePicSelector.vue"
-
 definePageMeta({
   middleware: ["auth"]
 })
@@ -28,7 +22,7 @@ const handleProfilePicEdit = () => {
       <div class="mb-12 text-center">
         <!-- Profile Picture -->
         <div class="mb-6 flex justify-center">
-          <ProfilePic size="xl" :editable="true" @editClick="handleProfilePicEdit" />
+          <ProfilePic :editable="true" @editClick="handleProfilePicEdit" />
         </div>
         <h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-white">Welcome back, {{ username }}!</h1>
         <p class="text-lg text-gray-600 dark:text-gray-300">Track your progress and continue your learning journey</p>

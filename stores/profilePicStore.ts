@@ -71,7 +71,6 @@ export const useProfilePicStore = defineStore('profilePic', {
         const authStore = useAuthStore()
         const token = authStore.token
         
-        // Use the correct backend URL
         const response = await fetch('http://localhost:8080/api/users/profilepic', {
           method: 'PUT',
           headers: {
@@ -105,7 +104,6 @@ export const useProfilePicStore = defineStore('profilePic', {
         const authStore = useAuthStore()
         const token = authStore.token
         
-        // Use the correct backend URL
         const response = await fetch('http://localhost:8080/api/users/profilepic/upload', {
           method: 'POST',
           headers: {
