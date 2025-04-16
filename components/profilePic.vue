@@ -24,6 +24,7 @@ const emit = defineEmits(["editClick"])
 const imageError = ref(false)
 const isLoading = ref(false)
 const imageUrl = ref<string | null>(null)
+const localVersion = ref(0) // Local version tracking
 
 const profilePicStore = useProfilePicStore()
 const authStore = useAuthStore() // Import auth store to get the token
@@ -97,9 +98,11 @@ const loadCustomProfileImage = async () => {
       imageUrl.value = null
     }
 
-    // Create a fetch request with authentication - use version parameter
-    const version = profilePicStore.customImageVersion
-    const response = await fetch(`http://localhost:8080/api/users/profilepic?type=image&v=${version}`, {
+    // Update local version from store
+    localVersion.value = profilePicStore.customImageVersion
+
+    // Create a fetch request with authentication - use version parameter to prevent caching
+    const response = await fetch(`http://localhost:8080/api/users/profilepic?type=image&v=${localVersion.value}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -117,7 +120,7 @@ const loadCustomProfileImage = async () => {
 
     // Set the image URL
     imageUrl.value = url
-    console.log("Custom image loaded successfully with version:", version)
+    console.log("Custom image loaded successfully with version:", localVersion.value)
     imageError.value = false
   } catch (error) {
     console.error("Error loading custom profile image:", error)
@@ -167,6 +170,8 @@ watch([activePicId, customImageVersion], ([newPicId, newVersion], [oldPicId, old
   if (newPicId === "custom") {
     // If switching to custom or custom version changed, reload the image
     if (oldPicId !== "custom" || newVersion !== oldVersion) {
+      // Force reload by updating local version
+      localVersion.value = newVersion
       loadCustomProfileImage()
     }
   }

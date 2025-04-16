@@ -17,6 +17,7 @@ const selectedPicId = ref<string | null>(null)
 const selectedPicSrc = ref<string | null>(null)
 const uploadFile = ref<File | null>(null)
 const uploadError = ref<string | null>(null)
+const fileTimestamp = ref<number>(Date.now()) // Add timestamp for cache busting
 
 // Store
 const profilePicStore = useProfilePicStore()
@@ -48,6 +49,11 @@ watch(
       uploadedImage.value = null
       uploadFile.value = null
       uploadError.value = null
+
+      // Reset file input to ensure we get a change event even if selecting the same file
+      if (fileInput.value) {
+        fileInput.value.value = ""
+      }
     }
   }
 )
@@ -104,13 +110,16 @@ const handleFileUpload = (event: Event) => {
       return
     }
 
+    // Update timestamp for cache busting
+    fileTimestamp.value = Date.now()
+
     // Store the file for later upload
     uploadFile.value = file
 
     // Create a preview
     const reader = new FileReader()
     reader.onload = e => {
-      console.log("Preview created")
+      console.log("Preview created with timestamp:", fileTimestamp.value)
       uploadedImage.value = e.target?.result as string
     }
     reader.readAsDataURL(file)
@@ -127,13 +136,17 @@ const applySelection = async () => {
     // Different handling based on whether it's a predefined pic or upload
     if (isUploadOption.value && uploadFile.value) {
       // Upload the custom image
-      console.log("Uploading custom image:", uploadFile.value.name)
-      const success = await profilePicStore.uploadCustomProfilePic(uploadFile.value)
+      console.log("Uploading custom image:", uploadFile.value.name, "with timestamp:", fileTimestamp.value)
+
+      // Make sure we're using the most recently selected file
+      const success = await profilePicStore.uploadCustomProfilePic(uploadFile.value, fileTimestamp.value)
       console.log("Upload result:", success)
 
       if (success) {
         console.log("Custom image uploaded successfully, currentProfilePic now:", profilePicStore.currentProfilePic)
-        // Verify the URL is being generated correctly
+
+        // Set version here to ensure it's using our timestamp
+        profilePicStore.customImageVersion = fileTimestamp.value
         console.log("Custom image URL:", profilePicStore.currentProfilePicUrl)
         closeModal()
       } else {

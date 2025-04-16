@@ -13,7 +13,7 @@ export const useProfilePicStore = defineStore('profilePic', {
       { id: "default", src: "/images/profilepics/default.png", label: "Default" }
     ],
     currentProfilePic: null as string | null,
-    customImageVersion: 0, // Add version to track custom image updates
+    customImageVersion: Date.now(), // Initialize with current timestamp
     isLoading: false
   }),
   
@@ -66,7 +66,13 @@ export const useProfilePicStore = defineStore('profilePic', {
         const data = await response.json();
         console.log("Received profile pic data:", data);
         this.currentProfilePic = data.profilePicId || 'default';
-        console.log("Set currentProfilePic to:", this.currentProfilePic);
+        
+        // Update version when fetching
+        if (this.currentProfilePic === 'custom') {
+          this.customImageVersion = Date.now();
+        }
+        
+        console.log("Set currentProfilePic to:", this.currentProfilePic, "with version:", this.customImageVersion);
         return this.currentProfilePic;
       } catch (error) {
         console.error('Error fetching profile pic:', error);
@@ -112,9 +118,14 @@ export const useProfilePicStore = defineStore('profilePic', {
     },
     
     // Upload a custom profile picture
-    async uploadCustomProfilePic(file: File) {
+    async uploadCustomProfilePic(file: File, timestamp?: number) {
       console.log("Uploading custom profile pic:", file.name, "Size:", file.size, "Type:", file.type);
       this.isLoading = true;
+      
+      // Generate new version timestamp before upload or use provided timestamp
+      const newVersion = timestamp || Date.now();
+      console.log("Using timestamp for version:", newVersion);
+      
       try {
         const formData = new FormData();
         formData.append('profilePic', file);
@@ -144,8 +155,8 @@ export const useProfilePicStore = defineStore('profilePic', {
         console.log("Upload response data:", data);
         
         this.currentProfilePic = 'custom';
-        // Increment version to force reload in all components
-        this.customImageVersion++;
+        // Use the timestamp we generated before the upload
+        this.customImageVersion = newVersion;
         console.log("Set currentProfilePic to 'custom' with version:", this.customImageVersion);
         
         const event = new CustomEvent('profile-pic-updated', { 
