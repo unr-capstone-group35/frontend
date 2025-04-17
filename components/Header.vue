@@ -9,10 +9,22 @@ const toggleTheme = () => {
 const route = useRoute()
 const isMenuOpen = ref(false)
 
-// don't show on index.vue and sign in pages
+// Import the auth store
+const authStore = useAuthStore()
+
 const showHamburger = computed(() => {
   const excludedRoutes = ["/signin", "/signup"]
-  return !excludedRoutes.includes(route.path)
+
+  if (excludedRoutes.includes(route.path)) {
+    return false
+  }
+
+  if (route.path === "/") {
+    return authStore.isAuthenticated
+  }
+
+  // Show on all other routes
+  return true
 })
 
 const toggleMenu = () => {
