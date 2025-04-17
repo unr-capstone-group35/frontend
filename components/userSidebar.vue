@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useProfilePicStore } from "~/stores/profilePicStore"
+import { usePointsStore } from "~/stores/pointsStore"
 
 const props = defineProps({
   isOpen: {
@@ -12,11 +13,62 @@ const emit = defineEmits(["close"])
 const router = useRouter()
 const authStore = useAuthStore()
 const profilePicStore = useProfilePicStore()
+const pointsStore = usePointsStore()
 
-// Load profile pic data
-onMounted(() => {
-  profilePicStore.fetchUserProfilePic()
+// Stats data
+const totalPoints = ref(0)
+const exercisesCompleted = ref(0)
+
+// Load profile pic data and user stats
+onMounted(async () => {
+  await profilePicStore.fetchUserProfilePic()
+  await fetchUserStats()
 })
+
+// Watch for changes in isOpen to refresh stats when sidebar opens
+watch(() => props.isOpen, async (isOpen) => {
+  if (isOpen) {
+    await fetchUserStats()
+  }
+})
+
+// Watch for changes in points to keep the sidebar updated
+watch(
+  () => pointsStore.summary,
+  () => {
+    if (pointsStore.summary) {
+      totalPoints.value = pointsStore.totalPoints
+      
+      // Count completed exercises from transactions
+      const completedExercises = pointsStore.recentTransactions.filter(
+        tx => tx.transactionType === 'correct_answer'
+      ).length
+      
+      exercisesCompleted.value = completedExercises
+    }
+  },
+  { deep: true }
+)
+
+// Fetch user stats
+const fetchUserStats = async () => {
+  try {
+    await pointsStore.fetchPointsSummary(100) // Fetch more transactions to count exercises
+    
+    if (pointsStore.summary) {
+      totalPoints.value = pointsStore.totalPoints
+      
+      // Count completed exercises from transactions
+      const completedExercises = pointsStore.recentTransactions.filter(
+        tx => tx.transactionType === 'correct_answer'
+      ).length
+      
+      exercisesCompleted.value = completedExercises
+    }
+  } catch (error) {
+    console.error("Failed to fetch user stats:", error)
+  }
+}
 
 const close = () => {
   emit("close")
@@ -86,14 +138,14 @@ const handleGlossaryClick = () => {
 
         <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
           <div class="text-sm text-gray-800 dark:text-gray-300">Points</div>
-          <div class="text-xl font-bold text-black dark:text-white">0</div>
+          <div class="text-xl font-bold text-black dark:text-white">{{ totalPoints }}</div>
         </div>
       </div>
 
       <div class="mb-6">
         <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
           <div class="text-sm text-gray-800 dark:text-gray-300">Exercises-Completed</div>
-          <div class="text-xl font-bold text-black dark:text-white">0</div>
+          <div class="text-xl font-bold text-black dark:text-white">{{ exercisesCompleted }}</div>
         </div>
       </div>
 

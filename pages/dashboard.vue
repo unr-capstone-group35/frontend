@@ -8,11 +8,25 @@ const showProfilePicSelector = ref(false)
 
 // Initialize profile picture store
 const profilePicStore = useProfilePicStore()
+// Initialize points store
+const pointsStore = usePointsStore()
+
+// Fetch points data on component mount
+onMounted(async () => {
+  await pointsStore.fetchPointsSummary()
+})
 
 // Handle edit profile pic button click
 const handleProfilePicEdit = () => {
   showProfilePicSelector.value = true
 }
+
+// Calculate completed exercises from transactions
+const completedExercises = computed(() => {
+  return pointsStore.recentTransactions
+    .filter(transaction => transaction.transactionType === 'correct_answer')
+    .length
+})
 </script>
 
 <template>
@@ -49,7 +63,7 @@ const handleProfilePicEdit = () => {
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-600"
               >
                 <div class="text-primary mb-2 text-xl">Total Points</div>
-                <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ pointsStore.totalPoints }}</div>
                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-200">points earned</div>
               </div>
 
@@ -58,9 +72,29 @@ const handleProfilePicEdit = () => {
                 class="transform rounded-xl bg-gray-50 p-6 text-center transition-transform hover:scale-105 dark:bg-gray-600"
               >
                 <div class="text-primary mb-2 text-xl">Exercises</div>
-                <div class="text-4xl font-bold text-gray-900 dark:text-white">0</div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ completedExercises }}</div>
                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-200">completed</div>
               </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <div v-if="pointsStore.recentTransactions.length > 0" class="mt-8 rounded-xl bg-gray-50 p-6 dark:bg-gray-600">
+              <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
+              <ul class="space-y-3">
+                <li 
+                  v-for="transaction in pointsStore.recentTransactions.slice(0, 3)" 
+                  :key="transaction.id"
+                  class="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm dark:bg-gray-700"
+                >
+                  <div>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ transaction.description }}</span>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      Course: {{ transaction.courseId }}
+                    </div>
+                  </div>
+                  <div class="font-bold text-green-600 dark:text-green-400">+{{ transaction.points }}</div>
+                </li>
+              </ul>
             </div>
 
             <!-- Start Learning Button -->

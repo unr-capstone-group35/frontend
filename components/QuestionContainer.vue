@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useExerciseStore } from "~/stores/exerciseStore"
 
 const props = defineProps({
   exercise: {
@@ -15,9 +14,33 @@ const props = defineProps({
 const emit = defineEmits(["next-exercise"])
 
 const exerciseStore = useExerciseStore()
+const pointsStore = usePointsStore()
 const isCorrect = ref(false)
 const showFeedback = ref(false)
 const selectedAnswer = ref(null)
+const pointsAwarded = ref(0)
+const currentStreak = ref(0)
+const displayedTotalPoints = ref(0) // Add this to track displayed points
+
+// Get the course and lesson IDs
+const route = useRoute()
+const courseId = computed(() => route.query.course as string)
+const lessonId = computed(() => route.query.lesson as string)
+
+// Get streak information
+const lessonStreak = computed(() => {
+  if (!courseId.value || !lessonId.value) return 0
+  return pointsStore.getLessonStreak(courseId.value, lessonId.value)
+})
+
+// Load points data
+onMounted(async () => {
+  if (courseId.value && lessonId.value) {
+    await pointsStore.fetchLessonPoints(courseId.value, lessonId.value)
+    await pointsStore.fetchPointsSummary() // Add this to fetch total points
+    displayedTotalPoints.value = pointsStore.totalPoints // Initialize displayed points
+  }
+})
 
 const canSubmit = computed(() => {
   // For ordering type, we should always be able to check the answer
@@ -34,8 +57,35 @@ watch(
     isCorrect.value = false
     showFeedback.value = false
     selectedAnswer.value = null
+    pointsAwarded.value = 0
   },
   { immediate: true }
+)
+
+// Watch for lesson points changes
+watch(
+  () => pointsStore.lessonPoints,
+  () => {
+    if (courseId.value && lessonId.value) {
+      const key = `${courseId.value}-${lessonId.value}`
+      const lessonPoints = pointsStore.lessonPoints[key]
+      if (lessonPoints) {
+        currentStreak.value = lessonPoints.currentStreak
+      }
+    }
+  },
+  { deep: true }
+)
+
+// Add a watcher for total points
+watch(
+  () => pointsStore.summary,
+  () => {
+    if (pointsStore.summary) {
+      displayedTotalPoints.value = pointsStore.totalPoints
+    }
+  },
+  { deep: true }
 )
 
 const questionComponent = computed(() => {
@@ -60,6 +110,7 @@ function updateAnswer(answer: any) {
   selectedAnswer.value = answer
   showFeedback.value = false
   isCorrect.value = false // Reset correctness state
+  pointsAwarded.value = 0 // Reset points
 }
 
 async function handleMainButton() {
@@ -80,10 +131,32 @@ async function submitAnswer() {
   showFeedback.value = false // Reset feedback before new submission
 
   try {
+    // Use the updated submission method that returns points info
     const result = await props.onSubmitAnswer(selectedAnswer.value)
     console.log("Question Container - Submission result:", result)
-    isCorrect.value = result
+    
+    // The result might now be an object with isCorrect and points
+    if (typeof result === 'object' && result !== null) {
+      isCorrect.value = result.isCorrect
+      if (result.points) {
+        pointsAwarded.value = result.points
+      }
+      if (result.currentStreak) {
+        currentStreak.value = result.currentStreak
+      }
+    } else {
+      // Backward compatibility
+      isCorrect.value = !!result
+    }
+    
     showFeedback.value = true
+    
+    // Refresh points data
+    if (courseId.value && lessonId.value) {
+      await pointsStore.fetchLessonPoints(courseId.value, lessonId.value)
+      await pointsStore.fetchPointsSummary() // Add this to refresh total points
+      displayedTotalPoints.value = pointsStore.totalPoints // Update displayed points
+    }
   } catch (error) {
     console.error("Error submitting answer:", error)
     isCorrect.value = false
@@ -100,6 +173,7 @@ function handleNextExercise() {
 function retryQuestion() {
   showFeedback.value = false
   selectedAnswer.value = null
+  pointsAwarded.value = 0
 
   // Reset the current exercise state in the store
   exerciseStore.resetCurrentExercise()
@@ -108,6 +182,20 @@ function retryQuestion() {
 
 <template>
   <div class="mx-auto max-w-3xl">
+    <!-- Points and Streak Display -->
+    <div v-if="courseId && lessonId" class="mb-4 flex justify-between">
+      <div class="rounded-lg bg-gray-100 px-3 py-2 dark:bg-gray-800">
+        <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Streak: </span>
+        <span class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ currentStreak }}</span>
+      </div>
+      <div class="rounded-lg bg-gray-100 px-3 py-2 dark:bg-gray-800">
+        <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Total Points: </span>
+        <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+          {{ displayedTotalPoints }}
+        </span>
+      </div>
+    </div>
+
     <!-- Exercise Content -->
     <component
       :is="questionComponent"
@@ -131,7 +219,14 @@ function retryQuestion() {
               : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
           ]"
         >
-          {{ isCorrect ? "Correct!" : "Try again!" }}
+          <div>{{ isCorrect ? "Correct!" : "Try again!" }}</div>
+          <!-- Points Information -->
+          <div v-if="isCorrect && pointsAwarded > 0" class="mt-1 text-sm font-medium">
+            +{{ pointsAwarded }} points
+            <span v-if="currentStreak > 1" class="ml-2">
+              ({{ currentStreak }}x streak!)
+            </span>
+          </div>
         </div>
       </div>
       <div v-else class="flex-grow">
