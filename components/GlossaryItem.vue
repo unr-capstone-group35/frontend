@@ -95,7 +95,10 @@
           :key="index"
           class="mb-4 overflow-hidden rounded-lg border border-gray-300 bg-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
         >
-          <div class="flex items-center border-b border-gray-200 p-4 dark:border-gray-700">
+          <div
+            class="flex cursor-pointer items-center border-b border-gray-200 p-4 dark:border-gray-700"
+            @click="toggleExample(index)"
+          >
             <div class="w-[120px] min-w-[120px] pr-4">
               <div class="pl-0.5 font-semibold text-gray-800 dark:text-white">{{ item.term }}</div>
             </div>
@@ -112,7 +115,7 @@
                 ]"
                 >{{ item.category === "Data Structures" ? "Data Structs" : item.category }}</span
               >
-              <button @click="toggleExample(index)" class="toggle-btn" :class="{ active: item.isExampleVisible }">
+              <button @click.stop="toggleExample(index)" class="toggle-btn" :class="{ active: item.isExampleVisible }">
                 <span class="toggle-arrow">{{ item.isExampleVisible ? "▲" : "▼" }}</span>
               </button>
             </div>
@@ -600,19 +603,44 @@ const glossaryItems = ref([
 
 // Filtered glossary items based on search and category
 const filteredGlossaryItems = computed(() => {
-  return (
-    glossaryItems.value
-      .filter(item => {
-        const matchesSearch =
-          searchTerm.value === "" ||
-          item.term.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-          item.definition.toLowerCase().includes(searchTerm.value.toLowerCase())
-        const matchesCategory = activeCategory.value === "All" || item.category === activeCategory.value
-        return matchesSearch && matchesCategory
-      })
-      // filters alphabetically
+  // If no search term, just filter by category and sort alphabetically
+  if (searchTerm.value === "") {
+    return glossaryItems.value
+      .filter(item => activeCategory.value === "All" || item.category === activeCategory.value)
       .sort((a, b) => a.term.localeCompare(b.term))
-  )
+  }
+
+  // With search term, we need to rank results
+  const searchLower = searchTerm.value.toLowerCase()
+
+  return glossaryItems.value
+    .filter(item => {
+      const matchesTerm = item.term.toLowerCase().includes(searchLower)
+      const matchesDefinition = item.definition.toLowerCase().includes(searchLower)
+      const matchesCategory = activeCategory.value === "All" || item.category === activeCategory.value
+
+      return (matchesTerm || matchesDefinition) && matchesCategory
+    })
+    .sort((a, b) => {
+      // Calculate relevance scores
+      const aTermLower = a.term.toLowerCase()
+      const bTermLower = b.term.toLowerCase()
+
+      // Exact match of term gets highest priority
+      if (aTermLower === searchLower && bTermLower !== searchLower) return -1
+      if (bTermLower === searchLower && aTermLower !== searchLower) return 1
+
+      // Term starting with search gets next priority
+      if (aTermLower.startsWith(searchLower) && !bTermLower.startsWith(searchLower)) return -1
+      if (bTermLower.startsWith(searchLower) && !aTermLower.startsWith(searchLower)) return 1
+
+      // Term containing search gets next priority (both contain it at this point)
+      if (aTermLower.includes(searchLower) && !bTermLower.includes(searchLower)) return -1
+      if (bTermLower.includes(searchLower) && !aTermLower.includes(searchLower)) return 1
+
+      // If both have similar relevance, sort alphabetically
+      return a.term.localeCompare(b.term)
+    })
 })
 
 // Toggle example visibility
