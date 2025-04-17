@@ -23,9 +23,7 @@ const handleProfilePicEdit = () => {
 
 // Calculate completed exercises from transactions
 const completedExercises = computed(() => {
-  return pointsStore.recentTransactions
-    .filter(transaction => transaction.transactionType === 'correct_answer')
-    .length
+  return pointsStore.recentTransactions.filter(transaction => transaction.transactionType === "correct_answer").length
 })
 </script>
 
@@ -75,26 +73,6 @@ const completedExercises = computed(() => {
                 <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ completedExercises }}</div>
                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-200">completed</div>
               </div>
-            </div>
-
-            <!-- Recent Activity Section -->
-            <div v-if="pointsStore.recentTransactions.length > 0" class="mt-8 rounded-xl bg-gray-50 p-6 dark:bg-gray-600">
-              <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
-              <ul class="space-y-3">
-                <li 
-                  v-for="transaction in pointsStore.recentTransactions.slice(0, 3)" 
-                  :key="transaction.id"
-                  class="flex items-center justify-between rounded-lg bg-white p-3 shadow-sm dark:bg-gray-700"
-                >
-                  <div>
-                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ transaction.description }}</span>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">
-                      Course: {{ transaction.courseId }}
-                    </div>
-                  </div>
-                  <div class="font-bold text-green-600 dark:text-green-400">+{{ transaction.points }}</div>
-                </li>
-              </ul>
             </div>
 
             <!-- Start Learning Button -->

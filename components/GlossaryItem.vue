@@ -3,7 +3,19 @@
     class="min-h-page flex-1 overflow-y-auto bg-gradient-to-b from-slate-100 to-slate-200 p-8 transition-all duration-300 dark:from-gray-950 dark:to-gray-900"
   >
     <div class="relative mx-auto max-w-[900px] p-6 font-sans">
-      <h1 class="mb-6 text-center text-4xl font-bold !text-emerald-500">📚 Programming Glossary</h1>
+      <div class="relative mb-6">
+        <div class="absolute left-0 top-1/2 -translate-y-1/2">
+          <button
+            @click="navigateBackToLearn"
+            class="flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-white transition-all hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+          >
+            <span class="mr-2">←</span>
+            <span>Back to Learn</span>
+          </button>
+        </div>
+        <h1 class="mb-6 text-center text-4xl font-bold !text-emerald-500">📚 Programming Glossary</h1>
+      </div>
+
       <div class="mb-4 flex items-center justify-between">
         <div class="relative max-w-[700px] flex-grow">
           <div class="search-icon">🔍</div>
@@ -204,7 +216,27 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue"
+const { currentCourse, currentLesson } = useLearn()
+
+const router = useRouter()
+
+// Navigate back to learn page
+const navigateBackToLearn = () => {
+  if (currentCourse.value?.id && currentLesson.value?.id) {
+    // If we have current course and lesson in the store, navigate back to it
+    router.push({
+      path: "/learn",
+      query: {
+        course: currentCourse.value.id,
+        lesson: currentLesson.value.id,
+        exercise: "" // Start with the first exercise
+      }
+    })
+  } else {
+    // If no current course/lesson, go to start learning page
+    router.push("/start-learning")
+  }
+}
 
 const viewMode = ref("compact") // 'compact' or 'card' view mode
 
