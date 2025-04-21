@@ -148,7 +148,15 @@ export const useProfilePicStore = defineStore('profilePic', {
         if (!response.ok) {
           const errorText = await response.text();
           console.error("Error response text:", errorText);
-          throw new Error(`Failed to upload profile picture: ${response.status}`);
+          
+          // 403 probably means google detected inappropriate material
+          if (response.status === 403) {
+            throw new Error("This image contains inappropriate content and cannot be used as a profile picture.");
+          } else if (response.status === 500 && errorText.includes("Failed to detect safe search")) {
+            throw new Error("Failed to detect safe search. The service may be temporarily unavailable.");
+          } else {
+            throw new Error(`Failed to upload profile picture: ${response.status}`);
+          }
         }
         
         const data = await response.json();
@@ -167,10 +175,10 @@ export const useProfilePicStore = defineStore('profilePic', {
         return true;
       } catch (error) {
         console.error('Error uploading profile pic:', error);
-        return false;
+        throw error; // Re-throw so the component can handle it
       } finally {
         this.isLoading = false;
       }
-    }
+    }        
   }
 })

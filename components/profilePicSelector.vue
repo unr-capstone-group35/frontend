@@ -138,19 +138,38 @@ const applySelection = async () => {
       // Upload the custom image
       console.log("Uploading custom image:", uploadFile.value.name, "with timestamp:", fileTimestamp.value)
 
-      // Make sure we're using the most recently selected file
-      const success = await profilePicStore.uploadCustomProfilePic(uploadFile.value, fileTimestamp.value)
-      console.log("Upload result:", success)
+      try {
+        // Make sure we're using the most recently selected file
+        const success = await profilePicStore.uploadCustomProfilePic(uploadFile.value, fileTimestamp.value)
+        console.log("Upload result:", success)
 
-      if (success) {
-        console.log("Custom image uploaded successfully, currentProfilePic now:", profilePicStore.currentProfilePic)
+        if (success) {
+          console.log("Custom image uploaded successfully, currentProfilePic now:", profilePicStore.currentProfilePic)
 
-        // Set version here to ensure it's using our timestamp
-        profilePicStore.customImageVersion = fileTimestamp.value
-        console.log("Custom image URL:", profilePicStore.currentProfilePicUrl)
-        closeModal()
-      } else {
-        uploadError.value = "Failed to upload image. Please try again."
+          // Set version here to ensure it's using our timestamp
+          profilePicStore.customImageVersion = fileTimestamp.value
+          console.log("Custom image URL:", profilePicStore.currentProfilePicUrl)
+          closeModal()
+        } else {
+          uploadError.value = "Failed to upload image. Please try again."
+        }
+      } catch (error: any) {
+        console.error("Error uploading image:", error)
+        
+        // Check for specific error messages from the API
+        if (error && error.message) {
+          if (error.message.includes("inappropriate content")) {
+            uploadError.value = "This image contains inappropriate content and cannot be used as a profile picture."
+          } else if (error.message.includes("Failed to detect safe search")) {
+            uploadError.value = "Unable to verify image content. The safe search service is currently unavailable. Please try again later or choose a different image."
+          } else if (error.message.includes("500")) {
+            uploadError.value = "Server error. The profile picture service is currently experiencing issues. Please try again later."
+          } else {
+            uploadError.value = error.message || "Failed to upload image. Please try again."
+          }
+        } else {
+          uploadError.value = "An error occurred while uploading. Please try again."
+        }
       }
     } else if (selectedPicId.value) {
       // Update with predefined pic
@@ -165,9 +184,9 @@ const applySelection = async () => {
         uploadError.value = "Failed to update profile picture. Please try again."
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error applying selection:", error)
-    uploadError.value = "An error occurred. Please try again."
+    uploadError.value = error.message || "An error occurred. Please try again."
   } finally {
     isSubmitting.value = false
   }
