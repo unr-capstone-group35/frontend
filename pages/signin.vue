@@ -89,12 +89,17 @@ async function handleSignIn() {
                 </svg>
               </button>
             </div>
+            <div class="mt-1 text-right">
+              <NuxtLink to="/reset-password" class="text-sm text-emerald-600 hover:underline dark:text-emerald-400">
+                Forgot your password?
+              </NuxtLink>
+            </div>
           </div>
 
           <button
             type="submit"
             :disabled="isLoading"
-            class="bg-primary hover-primary w-full rounded-lg px-6 py-3 font-bold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            class="w-full rounded-lg bg-emerald-600 px-6 py-3 font-bold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-500 dark:hover:bg-emerald-600"
           >
             {{ isLoading ? "Signing in..." : "Sign In" }}
           </button>
@@ -102,7 +107,9 @@ async function handleSignIn() {
 
         <p class="mt-4 text-center text-gray-600 dark:text-gray-300">
           Don't have an account?
-          <NuxtLink to="/signup" class="text-primary font-medium hover:underline"> Sign up </NuxtLink>
+          <NuxtLink to="/signup" class="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
+            Sign up
+          </NuxtLink>
         </p>
       </div>
     </div>
