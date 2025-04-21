@@ -92,6 +92,25 @@ const completedExercises = computed(() => {
           </div>
         </div>
       </div>
+
+      <!-- Footer with Reset Password Link -->
+      <div class="mt-16 text-center">
+        <!-- Green version (default) -->
+
+        <NuxtLink
+          to="/reset-password"
+          class="text-sm font-medium text-gray-400 transition-colors hover:text-gray-300 dark:text-gray-500 dark:hover:text-gray-400"
+        >
+          Reset Your Password
+        </NuxtLink>
+
+        <!-- green link version -->
+        <!-- 
+        <NuxtLink to="/reset-password" class="text-primary text-sm font-medium transition-colors hover:underline">
+          Reset Your Password
+        </NuxtLink>
+        -->
+      </div>
     </div>
 
     <!-- Profile Picture Selector Dialog -->
