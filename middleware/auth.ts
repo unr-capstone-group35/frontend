@@ -1,20 +1,26 @@
 export default defineNuxtRouteMiddleware((to, from) => {
   const authStore = useAuthStore()
 
+  /*
+  // for debugging
   console.log("Auth middleware running:", {
     path: to.path,
     isAuthenticated: authStore.isAuthenticated,
     hasToken: !!authStore.token,
     tokenExpiry: authStore.tokenExpiry
   })
+    */
 
   // Initialize auth state from cookies
   authStore.initializeFromCookie()
 
+  /*
+  // for debugging
   console.log("After initialization:", {
     isAuthenticated: authStore.isAuthenticated,
     hasToken: !!authStore.token
   })
+    */
 
   // Define protected routes
   const protectedRoutes = ["/dashboard", "/learn", "/start-learning"]

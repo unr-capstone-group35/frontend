@@ -2,10 +2,10 @@
 
 type ExerciseState = {
   currentExerciseId: string | null
-  previousAnswers: Record<string, any> // key: courseId-lessonId-exerciseId, value: lastAnswer
+  previousAnswers: Record<string, any> 
   loading: boolean
   error: string
-  submissionResults: Record<string, boolean> // key: courseId-lessonId-exerciseId, value: isCorrect
+  submissionResults: Record<string, boolean> 
 }
 
 export const useExerciseStore = defineStore('exercise', {
@@ -19,7 +19,8 @@ export const useExerciseStore = defineStore('exercise', {
 
   getters: {
     // Get current exercise
-    currentExercise(state): Exercise | null {
+    currentExercise(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       const currentLesson = lessonStore.currentLesson
       
@@ -30,6 +31,7 @@ export const useExerciseStore = defineStore('exercise', {
     
     // Get previous answer for the current exercise
     previousAnswer(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !state.currentExerciseId) {
         return null
@@ -41,6 +43,7 @@ export const useExerciseStore = defineStore('exercise', {
     
     // Check if the current exercise has been attempted
     hasAttempted(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !state.currentExerciseId) {
         return false
@@ -52,6 +55,7 @@ export const useExerciseStore = defineStore('exercise', {
     
     // Check if the current exercise was answered correctly
     isCorrect(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !state.currentExerciseId) {
         return false
@@ -72,7 +76,7 @@ export const useExerciseStore = defineStore('exercise', {
     async submitAnswer(answer: any): Promise<boolean> {
       const lessonStore = useLessonStore()
       const progressStore = useProgressStore()
-      const pointsStore = usePointsStore() // Add this
+      const pointsStore = usePointsStore()
       
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !this.currentExerciseId) {
         this.error = 'No active exercise'
@@ -195,6 +199,3 @@ export const useExerciseStore = defineStore('exercise', {
     }
   }
 })
-
-// For easier access to the lesson store in getters
-const lessonStore = useLessonStore()

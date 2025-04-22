@@ -140,15 +140,16 @@ if (process.client) {
                   v-if="user.profilePicture && user.profilePicture !== 'custom'"
                   :src="`/images/profilepics/${user.profilePicture}.png`"
                   :alt="user.username"
-                  class="h-full w-full rounded-full object-cover"
+                  class="h-90 w-90 object-contain p-2"
                 />
                 <img
                   v-else-if="user.profilePicture === 'custom'"
                   :src="`http://localhost:8080/api/users/profilepic?type=image&username=${user.username}`"
                   :alt="user.username"
-                  class="h-full w-full rounded-full object-cover"
+                  class="h-full w-full object-contain p-1"
+                  @error="($event.target as HTMLImageElement).src = '/images/profilepics/default.png'"
                 />
-                <svg v-else class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg v-else class="h-2 w-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fill-rule="evenodd"
                     d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"

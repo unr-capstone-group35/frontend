@@ -4,19 +4,19 @@ export function useLearn() {
   const router = useRouter()
   const route = useRoute()
   
-  // Stores
+  // Stores - only initialize inside the composable function
   const courseStore = useCourseStore()
   const lessonStore = useLessonStore()
   const exerciseStore = useExerciseStore()
   const progressStore = useProgressStore()
   const pointsStore = usePointsStore()
   
-  // Reactive references from stores
+  // Use storeToRefs to maintain reactivity
   const { currentCourse } = storeToRefs(courseStore)
   const { currentLesson } = storeToRefs(lessonStore)
   const { currentExercise, isCorrect } = storeToRefs(exerciseStore)
 
-  // Navigation state
+  // Navigation state - define inside the composable
   const sidebarOpen = ref<boolean>(true)
   const expandedCourseId = ref<string>("")
   const expandedLessonId = ref<string>("")
@@ -89,6 +89,20 @@ export function useLearn() {
     const inactiveClasses = "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
 
     return `${baseClasses} ${isActiveLesson(lessonId) ? activeClasses : inactiveClasses}`
+  }
+
+  // Helper to update current exercise - with better error handling
+  function updateCurrentExercise() {
+    if (!currentLesson.value) {
+      console.log("Waiting for lesson data to load...")
+      return
+    }
+    
+    if (currentLesson.value.exercises?.length > 0) {
+      exerciseStore.setCurrentExercise(currentLesson.value.exercises[0].id)
+    } else {
+      console.log("No exercises found in current lesson")
+    }
   }
 
   // Exercise management
@@ -215,8 +229,10 @@ export function useLearn() {
         await lessonStore.markLessonInProgress(courseId, lessonId)
       }
 
-      // Set the first exercise as current
-      updateCurrentExercise()
+      // Set the first exercise as current - only if lesson data is loaded
+      if (currentLesson.value) {
+        updateCurrentExercise()
+      }
       
       // Load lesson points data
       await pointsStore.fetchLessonPoints(courseId, lessonId)
@@ -228,19 +244,7 @@ export function useLearn() {
     }
   }
 
-  // Helper to update current exercise
-  function updateCurrentExercise() {
-    if (!currentLesson.value) {
-      console.error("Current lesson does not exist")
-      return
-    }
-    
-    if (currentLesson.value.exercises?.length > 0) {
-      exerciseStore.setCurrentExercise(currentLesson.value.exercises[0].id)
-    }
-  }
-
-  // Initialization
+  // Initialization - with better async handling
   async function initialize() {
     const courseId = route.query.course as string
     const lessonId = route.query.lesson as string
@@ -261,8 +265,13 @@ export function useLearn() {
 
         // If lesson ID is provided in the route
         if (lessonId) {
-          // Load the lesson
+          // Load the lesson and wait for it to complete
+          console.log(`Requesting lesson ${lessonId} from course ${courseId}`)
           await lessonStore.fetchLesson(courseId, lessonId)
+          
+          // Ensure we have the lesson data before proceeding
+          await nextTick()
+          
           expandedLessonId.value = lessonId
           
           // Load lesson points
@@ -273,11 +282,13 @@ export function useLearn() {
             const exerciseExists = currentLesson.value.exercises.some(ex => ex.id === exerciseId)
             if (exerciseExists) {
               exerciseStore.setCurrentExercise(exerciseId)
-            } else {
-              updateCurrentExercise() // Fall back to first exercise
+            } else if (currentLesson.value) {
+              // Only update if lesson data is available
+              updateCurrentExercise()
             }
-          } else {
-            updateCurrentExercise() // No exercise specified, use first one
+          } else if (currentLesson.value) {
+            // Only update if lesson data is available
+            updateCurrentExercise()
           }
         }
       }
@@ -285,6 +296,44 @@ export function useLearn() {
       console.error("Error initializing:", error)
     }
   }
+
+  let watchInitialized = false
+  
+  watch(
+    () => currentLesson.value,
+    (newLesson) => {
+      if (newLesson && !watchInitialized) {
+        watchInitialized = true
+        updateCurrentExercise()
+      }
+    }
+  )
+
+  watch(
+    () => route.query,
+    async (newQuery) => {
+      const courseId = newQuery.course as string
+      const lessonId = newQuery.lesson as string
+
+      if (courseId && lessonId) {
+        if (!currentLesson.value || currentLesson.value.id !== lessonId) {
+          try {
+            // Load lesson data before updating current exercise
+            await lessonStore.fetchLesson(courseId, lessonId)
+            await nextTick()
+            
+            // Only update if lesson data is available
+            if (currentLesson.value) {
+              updateCurrentExercise()
+            }
+          } catch (error) {
+            console.error("Error loading lesson data:", error)
+          }
+        }
+      }
+    },
+    { deep: true }
+  )
 
   return {
     // State
