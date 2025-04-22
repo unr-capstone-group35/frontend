@@ -18,6 +18,7 @@ const pointsStore = usePointsStore()
 // Stats data
 const totalPoints = ref(0)
 const exercisesCompleted = ref(0)
+const currentStreak = ref(0)
 
 // Load profile pic data and user stats
 onMounted(async () => {
@@ -26,11 +27,14 @@ onMounted(async () => {
 })
 
 // Watch for changes in isOpen to refresh stats when sidebar opens
-watch(() => props.isOpen, async (isOpen) => {
-  if (isOpen) {
-    await fetchUserStats()
+watch(
+  () => props.isOpen,
+  async isOpen => {
+    if (isOpen) {
+      await fetchUserStats()
+    }
   }
-})
+)
 
 // Watch for changes in points to keep the sidebar updated
 watch(
@@ -38,12 +42,13 @@ watch(
   () => {
     if (pointsStore.summary) {
       totalPoints.value = pointsStore.totalPoints
-      
+      currentStreak.value = pointsStore.currentStreak
+
       // Count completed exercises from transactions
       const completedExercises = pointsStore.recentTransactions.filter(
-        tx => tx.transactionType === 'correct_answer'
+        tx => tx.transactionType === "correct_answer"
       ).length
-      
+
       exercisesCompleted.value = completedExercises
     }
   },
@@ -54,15 +59,16 @@ watch(
 const fetchUserStats = async () => {
   try {
     await pointsStore.fetchPointsSummary(100) // Fetch more transactions to count exercises
-    
+
     if (pointsStore.summary) {
       totalPoints.value = pointsStore.totalPoints
-      
+      currentStreak.value = pointsStore.currentStreak
+
       // Count completed exercises from transactions
       const completedExercises = pointsStore.recentTransactions.filter(
-        tx => tx.transactionType === 'correct_answer'
+        tx => tx.transactionType === "correct_answer"
       ).length
-      
+
       exercisesCompleted.value = completedExercises
     }
   } catch (error) {
@@ -133,7 +139,7 @@ const handleGlossaryClick = () => {
       <div class="mb-6 grid grid-cols-2 gap-4">
         <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
           <div class="text-sm text-gray-800 dark:text-gray-300">Streak</div>
-          <div class="text-xl font-bold text-black dark:text-white">0</div>
+          <div class="text-xl font-bold text-black dark:text-white">{{ currentStreak }}</div>
         </div>
 
         <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
