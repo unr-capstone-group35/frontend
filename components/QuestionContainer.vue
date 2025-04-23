@@ -26,6 +26,7 @@ const streakIncreased = ref(false)
 const animateStreak = ref(false)
 const animatePoints = ref(false)
 const shakeStreak = ref(false)
+const initialLoad = ref(true) // Add this flag to track initial load
 
 // Get the course and lesson IDs
 const route = useRoute()
@@ -45,7 +46,17 @@ onMounted(async () => {
     await pointsStore.fetchPointsSummary()
     displayedTotalPoints.value = pointsStore.totalPoints
     previousPoints.value = displayedTotalPoints.value
-    previousStreak.value = currentStreak.value
+    
+    const key = `${courseId.value}-${lessonId.value}`
+    const lessonPoints = pointsStore.lessonPoints[key]
+    if (lessonPoints) {
+      currentStreak.value = lessonPoints.currentStreak
+      previousStreak.value = currentStreak.value
+    }
+    
+    setTimeout(() => {
+      initialLoad.value = false
+    }, 500)
   }
 })
 
@@ -76,7 +87,7 @@ watch(
 watch(
   () => pointsStore.lessonPoints,
   () => {
-    if (courseId.value && lessonId.value) {
+    if (courseId.value && lessonId.value && !initialLoad.value) {
       const key = `${courseId.value}-${lessonId.value}`
       const lessonPoints = pointsStore.lessonPoints[key]
       if (lessonPoints) {
@@ -109,7 +120,7 @@ watch(
 watch(
   () => pointsStore.summary,
   () => {
-    if (pointsStore.summary) {
+    if (pointsStore.summary && !initialLoad.value) {
       previousPoints.value = displayedTotalPoints.value
       displayedTotalPoints.value = pointsStore.totalPoints
     }
