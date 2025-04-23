@@ -1,4 +1,3 @@
-// Update the existing pointsStore.ts with new functionality
 import { defineStore } from 'pinia'
 
 export type PointTransaction = {
@@ -34,6 +33,9 @@ export type ExercisePointsResult = {
   transaction?: PointTransaction
   currentStreak: number
   maxStreak: number
+  accuracyRate: number
+  totalAttempts: number
+  correctAttempts: number
 }
 
 export type LeaderboardEntry = {
@@ -44,43 +46,77 @@ export type LeaderboardEntry = {
   rank: number
 }
 
+export type DailyStreakInfo = {
+  currentStreak: number
+  maxStreak: number
+  lastLoginDate?: string
+  nextMilestone?: number
+  daysToMilestone?: number
+}
+
+export type AccuracyStats = {
+  totalAttempts: number
+  correctAttempts: number
+  accuracyRate: number
+}
+
 export const usePointsStore = defineStore('points', {
   state: () => ({
     summary: null as PointsSummary | null,
     lessonPoints: {} as Record<string, LessonPointsData>,
     leaderboard: [] as LeaderboardEntry[],
+    dailyStreak: null as DailyStreakInfo | null,
+    accuracyStats: null as AccuracyStats | null,
     loading: false,
     error: ''
   }),
 
   getters: {
-    // Get total points for the user
     totalPoints: (state): number => {
       return state.summary?.totalPoints || 0
     },
 
-    // Get current streak across all lessons
     currentStreak: (state): number => {
       return state.summary?.currentStreak || 0
     },
 
-    // Get max streak
     maxStreak: (state): number => {
       return state.summary?.maxStreak || 0
     },
 
-    // Get recent transactions
+    currentDailyStreak: (state): number => {
+      return state.dailyStreak?.currentStreak || 0
+    },
+
+    maxDailyStreak: (state): number => {
+      return state.dailyStreak?.maxStreak || 0
+    },
+
+    daysToNextMilestone: (state): number => {
+      return state.dailyStreak?.daysToMilestone || 0
+    },
+
+    accuracyRate: (state): number => {
+      return state.accuracyStats?.accuracyRate || 0
+    },
+
+    totalAttempts: (state): number => {
+      return state.accuracyStats?.totalAttempts || 0
+    },
+
+    correctAttempts: (state): number => {
+      return state.accuracyStats?.correctAttempts || 0
+    },
+
     recentTransactions: (state): PointTransaction[] => {
       return state.summary?.recentTransactions || []
     },
     
-    // Get points for a specific lesson
     getLessonPoints: (state) => (courseId: string, lessonId: string): LessonPointsData | null => {
       const key = `${courseId}-${lessonId}`
       return state.lessonPoints[key] || null
     },
     
-    // Get lesson streak
     getLessonStreak: (state) => (courseId: string, lessonId: string): number => {
       const key = `${courseId}-${lessonId}`
       return state.lessonPoints[key]?.currentStreak || 0
@@ -88,7 +124,6 @@ export const usePointsStore = defineStore('points', {
   },
 
   actions: {
-    // Fetch points summary
     async fetchPointsSummary(limit: number = 5) {
       this.loading = true
       this.error = ''
@@ -133,7 +168,6 @@ export const usePointsStore = defineStore('points', {
       }
     },
     
-    // Submit exercise attempt with points
     async submitExerciseAttempt(courseId: string, lessonId: string, exerciseId: string, answer: any) {
       this.loading = true
       this.error = ''
@@ -146,6 +180,15 @@ export const usePointsStore = defineStore('points', {
             body: JSON.stringify({ answer })
           }
         )
+        
+        // Update accuracy stats from the response
+        if (response) {
+          this.accuracyStats = {
+            totalAttempts: response.totalAttempts,
+            correctAttempts: response.correctAttempts,
+            accuracyRate: response.accuracyRate
+          }
+        }
         
         // Refresh data after submission
         await this.fetchLessonPoints(courseId, lessonId)
@@ -160,7 +203,6 @@ export const usePointsStore = defineStore('points', {
       }
     },
     
-    // Complete a lesson with points
     async completeLesson(courseId: string, lessonId: string) {
       this.loading = true
       this.error = ''
@@ -230,12 +272,58 @@ export const usePointsStore = defineStore('points', {
         this.loading = false
       }
     },
+
+    // Fetch daily streak information
+    async fetchDailyStreak() {
+      this.loading = true
+      this.error = ''
+      
+      try {
+        const response = await useNuxtApp().$api<DailyStreakInfo>(
+          `http://localhost:8080/api/stats/daily-streak`,
+          { method: 'GET' }
+        )
+        
+        this.dailyStreak = response
+        return response
+      } catch (error: any) {
+        this.error = error.message || 'Failed to fetch daily streak'
+        console.error(this.error)
+        return null
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // Fetch accuracy statistics
+    async fetchAccuracyStats() {
+      this.loading = true
+      this.error = ''
+      
+      try {
+        const response = await useNuxtApp().$api<AccuracyStats>(
+          `http://localhost:8080/api/stats/accuracy`,
+          { method: 'GET' }
+        )
+        
+        this.accuracyStats = response
+        return response
+      } catch (error: any) {
+        this.error = error.message || 'Failed to fetch accuracy stats'
+        console.error(this.error)
+        return null
+      } finally {
+        this.loading = false
+      }
+    },
     
-    // Clear points data (useful for logout)
+    // Clear points data (for logout)
     clearPointsData() {
       this.summary = null
       this.lessonPoints = {}
       this.leaderboard = []
+      this.dailyStreak = null
+      this.accuracyStats = null
       this.error = ''
     }
   }

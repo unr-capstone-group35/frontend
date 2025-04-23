@@ -19,6 +19,11 @@ const pointsStore = usePointsStore()
 const totalPoints = ref(0)
 const exercisesCompleted = ref(0)
 const currentStreak = ref(0)
+// Add new stats matching dashboard
+const dailyStreak = ref(0)
+const accuracyRate = ref(0)
+const totalAttempts = ref(0)
+const correctAttempts = ref(0)
 
 // Load profile pic data and user stats
 onMounted(async () => {
@@ -36,7 +41,7 @@ watch(
   }
 )
 
-// Watch for changes in points to keep the sidebar updated
+// Watch for changes in points summary
 watch(
   () => pointsStore.summary,
   () => {
@@ -55,10 +60,38 @@ watch(
   { deep: true }
 )
 
+// Watch for changes in daily streak data
+watch(
+  () => pointsStore.dailyStreak,
+  () => {
+    if (pointsStore.dailyStreak) {
+      dailyStreak.value = pointsStore.currentDailyStreak
+    }
+  },
+  { deep: true }
+)
+
+// Watch for changes in accuracy data
+watch(
+  () => pointsStore.accuracyStats,
+  () => {
+    if (pointsStore.accuracyStats) {
+      accuracyRate.value = pointsStore.accuracyRate
+      totalAttempts.value = pointsStore.totalAttempts
+      correctAttempts.value = pointsStore.correctAttempts
+    }
+  },
+  { deep: true }
+)
+
 // Fetch user stats
 const fetchUserStats = async () => {
   try {
-    await pointsStore.fetchPointsSummary(100) // Fetch more transactions to count exercises
+    await Promise.all([
+      pointsStore.fetchPointsSummary(100),
+      pointsStore.fetchDailyStreak(),
+      pointsStore.fetchAccuracyStats()
+    ])
 
     if (pointsStore.summary) {
       totalPoints.value = pointsStore.totalPoints
@@ -71,10 +104,25 @@ const fetchUserStats = async () => {
 
       exercisesCompleted.value = completedExercises
     }
+
+    if (pointsStore.dailyStreak) {
+      dailyStreak.value = pointsStore.currentDailyStreak
+    }
+
+    if (pointsStore.accuracyStats) {
+      accuracyRate.value = pointsStore.accuracyRate
+      totalAttempts.value = pointsStore.totalAttempts
+      correctAttempts.value = pointsStore.correctAttempts
+    }
   } catch (error) {
     console.error("Failed to fetch user stats:", error)
   }
 }
+
+// Formatted accuracy rate as percentage without decimal points
+const formattedAccuracy = computed(() => {
+  return Math.round(accuracyRate.value) + "%"
+})
 
 const close = () => {
   emit("close")
@@ -126,7 +174,7 @@ const handleGlossaryClick = () => {
       </button>
 
       <!-- Profile -->
-      <div class="mb-8 flex flex-col items-center space-y-4">
+      <div class="mb-6 flex flex-col items-center space-y-4">
         <!-- Use normal sized ProfilePic component -->
         <ProfilePic />
 
@@ -136,22 +184,40 @@ const handleGlossaryClick = () => {
       </div>
 
       <!-- Stats -->
-      <div class="mb-6 grid grid-cols-2 gap-4">
+      <div class="mb-4 grid grid-cols-2 gap-3">
+        <!-- Daily Streak Card -->
+        <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
+          <div class="text-sm text-gray-800 dark:text-gray-300">Daily Streak</div>
+          <div class="text-xl font-bold text-black dark:text-white">{{ dailyStreak }}</div>
+        </div>
+
+        <!-- Exercise Streak Card (moved to top right) -->
         <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
           <div class="text-sm text-gray-800 dark:text-gray-300">Streak</div>
           <div class="text-xl font-bold text-black dark:text-white">{{ currentStreak }}</div>
         </div>
+      </div>
 
+      <!-- Second row -->
+      <div class="mb-4 grid grid-cols-2 gap-3">
+        <!-- Exercises Completed Card with text on new lines -->
         <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
-          <div class="text-sm text-gray-800 dark:text-gray-300">Points</div>
-          <div class="text-xl font-bold text-black dark:text-white">{{ totalPoints }}</div>
+          <div class="text-sm text-gray-800 dark:text-gray-300">Exercises</div>
+          <div class="text-xl font-bold text-black dark:text-white">{{ exercisesCompleted }}</div>
+        </div>
+
+        <!-- Accuracy Card with text on new lines -->
+        <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
+          <div class="text-sm text-gray-800 dark:text-gray-300">Accuracy</div>
+          <div class="text-xl font-bold text-black dark:text-white">{{ formattedAccuracy }}</div>
         </div>
       </div>
 
+      <!-- Points Card as full width -->
       <div class="mb-6">
         <div class="flex flex-col items-center rounded-lg bg-gray-200 p-3 dark:bg-gray-700">
-          <div class="text-sm text-gray-800 dark:text-gray-300">Exercises-Completed</div>
-          <div class="text-xl font-bold text-black dark:text-white">{{ exercisesCompleted }}</div>
+          <div class="text-sm text-gray-800 dark:text-gray-300">Points</div>
+          <div class="text-xl font-bold text-black dark:text-white">{{ totalPoints }}</div>
         </div>
       </div>
 
