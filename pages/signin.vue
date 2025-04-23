@@ -90,7 +90,7 @@ async function handleSignIn() {
               </button>
             </div>
             <div class="mt-1 text-right">
-              <NuxtLink to="/reset-password" class="text-sm text-emerald-600 hover:underline dark:text-emerald-400">
+              <NuxtLink to="/forgot-password" class="text-sm text-emerald-600 hover:underline dark:text-emerald-400">
                 Forgot your password?
               </NuxtLink>
             </div>

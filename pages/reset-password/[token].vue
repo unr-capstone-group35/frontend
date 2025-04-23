@@ -1,4 +1,4 @@
-<!-- reset-password.vue -->
+<!-- pages/reset-password/[token].vue -->
 <script setup lang="ts">
 
 interface TokenVerifyResponse {
@@ -6,59 +6,60 @@ interface TokenVerifyResponse {
   token: string;
 }
 
-const route = useRoute()
-const token = computed(() => route.params.token as string)
+const route = useRoute();
+const token = computed(() => route.params.token as string);
+const authStore = useAuthStore();
 
-const newPassword = ref('')
-const confirmPassword = ref('')
-const passwordError = ref('')
-const confirmError = ref('')
-const isLoading = ref(false)
-const resetSuccess = ref(false)
-const resetError = ref('')
-const tokenValid = ref(false)
-const tokenChecked = ref(false)
-const userEmail = ref('')
+const newPassword = ref('');
+const confirmPassword = ref('');
+const passwordError = ref('');
+const confirmError = ref('');
+const isLoading = ref(false);
+const resetSuccess = ref(false);
+const resetError = ref('');
+const tokenValid = ref(false);
+const tokenChecked = ref(false);
+const userEmail = ref('');
 
 // Validate the token on page load
 onMounted(async () => {
   if (!token.value) {
-    resetError.value = 'Invalid reset token'
-    tokenChecked.value = true
-    return
+    resetError.value = 'Invalid reset token';
+    tokenChecked.value = true;
+    return;
   }
 
   try {
-  isLoading.value = true
-  const response = await $fetch<TokenVerifyResponse>(`http://localhost:8080/api/reset-password/verify/${token.value}`, {
-    method: 'GET'
-  })
-  
-    tokenValid.value = true
-    userEmail.value = response.email
+    isLoading.value = true;
+    const response = await useNuxtApp().$api<TokenVerifyResponse>(
+      `http://localhost:8080/api/reset-password/verify/${token.value}`,
+      { method: 'GET' }
+    );
+    
+    tokenValid.value = true;
+    userEmail.value = response.email;
   } catch (error) {
-    console.error('Invalid token:', error)
-    resetError.value = 'This password reset link is invalid or has expired.'
+    console.error('Invalid token:', error);
+    resetError.value = 'This password reset link is invalid or has expired.';
   } finally {
-    isLoading.value = false
-    tokenChecked.value = true
+    isLoading.value = false;
+    tokenChecked.value = true;
   }
-
-})
+});
 
 function validatePassword() {
   if (newPassword.value.length < 8) {
-    passwordError.value = 'Password must be at least 8 characters long'
+    passwordError.value = 'Password must be at least 8 characters long';
   } else {
-    passwordError.value = ''
+    passwordError.value = '';
   }
 }
 
 function validateConfirmPassword() {
   if (confirmPassword.value !== newPassword.value) {
-    confirmError.value = 'Passwords do not match'
+    confirmError.value = 'Passwords do not match';
   } else {
-    confirmError.value = ''
+    confirmError.value = '';
   }
 }
 
@@ -68,29 +69,23 @@ const isValid = computed(() => {
     confirmPassword.value &&
     !passwordError.value &&
     !confirmError.value
-  )
-})
+  );
+});
 
 async function handleResetPassword() {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
   try {
-    isLoading.value = true
+    isLoading.value = true;
     
-    await $fetch('http://localhost:8080/api/reset-password/reset', {
-      method: 'POST',
-      body: {
-        token: token.value,
-        newPassword: newPassword.value
-      }
-    })
+    await authStore.resetPassword(token.value, newPassword.value);
     
-    resetSuccess.value = true
+    resetSuccess.value = true;
   } catch (error) {
-    console.error('Password reset failed:', error)
-    resetError.value = 'Failed to reset password. Please try again or request a new reset link.'
+    console.error('Password reset failed:', error);
+    resetError.value = 'Failed to reset password. Please try again or request a new reset link.';
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>
@@ -101,11 +96,11 @@ async function handleResetPassword() {
       <div class="card w-full max-w-md p-6">
         <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">Reset Your Password</h2>
 
-        <div v-if="!tokenChecked" class="mb-4 rounded bg-gray-100 p-4 text-gray-700">
+        <div v-if="!tokenChecked" class="mb-4 rounded bg-gray-100 p-4 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
           <p>Verifying your reset link...</p>
         </div>
 
-        <div v-else-if="resetError" class="mb-4 rounded bg-red-100 p-4 text-red-700">
+        <div v-else-if="resetError" class="mb-4 rounded bg-red-100 p-4 text-red-700 dark:bg-red-900/50 dark:text-red-200">
           <p>{{ resetError }}</p>
           <p class="mt-4">
             <NuxtLink to="/forgot-password" class="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
@@ -114,7 +109,7 @@ async function handleResetPassword() {
           </p>
         </div>
 
-        <div v-else-if="resetSuccess" class="mb-4 rounded bg-green-100 p-4 text-green-700">
+        <div v-else-if="resetSuccess" class="mb-4 rounded bg-green-100 p-4 text-green-700 dark:bg-green-900/50 dark:text-green-200">
           <p>Your password has been reset successfully!</p>
           <p class="mt-4">
             <NuxtLink to="/signin" class="font-medium text-emerald-600 hover:underline dark:text-emerald-400">

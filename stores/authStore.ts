@@ -18,6 +18,52 @@ export const useAuthStore = defineStore("auth", {
   },
 
   actions: {
+    async requestPasswordReset(email: string) {
+      this.error = ""
+      try {
+        await useNuxtApp().$api("http://localhost:8080/api/reset-password/request", {
+          method: "POST",
+          body: {
+            email: email
+          }
+        })
+        return true
+      } catch (err: any) {
+        this.error = err.data || "Failed to request password reset"
+        throw err
+      }
+    },
+    
+    async verifyResetToken(token: string) {
+      this.error = ""
+      try {
+        const response = await useNuxtApp().$api(`http://localhost:8080/api/reset-password/verify/${token}`, {
+          method: "GET"
+        })
+        return response
+      } catch (err: any) {
+        this.error = err.data || "Invalid or expired token"
+        throw err
+      }
+    },
+    
+    async resetPassword(token: string, newPassword: string) {
+      this.error = ""
+      try {
+        await useNuxtApp().$api("http://localhost:8080/api/reset-password/reset", {
+          method: "POST",
+          body: {
+            token: token,
+            newPassword: newPassword
+          }
+        })
+        return true
+      } catch (err: any) {
+        this.error = err.data || "Failed to reset password"
+        throw err
+      }
+    },    
+
     async signup(email: string, username: string, password: string) {
       this.error = ""
       try {

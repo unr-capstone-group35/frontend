@@ -26,7 +26,7 @@ const streakIncreased = ref(false)
 const animateStreak = ref(false)
 const animatePoints = ref(false)
 const shakeStreak = ref(false)
-const initialLoad = ref(true) // Add this flag to track initial load
+const initialLoad = ref(true)
 
 // Get the course and lesson IDs
 const route = useRoute()
