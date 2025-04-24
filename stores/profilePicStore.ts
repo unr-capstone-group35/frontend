@@ -47,6 +47,13 @@ export const useProfilePicStore = defineStore('profilePic', {
       this.isLoading = true;
       try {
         const authStore = useAuthStore();
+        // Check if user is logged in before trying to fetch profile
+        if (!authStore.isAuthenticated || !authStore.token) {
+          console.log("User not authenticated, returning default profile");
+          this.currentProfilePic = 'default';
+          return 'default';
+        }
+        
         const token = authStore.token;
         console.log("Auth token exists:", !!token);
         

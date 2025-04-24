@@ -4,7 +4,19 @@ export default defineNuxtPlugin(() => {
   const api = $fetch.create({
     async onRequest({ request, options }) {
       options.headers.set("Content-Type", "application/json")
-      if (authStore.isAuthenticated) {
+      
+      // Check if this is a protected endpoint
+      const isProtectedUrl = request.toString().includes('/api/users/') || 
+                            request.toString().includes('/api/points/') ||
+                            request.toString().includes('/api/stats/');
+      
+      // Skip these requests entirely if not logged in
+      if (isProtectedUrl && (!authStore.isAuthenticated || !authStore.token)) {
+        console.log("Not authenticated");
+        return Promise.reject(new Error('Not authenticated'));
+      }
+      
+      if (authStore.isAuthenticated && authStore.token) {
         options.headers.set("Authorization", `Bearer ${authStore.token}`)
       }
 

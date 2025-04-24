@@ -14,6 +14,9 @@ export const useAuthStore = defineStore("auth", {
     isTokenValid: state => {
       if (state.token == "" || state.tokenExpiry == "") return false
       return new Date(state.tokenExpiry) > new Date()
+    },
+    isLoggedIn: state => {
+      return state.isAuthenticated && state.token && new Date(state.tokenExpiry) > new Date()
     }
   },
 
@@ -89,7 +92,7 @@ export const useAuthStore = defineStore("auth", {
         username: string
         email: string
         token: string
-        expiresAt: string // make date eventually
+        expiresAt: string
       }
       try {
         const signInResponse = await useNuxtApp().$api<SignInResponse>("http://localhost:8080/api/signin", {
