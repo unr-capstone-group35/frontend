@@ -14,10 +14,59 @@ export const useAuthStore = defineStore("auth", {
     isTokenValid: state => {
       if (state.token == "" || state.tokenExpiry == "") return false
       return new Date(state.tokenExpiry) > new Date()
+    },
+    isLoggedIn: state => {
+      return state.isAuthenticated && state.token && new Date(state.tokenExpiry) > new Date()
     }
   },
 
   actions: {
+    async requestPasswordReset(email: string) {
+      this.error = ""
+      try {
+        await useNuxtApp().$api("http://localhost:8080/api/reset-password/request", {
+          method: "POST",
+          body: {
+            email: email
+          }
+        })
+        return true
+      } catch (err: any) {
+        this.error = err.data || "Failed to request password reset"
+        throw err
+      }
+    },
+    
+    async verifyResetToken(token: string) {
+      this.error = ""
+      try {
+        const response = await useNuxtApp().$api(`http://localhost:8080/api/reset-password/verify/${token}`, {
+          method: "GET"
+        })
+        return response
+      } catch (err: any) {
+        this.error = err.data || "Invalid or expired token"
+        throw err
+      }
+    },
+    
+    async resetPassword(token: string, newPassword: string) {
+      this.error = ""
+      try {
+        await useNuxtApp().$api("http://localhost:8080/api/reset-password/reset", {
+          method: "POST",
+          body: {
+            token: token,
+            newPassword: newPassword
+          }
+        })
+        return true
+      } catch (err: any) {
+        this.error = err.data || "Failed to reset password"
+        throw err
+      }
+    },    
+
     async signup(email: string, username: string, password: string) {
       this.error = ""
       try {
@@ -43,7 +92,7 @@ export const useAuthStore = defineStore("auth", {
         username: string
         email: string
         token: string
-        expiresAt: string // make date eventually
+        expiresAt: string
       }
       try {
         const signInResponse = await useNuxtApp().$api<SignInResponse>("http://localhost:8080/api/signin", {

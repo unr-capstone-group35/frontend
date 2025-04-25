@@ -3,18 +3,21 @@ definePageMeta({
   middleware: ["auth"]
 })
 
+// Set up reactive state inside the component
 const route = useRoute()
 const router = useRouter()
+
+// Use the composable within the setup function
 const {
   sidebarOpen,
   currentExercise,
   currentLesson,
   currentCourse,
-  
+
   courseStore,
   progressStore,
   exerciseStore,
-  
+
   getSidebarContainerClasses,
   getSidebarContentClasses,
   toggleSidebar,
@@ -30,36 +33,26 @@ const {
   selectLesson
 } = useLearn()
 
-// Initialize
-onMounted(initialize)
-
-// Watch for route changes
-watch(() => route.query, () => {
-  const courseId = route.query.course as string
-  const lessonId = route.query.lesson as string
-  
-  if (courseId && lessonId) {
-    updateCurrentExercise()
-  }
-}, { immediate: true })
+// Initialize the component when mounted - this ensures proper context
+onMounted(async () => {
+  await initialize()
+})
 
 // Navigate to glossary
 const navigateToGlossary = () => {
   router.push("/glossary")
 }
 
-// Compute total and completed lessons
+// Compute total and completed lessons with proper reactivity
 const totalLessons = computed(() => {
   return currentCourse.value?.lessons?.length || 0
 })
 
 const completedLessons = computed(() => {
   if (!currentCourse.value?.id || !currentCourse.value?.lessons) return 0
-  
+
   const courseId = currentCourse.value.id
-  return currentCourse.value.lessons.filter(lesson => 
-    isLessonCompleted(courseId, lesson.id)
-  ).length
+  return currentCourse.value.lessons.filter(lesson => isLessonCompleted(courseId, lesson.id)).length
 })
 
 // Calculate progress percentage
@@ -87,20 +80,19 @@ const progressBarColor = computed(() => {
           :class="getSidebarContentClasses()"
         >
           <div class="flex h-full w-80 flex-col">
-            <div class="border-b p-6 dark:border-gray-700">
+            <div class="border-b-2 dark:border-gray-700">
               <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold dark:text-white">Course Content</h2>
-                <button @click="toggleSidebar" class="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <h2 class="mx-6 my-8 text-2xl font-bold dark:text-white">Course Content</h2>
+                <button @click="toggleSidebar" class="mr-6 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                   <svg class="h-6 w-6 text-gray-800 dark:text-white" viewBox="0 0 476.213 476.213" fill="currentColor">
                     <polygon
-                      points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5
-                      57.427,253.107 476.213,253.107"
+                      points="476.213,223.107 57.427,223.107 151.82,128.713 130.607,107.5 0,238.106 130.607,368.714 151.82,347.5 57.427,253.107 476.213,253.107"
                     />
                   </svg>
                 </button>
               </div>
             </div>
-            
+
             <!-- Course Progress Section -->
             <div v-if="currentCourse" class="border-b px-6 py-4 dark:border-gray-700">
               <div class="space-y-4">
@@ -140,18 +132,16 @@ const progressBarColor = computed(() => {
                 </template>
               </div>
             </div>
-            
+
             <div v-else-if="courseStore.loading" class="p-6 text-center">
               <span class="text-gray-500">Loading course...</span>
             </div>
-            
+
             <div v-else-if="courseStore.error" class="p-6 text-center">
               <span class="text-red-500">{{ courseStore.error }}</span>
             </div>
-            
-            <div v-else class="p-6 text-center text-gray-500">
-              Select a course to begin
-            </div>
+
+            <div v-else class="p-6 text-center text-gray-500">Select a course to begin</div>
           </div>
         </aside>
 

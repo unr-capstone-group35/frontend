@@ -2,10 +2,10 @@
 
 type ExerciseState = {
   currentExerciseId: string | null
-  previousAnswers: Record<string, any> // key: courseId-lessonId-exerciseId, value: lastAnswer
+  previousAnswers: Record<string, any> 
   loading: boolean
   error: string
-  submissionResults: Record<string, boolean> // key: courseId-lessonId-exerciseId, value: isCorrect
+  submissionResults: Record<string, boolean> 
 }
 
 export const useExerciseStore = defineStore('exercise', {
@@ -19,7 +19,8 @@ export const useExerciseStore = defineStore('exercise', {
 
   getters: {
     // Get current exercise
-    currentExercise(state): Exercise | null {
+    currentExercise(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       const currentLesson = lessonStore.currentLesson
       
@@ -30,6 +31,7 @@ export const useExerciseStore = defineStore('exercise', {
     
     // Get previous answer for the current exercise
     previousAnswer(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !state.currentExerciseId) {
         return null
@@ -41,6 +43,7 @@ export const useExerciseStore = defineStore('exercise', {
     
     // Check if the current exercise has been attempted
     hasAttempted(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !state.currentExerciseId) {
         return false
@@ -52,6 +55,7 @@ export const useExerciseStore = defineStore('exercise', {
     
     // Check if the current exercise was answered correctly
     isCorrect(state) {
+      // Import the store inside the getter
       const lessonStore = useLessonStore()
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !state.currentExerciseId) {
         return false
@@ -72,6 +76,7 @@ export const useExerciseStore = defineStore('exercise', {
     async submitAnswer(answer: any): Promise<boolean> {
       const lessonStore = useLessonStore()
       const progressStore = useProgressStore()
+      const pointsStore = usePointsStore()
       
       if (!lessonStore.currentCourseId || !lessonStore.currentLessonId || !this.currentExerciseId) {
         this.error = 'No active exercise'
@@ -94,23 +99,23 @@ export const useExerciseStore = defineStore('exercise', {
           answer: JSON.stringify(answer)
         })
         
-        // Call the API to verify the answer
-        const response = await useNuxtApp().$api<{ isCorrect: boolean }>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/exercises/${exerciseId}/attempt`,
-          {
-            method: 'POST',
-            body: JSON.stringify({ answer })
-          }
+        // Use the points API endpoint instead of the regular one
+        const response = await pointsStore.submitExerciseAttempt(
+          courseId, 
+          lessonId, 
+          exerciseId, 
+          answer
         )
+        
+        if (!response) {
+          throw new Error('Failed to submit answer')
+        }
         
         // Store the result
         this.submissionResults[key] = response.isCorrect
         
         // Store the answer
         this.previousAnswers[key] = answer
-        
-        // Record the attempt in the progress store
-        await progressStore.recordExerciseAttempt(courseId, lessonId, exerciseId, answer, response.isCorrect)
         
         // If correct, update lesson progress
         if (response.isCorrect) {
@@ -126,6 +131,11 @@ export const useExerciseStore = defineStore('exercise', {
               lessonId, 
               isLastExercise ? 'completed' : 'in_progress'
             )
+            
+            // If this is the last exercise, also award lesson completion bonus
+            if (isLastExercise) {
+              await pointsStore.completeLesson(courseId, lessonId)
+            }
           }
         }
         
@@ -189,6 +199,3 @@ export const useExerciseStore = defineStore('exercise', {
     }
   }
 })
-
-// For easier access to the lesson store in getters
-const lessonStore = useLessonStore()

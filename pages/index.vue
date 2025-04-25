@@ -42,7 +42,7 @@ const gameFeatures = ref([
             <div class="mx-auto flex max-w-md flex-col gap-4 sm:flex-row lg:mx-0">
               <NuxtLink
                 to="/start-learning"
-                class="bg-primary hover-primary flex-1 rounded-xl px-8 py-4 font-bold text-white shadow-md transition-colors"
+                class="bg-primary hover-primary flex flex-1 items-center justify-center rounded-xl px-8 py-4 text-center font-bold text-white shadow-md transition-colors"
               >
                 START LEARNING
               </NuxtLink>
