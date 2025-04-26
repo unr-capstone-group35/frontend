@@ -57,7 +57,7 @@
             'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
             activeCategory === 'All'
               ? 'border-teal-800 bg-teal-800 text-white'
-              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white',
           ]"
         >
           All
@@ -69,7 +69,7 @@
             'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
             activeCategory === 'Basics'
               ? 'border-emerald-500 bg-emerald-500 text-white'
-              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white',
           ]"
         >
           Basics
@@ -81,7 +81,7 @@
             'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
             activeCategory === 'Data Structures'
               ? 'border-blue-700 bg-blue-700 text-white'
-              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white',
           ]"
         >
           Data Structures
@@ -93,7 +93,7 @@
             'cursor-pointer whitespace-nowrap rounded-md border px-4 py-2 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700',
             activeCategory === 'Algorithms'
               ? 'border-red-700 bg-red-700 text-white'
-              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white'
+              : 'border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white',
           ]"
         >
           Algorithms
@@ -123,7 +123,7 @@
                     ? 'bg-emerald-500 text-white'
                     : item.category === 'Data Structures'
                       ? 'bg-blue-700 text-white'
-                      : 'bg-red-700 text-white'
+                      : 'bg-red-700 text-white',
                 ]"
                 >{{ item.category === "Data Structures" ? "Data Structs" : item.category }}</span
               >
@@ -169,7 +169,7 @@
                   ? 'bg-emerald-500 text-white'
                   : item.category === 'Data Structures'
                     ? 'bg-blue-700 text-white'
-                    : 'bg-red-700 text-white'
+                    : 'bg-red-700 text-white',
               ]"
               >{{ item.category === "Data Structures" ? "Data Structs" : item.category }}</span
             >
@@ -216,9 +216,9 @@
 </template>
 
 <script setup>
-const { currentCourse, currentLesson } = useLearn()
+const { currentCourse, currentLesson } = useLearn();
 
-const router = useRouter()
+const router = useRouter();
 
 // Navigate back to learn page
 const navigateBackToLearn = () => {
@@ -229,26 +229,26 @@ const navigateBackToLearn = () => {
       query: {
         course: currentCourse.value.id,
         lesson: currentLesson.value.id,
-        exercise: "" // Start with the first exercise
-      }
-    })
+        exercise: "", // Start with the first exercise
+      },
+    });
   } else {
     // If no current course/lesson, go to start learning page
-    router.push("/start-learning")
+    router.push("/start-learning");
   }
-}
+};
 
-const viewMode = ref("compact") // 'compact' or 'card' view mode
+const viewMode = ref("compact"); // 'compact' or 'card' view mode
 
 // Categories
-const categories = ["All", "Basics", "Data Structures", "Algorithms"]
-const activeCategory = ref("All")
+const categories = ["All", "Basics", "Data Structures", "Algorithms"];
+const activeCategory = ref("All");
 
 // Search
-const searchTerm = ref("")
+const searchTerm = ref("");
 
 // Copy notification
-const showCopyNotification = ref(false)
+const showCopyNotification = ref(false);
 
 // Glossary data
 const glossaryItems = ref([
@@ -260,7 +260,7 @@ const glossaryItems = ref([
     example: "foo = 42",
     explanation: 'In this example, "foo" is the variable name and 42 is the value assigned to it.',
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Function",
@@ -269,7 +269,7 @@ const glossaryItems = ref([
     example: "function add(a, b) {\n  return a + b;\n}",
     explanation: 'This function named "add" takes two parameters (a and b) and returns their sum.',
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Array",
@@ -277,7 +277,7 @@ const glossaryItems = ref([
     example: "numbers = [1, 2, 3, 4, 5]",
     explanation: 'This creates an array called "numbers" containing five integer elements.',
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Object",
@@ -285,7 +285,7 @@ const glossaryItems = ref([
     example: 'person = {\n  name: "John",\n  age: 30\n}',
     explanation: 'This object has two properties: "name" with value "John" and "age" with value 30.',
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Recursion",
@@ -294,7 +294,7 @@ const glossaryItems = ref([
     explanation:
       "This recursive function calculates the factorial of a number by calling itself with a smaller input until it reaches the base case.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   // additional basics
   {
@@ -303,7 +303,7 @@ const glossaryItems = ref([
     example: "console.log('Hello, World!');",
     explanation: "This simple program outputs the text 'Hello, World!' to the console.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Bug",
@@ -312,7 +312,7 @@ const glossaryItems = ref([
     example: "let total = 5;\ntotal = total + '5'; // Becomes '55' instead of 10",
     explanation: "This bug occurs because the '+' operator with a string performs concatenation instead of addition.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Debug",
@@ -320,7 +320,7 @@ const glossaryItems = ref([
     example: "console.log('Value:', myVariable); // Check current value",
     explanation: "Using console.log to inspect variables is a common debugging technique.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Code",
@@ -328,7 +328,7 @@ const glossaryItems = ref([
     example: "let message = 'Hello';\nconsole.log(message);",
     explanation: "This code creates a variable and then displays its value in the console.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Integer",
@@ -336,7 +336,7 @@ const glossaryItems = ref([
     example: "let age = 25;",
     explanation: "The variable 'age' is assigned an integer value of 25.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "String",
@@ -344,7 +344,7 @@ const glossaryItems = ref([
     example: 'let greeting = "Hello, world!";',
     explanation: "The variable 'greeting' contains a string of 13 characters.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Boolean",
@@ -352,7 +352,7 @@ const glossaryItems = ref([
     example: "let isActive = true;\nlet isComplete = false;",
     explanation: "The variables store boolean values that can be used in conditional statements.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Conditional Statement",
@@ -361,7 +361,7 @@ const glossaryItems = ref([
     example: "if (age >= 18) {\n  console.log('Adult');\n} else {\n  console.log('Minor');\n}",
     explanation: "This code checks if the age is at least 18 and outputs either 'Adult' or 'Minor' accordingly.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Loop",
@@ -369,7 +369,7 @@ const glossaryItems = ref([
     example: "for (let i = 0; i < 3; i++) {\n  console.log(i);\n}",
     explanation: "This for loop outputs the numbers 0, 1, and 2 by repeating the code block three times.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "For Loop",
@@ -378,7 +378,7 @@ const glossaryItems = ref([
     example: "for (let i = 1; i <= 5; i++) {\n  console.log(i);\n}",
     explanation: "This loop counts from 1 to 5, printing each number to the console.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "While Loop",
@@ -386,7 +386,7 @@ const glossaryItems = ref([
     example: "let i = 0;\nwhile (i < 3) {\n  console.log(i);\n  i++;\n}",
     explanation: "This while loop outputs 0, 1, and 2, continuing until i is no longer less than 3.",
     category: "Basics",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   // Data Structures
   {
@@ -397,7 +397,7 @@ const glossaryItems = ref([
     explanation:
       "This example shows two common data structures: an array for sequential data and a Map for key-value pairs.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Linked List",
@@ -407,7 +407,7 @@ const glossaryItems = ref([
       "class Node {\n  constructor(data) {\n    this.data = data;\n    this.next = null;\n  }\n}\n\nlet head = new Node(1);\nhead.next = new Node(2);",
     explanation: "This creates a simple linked list with two nodes containing values 1 and 2.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Stack",
@@ -417,7 +417,7 @@ const glossaryItems = ref([
       "let stack = [];\n\n// Push elements\nstack.push(1);\nstack.push(2);\n\n// Pop element\nlet top = stack.pop(); // Returns 2",
     explanation: "Using an array as a stack: elements are pushed onto the top and popped off in reverse order.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Queue",
@@ -427,7 +427,7 @@ const glossaryItems = ref([
       "let queue = [];\n\n// Enqueue elements\nqueue.push(1);\nqueue.push(2);\n\n// Dequeue element\nlet front = queue.shift(); // Returns 1",
     explanation: "Using an array as a queue: elements are added to the end and removed from the front.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Tree",
@@ -437,7 +437,7 @@ const glossaryItems = ref([
       "class TreeNode {\n  constructor(value) {\n    this.value = value;\n    this.left = null;\n    this.right = null;\n  }\n}\n\nlet root = new TreeNode(1);\nroot.left = new TreeNode(2);\nroot.right = new TreeNode(3);",
     explanation: "This creates a simple binary tree with a root node (1) and two child nodes (2 and 3).",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Binary Tree",
@@ -447,7 +447,7 @@ const glossaryItems = ref([
       "class Node {\n  constructor(data) {\n    this.data = data;\n    this.left = null;\n    this.right = null;\n  }\n}",
     explanation: "This defines a node in a binary tree, where each node can have up to two children.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Graph",
@@ -457,7 +457,7 @@ const glossaryItems = ref([
       "// Adjacency list representation\nlet graph = {\n  A: ['B', 'C'],\n  B: ['A', 'D'],\n  C: ['A', 'D'],\n  D: ['B', 'C']\n};",
     explanation: "This example shows a simple undirected graph with 4 vertices (A, B, C, D) using an adjacency list.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Array Index",
@@ -467,7 +467,7 @@ const glossaryItems = ref([
       "let fruits = ['apple', 'banana', 'cherry'];\nlet firstFruit = fruits[0]; // 'apple'\nlet lastFruit = fruits[2]; // 'cherry'",
     explanation: "Accessing array elements using their index: 0 for the first element, 1 for the second, and so on.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Dynamic Array",
@@ -477,7 +477,7 @@ const glossaryItems = ref([
       "let dynamicArray = [];\n\n// Add elements beyond initial capacity\nfor (let i = 0; i < 10; i++) {\n  dynamicArray.push(i);\n}",
     explanation: "JavaScript arrays are dynamic by default, automatically resizing when new elements are added.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Vertex",
@@ -485,7 +485,7 @@ const glossaryItems = ref([
     example: "// Graph with vertices A, B, C\nlet graph = {\n  A: [],\n  B: [],\n  C: []\n};",
     explanation: "This example defines a graph with three vertices but no connections between them yet.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Edge",
@@ -493,7 +493,7 @@ const glossaryItems = ref([
     example: "// Adding edges to connect vertices\ngraph.A.push('B'); // A -> B\ngraph.B.push('A'); // B -> A",
     explanation: "This adds a bidirectional edge between vertices A and B in the graph.",
     category: "Data Structures",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   //Algorithms
   {
@@ -503,7 +503,7 @@ const glossaryItems = ref([
       "function binarySearch(arr, target) {\n  let left = 0;\n  let right = arr.length - 1;\n  \n  while (left <= right) {\n    let mid = Math.floor((left + right) / 2);\n    if (arr[mid] === target) return mid;\n    if (arr[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}",
     explanation: "This binary search algorithm efficiently finds a target value in a sorted array.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Time Complexity",
@@ -512,7 +512,7 @@ const glossaryItems = ref([
       "// O(n) - Linear Time\nfunction findMax(arr) {\n  let max = arr[0];\n  for (let i = 1; i < arr.length; i++) {\n    if (arr[i] > max) max = arr[i];\n  }\n  return max;\n}",
     explanation: "This function runs in O(n) time because it examines each element in the array exactly once.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Space Complexity",
@@ -522,7 +522,7 @@ const glossaryItems = ref([
     explanation:
       "This function has O(n) space complexity because it creates a new array proportional to the input size.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Big O Notation",
@@ -533,7 +533,7 @@ const glossaryItems = ref([
     explanation:
       "Big O notation classifies algorithms by their efficiency: O(1) is constant time, O(n) is linear time, and so on.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Binary Search",
@@ -544,7 +544,7 @@ const glossaryItems = ref([
     explanation:
       "Binary search operates on a sorted array and has O(log n) time complexity, making it much faster than linear search for large datasets.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Linear Search",
@@ -554,7 +554,7 @@ const glossaryItems = ref([
       "function linearSearch(arr, target) {\n  for (let i = 0; i < arr.length; i++) {\n    if (arr[i] === target) return i;\n  }\n  return -1;\n}",
     explanation: "Linear search has O(n) time complexity and works on both sorted and unsorted arrays.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Bubble Sort",
@@ -564,7 +564,7 @@ const glossaryItems = ref([
       "function bubbleSort(arr) {\n  for (let i = 0; i < arr.length; i++) {\n    for (let j = 0; j < arr.length - i - 1; j++) {\n      if (arr[j] > arr[j + 1]) {\n        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];\n      }\n    }\n  }\n  return arr;\n}",
     explanation: "Bubble sort has O(n²) time complexity in the worst case, making it inefficient for large datasets.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Merge Sort",
@@ -575,7 +575,7 @@ const glossaryItems = ref([
     explanation:
       "Merge sort has O(n log n) time complexity, making it efficient for large datasets, though it requires additional space.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Quick Sort",
@@ -585,7 +585,7 @@ const glossaryItems = ref([
       "function quickSort(arr) {\n  if (arr.length <= 1) return arr;\n  \n  const pivot = arr[0];\n  const left = [];\n  const right = [];\n  \n  for (let i = 1; i < arr.length; i++) {\n    if (arr[i] < pivot) left.push(arr[i]);\n    else right.push(arr[i]);\n  }\n  \n  return [...quickSort(left), pivot, ...quickSort(right)];\n}",
     explanation: "Quick sort has an average time complexity of O(n log n) but can degrade to O(n²) in the worst case.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Recursion",
@@ -596,7 +596,7 @@ const glossaryItems = ref([
     explanation:
       "This factorial function uses recursion with a base case (n <= 1) and a recursive case that calls itself with a smaller input.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Divide and Conquer",
@@ -607,7 +607,7 @@ const glossaryItems = ref([
     explanation:
       "Divide and conquer breaks down problems into manageable parts, often using recursion, and is the basis for efficient algorithms like merge sort.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Dynamic Programming",
@@ -618,7 +618,7 @@ const glossaryItems = ref([
     explanation:
       "This function efficiently calculates Fibonacci numbers by storing previously computed values, avoiding the exponential time complexity of naive recursion.",
     category: "Algorithms",
-    isExampleVisible: false
+    isExampleVisible: false,
   },
   {
     term: "Memoization",
@@ -629,84 +629,84 @@ const glossaryItems = ref([
     explanation:
       "This recursive Fibonacci function uses memoization to store and reuse previously calculated values, dramatically improving performance.",
     category: "Algorithms",
-    isExampleVisible: false
-  }
-])
+    isExampleVisible: false,
+  },
+]);
 
 // Filtered glossary items based on search and category
 const filteredGlossaryItems = computed(() => {
   // If no search term, just filter by category and sort alphabetically
   if (searchTerm.value === "") {
     return glossaryItems.value
-      .filter(item => activeCategory.value === "All" || item.category === activeCategory.value)
-      .sort((a, b) => a.term.localeCompare(b.term))
+      .filter((item) => activeCategory.value === "All" || item.category === activeCategory.value)
+      .sort((a, b) => a.term.localeCompare(b.term));
   }
 
   // With search term, we need to rank results
-  const searchLower = searchTerm.value.toLowerCase()
+  const searchLower = searchTerm.value.toLowerCase();
 
   return glossaryItems.value
-    .filter(item => {
-      const matchesTerm = item.term.toLowerCase().includes(searchLower)
-      const matchesDefinition = item.definition.toLowerCase().includes(searchLower)
-      const matchesCategory = activeCategory.value === "All" || item.category === activeCategory.value
+    .filter((item) => {
+      const matchesTerm = item.term.toLowerCase().includes(searchLower);
+      const matchesDefinition = item.definition.toLowerCase().includes(searchLower);
+      const matchesCategory = activeCategory.value === "All" || item.category === activeCategory.value;
 
-      return (matchesTerm || matchesDefinition) && matchesCategory
+      return (matchesTerm || matchesDefinition) && matchesCategory;
     })
     .sort((a, b) => {
       // Calculate relevance scores
-      const aTermLower = a.term.toLowerCase()
-      const bTermLower = b.term.toLowerCase()
+      const aTermLower = a.term.toLowerCase();
+      const bTermLower = b.term.toLowerCase();
 
       // Exact match of term gets highest priority
-      if (aTermLower === searchLower && bTermLower !== searchLower) return -1
-      if (bTermLower === searchLower && aTermLower !== searchLower) return 1
+      if (aTermLower === searchLower && bTermLower !== searchLower) return -1;
+      if (bTermLower === searchLower && aTermLower !== searchLower) return 1;
 
       // Term starting with search gets next priority
-      if (aTermLower.startsWith(searchLower) && !bTermLower.startsWith(searchLower)) return -1
-      if (bTermLower.startsWith(searchLower) && !aTermLower.startsWith(searchLower)) return 1
+      if (aTermLower.startsWith(searchLower) && !bTermLower.startsWith(searchLower)) return -1;
+      if (bTermLower.startsWith(searchLower) && !aTermLower.startsWith(searchLower)) return 1;
 
       // Term containing search gets next priority (both contain it at this point)
-      if (aTermLower.includes(searchLower) && !bTermLower.includes(searchLower)) return -1
-      if (bTermLower.includes(searchLower) && !aTermLower.includes(searchLower)) return 1
+      if (aTermLower.includes(searchLower) && !bTermLower.includes(searchLower)) return -1;
+      if (bTermLower.includes(searchLower) && !aTermLower.includes(searchLower)) return 1;
 
       // If both have similar relevance, sort alphabetically
-      return a.term.localeCompare(b.term)
-    })
-})
+      return a.term.localeCompare(b.term);
+    });
+});
 
 // Toggle example visibility
-const toggleExample = index => {
-  const actualIndex = glossaryItems.value.findIndex(item => item.term === filteredGlossaryItems.value[index].term)
+const toggleExample = (index) => {
+  const actualIndex = glossaryItems.value.findIndex((item) => item.term === filteredGlossaryItems.value[index].term);
   if (actualIndex !== -1) {
-    glossaryItems.value[actualIndex].isExampleVisible = !glossaryItems.value[actualIndex].isExampleVisible
+    glossaryItems.value[actualIndex].isExampleVisible = !glossaryItems.value[actualIndex].isExampleVisible;
   }
-}
+};
 
 // Set active category
-const setActiveCategory = category => {
-  activeCategory.value = category
-}
+const setActiveCategory = (category) => {
+  activeCategory.value = category;
+};
 
-const toggleView = mode => {
-  viewMode.value = mode
-}
+const toggleView = (mode) => {
+  viewMode.value = mode;
+};
 
-const copyToClipboard = text => {
+const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text).then(() => {
-    showCopyNotification.value = true
+    showCopyNotification.value = true;
     setTimeout(() => {
-      showCopyNotification.value = false
-    }, 2000)
-  })
-}
+      showCopyNotification.value = false;
+    }, 2000);
+  });
+};
 
 // Close when search or category changes
 watch([searchTerm, activeCategory], () => {
-  glossaryItems.value.forEach(item => {
-    item.isExampleVisible = false
-  })
-})
+  glossaryItems.value.forEach((item) => {
+    item.isExampleVisible = false;
+  });
+});
 </script>
 
 <style scoped>

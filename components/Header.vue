@@ -1,35 +1,35 @@
 <script setup lang="ts">
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === "dark")
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === "dark");
 
 const toggleTheme = () => {
-  colorMode.preference = isDark.value ? "light" : "dark"
-}
+  colorMode.preference = isDark.value ? "light" : "dark";
+};
 
-const route = useRoute()
-const isMenuOpen = ref(false)
+const route = useRoute();
+const isMenuOpen = ref(false);
 
 // Import the auth store
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 const showHamburger = computed(() => {
-  const excludedRoutes = ["/signin", "/signup"]
+  const excludedRoutes = ["/signin", "/signup"];
 
   if (excludedRoutes.includes(route.path)) {
-    return false
+    return false;
   }
 
   if (route.path === "/") {
-    return authStore.isAuthenticated
+    return authStore.isAuthenticated;
   }
 
   // Show on all other routes
-  return true
-})
+  return true;
+});
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
+  isMenuOpen.value = !isMenuOpen.value;
+};
 </script>
 
 <template>

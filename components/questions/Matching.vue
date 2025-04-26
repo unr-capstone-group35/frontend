@@ -2,131 +2,131 @@
 const props = defineProps({
   exercise: {
     type: Object,
-    required: true
+    required: true,
   },
   selectedAnswer: {
     type: Array,
-    default: () => []
-  }
-})
+    default: () => [],
+  },
+});
 
-const emit = defineEmits(["update-answer"])
+const emit = defineEmits(["update-answer"]);
 
-const selectedTerm = ref(null)
-const selectedDefinition = ref(null)
-const currentMatches = ref([])
-const randomizedTerms = ref([])
-const randomizedDefinitions = ref([])
+const selectedTerm = ref(null);
+const selectedDefinition = ref(null);
+const currentMatches = ref([]);
+const randomizedTerms = ref([]);
+const randomizedDefinitions = ref([]);
 
 function shuffleArray(array) {
-  const shuffled = [...array]
+  const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  return shuffled
+  return shuffled;
 }
 
 function initializeRandomization() {
-  const indices = Array.from({ length: props.exercise.pairs.length }, (_, i) => i)
+  const indices = Array.from({ length: props.exercise.pairs.length }, (_, i) => i);
 
-  const termIndices = shuffleArray(indices)
-  randomizedTerms.value = termIndices.map(originalIndex => ({
+  const termIndices = shuffleArray(indices);
+  randomizedTerms.value = termIndices.map((originalIndex) => ({
     text: props.exercise.pairs[originalIndex][0],
-    originalIndex
-  }))
+    originalIndex,
+  }));
 
-  const defIndices = shuffleArray(indices)
-  randomizedDefinitions.value = defIndices.map(originalIndex => ({
+  const defIndices = shuffleArray(indices);
+  randomizedDefinitions.value = defIndices.map((originalIndex) => ({
     text: props.exercise.pairs[originalIndex][1],
-    originalIndex
-  }))
+    originalIndex,
+  }));
 }
 
 function getTermText(index) {
-  const term = randomizedTerms.value.find(t => t.originalIndex === index)
-  return term ? term.text : ""
+  const term = randomizedTerms.value.find((t) => t.originalIndex === index);
+  return term ? term.text : "";
 }
 
 function getDefinitionText(index) {
-  const def = randomizedDefinitions.value.find(d => d.originalIndex === index)
-  return def ? def.text : ""
+  const def = randomizedDefinitions.value.find((d) => d.originalIndex === index);
+  return def ? def.text : "";
 }
 
 function deleteMatch(index) {
-  currentMatches.value.splice(index, 1)
-  updateAnswer()
+  currentMatches.value.splice(index, 1);
+  updateAnswer();
 }
 
 function clearAllMatches() {
-  currentMatches.value = []
-  selectedTerm.value = null
-  selectedDefinition.value = null
-  updateAnswer()
+  currentMatches.value = [];
+  selectedTerm.value = null;
+  selectedDefinition.value = null;
+  updateAnswer();
 }
 
 // Update answer whenever matches change
 function updateAnswer() {
   if (currentMatches.value.length === props.exercise.pairs.length) {
-    const formattedAnswer = currentMatches.value.map(match => {
-      const term = String(props.exercise.pairs[match[0]][0])
-      const definition = String(props.exercise.pairs[match[1]][1])
-      return [term, definition]
-    })
-    emit("update-answer", formattedAnswer)
+    const formattedAnswer = currentMatches.value.map((match) => {
+      const term = String(props.exercise.pairs[match[0]][0]);
+      const definition = String(props.exercise.pairs[match[1]][1]);
+      return [term, definition];
+    });
+    emit("update-answer", formattedAnswer);
   } else {
-    emit("update-answer", null)
+    emit("update-answer", null);
   }
 }
 
 onMounted(() => {
-  initializeRandomization()
-})
+  initializeRandomization();
+});
 
 watch(
   () => props.exercise,
   () => {
-    clearAllMatches()
-    initializeRandomization()
+    clearAllMatches();
+    initializeRandomization();
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 // clear all matches when selected answer becomes null from question container
 watch(
   () => props.selectedAnswer,
   (newValue, oldValue) => {
     if (newValue == null && oldValue != null) {
-      clearAllMatches()
+      clearAllMatches();
     }
-  }
-)
+  },
+);
 
 function isMatched(index, type) {
   if (type === "term") {
-    return currentMatches.value.some(match => match[0] === index)
+    return currentMatches.value.some((match) => match[0] === index);
   }
-  return currentMatches.value.some(match => match[1] === index)
+  return currentMatches.value.some((match) => match[1] === index);
 }
 
 function selectTerm(index) {
-  if (isMatched(index, "term")) return
-  selectedTerm.value = index
-  tryMatch()
+  if (isMatched(index, "term")) return;
+  selectedTerm.value = index;
+  tryMatch();
 }
 
 function selectDefinition(index) {
-  if (isMatched(index, "definition")) return
-  selectedDefinition.value = index
-  tryMatch()
+  if (isMatched(index, "definition")) return;
+  selectedDefinition.value = index;
+  tryMatch();
 }
 
 function tryMatch() {
   if (selectedTerm.value !== null && selectedDefinition.value !== null) {
-    currentMatches.value.push([selectedTerm.value, selectedDefinition.value])
-    selectedTerm.value = null
-    selectedDefinition.value = null
-    updateAnswer()
+    currentMatches.value.push([selectedTerm.value, selectedDefinition.value]);
+    selectedTerm.value = null;
+    selectedDefinition.value = null;
+    updateAnswer();
   }
 }
 </script>
@@ -148,14 +148,14 @@ function tryMatch() {
             'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800': selectedTerm !== term.originalIndex,
             'border-blue-500 bg-blue-100 dark:border-blue-400 dark:bg-blue-800': selectedTerm === term.originalIndex,
             'opacity-50': isMatched(term.originalIndex, 'term'),
-            'cursor-pointer': !isMatched(term.originalIndex, 'term')
+            'cursor-pointer': !isMatched(term.originalIndex, 'term'),
           }"
           @click="selectTerm(term.originalIndex)"
         >
           <span
             :class="{
               'text-gray-900 dark:text-white': !selectedTerm || selectedTerm !== term.originalIndex,
-              'text-blue-800 dark:text-blue-100': selectedTerm === term.originalIndex
+              'text-blue-800 dark:text-blue-100': selectedTerm === term.originalIndex,
             }"
             >{{ term.text }}</span
           >
@@ -173,14 +173,14 @@ function tryMatch() {
             'border-blue-500 bg-blue-100 dark:border-blue-400 dark:bg-blue-800':
               selectedDefinition === def.originalIndex,
             'opacity-50': isMatched(def.originalIndex, 'definition'),
-            'cursor-pointer': !isMatched(def.originalIndex, 'definition')
+            'cursor-pointer': !isMatched(def.originalIndex, 'definition'),
           }"
           @click="selectDefinition(def.originalIndex)"
         >
           <span
             :class="{
               'text-gray-900 dark:text-white': !selectedDefinition || selectedDefinition !== def.originalIndex,
-              'text-blue-800 dark:text-blue-100': selectedDefinition === def.originalIndex
+              'text-blue-800 dark:text-blue-100': selectedDefinition === def.originalIndex,
             }"
             >{{ def.text }}</span
           >

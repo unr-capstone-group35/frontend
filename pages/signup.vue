@@ -1,40 +1,40 @@
 <script setup lang="ts">
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
-const email = ref("")
-const username = ref("")
-const password = ref("")
-const confirmPassword = ref("")
-const isLoading = ref(false)
-const emailError = ref("")
-const passwordMatchError = ref("")
-const passwordLengthError = ref("")
-const authStore = useAuthStore()
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+const email = ref("");
+const username = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const isLoading = ref(false);
+const emailError = ref("");
+const passwordMatchError = ref("");
+const passwordLengthError = ref("");
+const authStore = useAuthStore();
 
-const MIN_PASSWORD_LENGTH = 8
+const MIN_PASSWORD_LENGTH = 8;
 
 function validateEmail() {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (email.value && !emailRegex.test(email.value)) {
-    emailError.value = "Please enter a valid email address"
+    emailError.value = "Please enter a valid email address";
   } else {
-    emailError.value = ""
+    emailError.value = "";
   }
 }
 
 function validatePasswords() {
   // Check password length
   if (password.value && password.value.length < MIN_PASSWORD_LENGTH) {
-    passwordLengthError.value = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`
+    passwordLengthError.value = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`;
   } else {
-    passwordLengthError.value = ""
+    passwordLengthError.value = "";
   }
 
   // Check if passwords match
   if (confirmPassword.value && password.value !== confirmPassword.value) {
-    passwordMatchError.value = "Passwords do not match"
+    passwordMatchError.value = "Passwords do not match";
   } else {
-    passwordMatchError.value = ""
+    passwordMatchError.value = "";
   }
 }
 
@@ -47,19 +47,19 @@ const isValid = computed(() => {
     password.value === confirmPassword.value &&
     password.value.length >= MIN_PASSWORD_LENGTH &&
     !emailError.value
-  )
-})
+  );
+});
 
 async function handleSignUp() {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
   try {
-    isLoading.value = true
-    await authStore.signup(email.value, username.value, password.value)
+    isLoading.value = true;
+    await authStore.signup(email.value, username.value, password.value);
   } catch (error) {
-    console.error("Signup failed:", error)
+    console.error("Signup failed:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>

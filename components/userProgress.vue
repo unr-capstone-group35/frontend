@@ -1,37 +1,37 @@
 <script setup lang="ts">
-const courseStore = useCourseStore()
-const progressStore = useProgressStore()
-const { currentCourse } = storeToRefs(courseStore)
+const courseStore = useCourseStore();
+const progressStore = useProgressStore();
+const { currentCourse } = storeToRefs(courseStore);
 
 // Calculate total and completed lessons
-const totalLessons = computed(() => currentCourse.value?.lessons?.length || 0)
+const totalLessons = computed(() => currentCourse.value?.lessons?.length || 0);
 
 const completedLessons = computed(() => {
-  if (!currentCourse.value || !currentCourse.value.lessons) return 0
-  
+  if (!currentCourse.value || !currentCourse.value.lessons) return 0;
+
   return currentCourse.value.lessons.filter(
-    lesson => currentCourse.value && progressStore.isLessonCompleted(currentCourse.value.id, lesson.id)
-  ).length
-})
+    (lesson) => currentCourse.value && progressStore.isLessonCompleted(currentCourse.value.id, lesson.id),
+  ).length;
+});
 
 // Calculate progress percentage
 const progressPercentage = computed(() => {
-  if (!totalLessons.value || !currentCourse.value) return 0
-  return courseStore.calculateCourseProgress(currentCourse.value.id)
-})
+  if (!totalLessons.value || !currentCourse.value) return 0;
+  return courseStore.calculateCourseProgress(currentCourse.value.id);
+});
 
 // Progress bar color based on completion
 const progressBarColor = computed(() => {
-  if (progressPercentage.value === 100) return "bg-green-500"
-  if (progressPercentage.value > 0) return "bg-blue-500"
-  return "bg-gray-300"
-})
+  if (progressPercentage.value === 100) return "bg-green-500";
+  if (progressPercentage.value > 0) return "bg-blue-500";
+  return "bg-gray-300";
+});
 
 // Format time spent (placeholder for now)
 const formatTimeSpent = computed(() => {
   // This can be enhanced to track actual time spent
-  return "0h 0m"
-})
+  return "0h 0m";
+});
 </script>
 
 <template>

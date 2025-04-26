@@ -1,13 +1,13 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 const handleLogout = async () => {
   try {
-    await authStore.logout()
+    await authStore.logout();
   } catch (error) {
-    console.error("Logout failed:", error)
+    console.error("Logout failed:", error);
   }
-}
+};
 </script>
 
 <template>

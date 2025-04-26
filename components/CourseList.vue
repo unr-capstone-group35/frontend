@@ -1,61 +1,60 @@
 <script setup lang="ts">
-
 const props = withDefaults(
   defineProps<{
-    loading: boolean
-    error: string
-    courses: Course[]
+    loading: boolean;
+    error: string;
+    courses: Course[];
   }>(),
   {
     loading: false,
-    error: ""
-  }
-)
+    error: "",
+  },
+);
 
-const route = useRoute()
-const courseStore = useCourseStore()
-const progressStore = useProgressStore()
-const { currentCourse } = storeToRefs(courseStore)
+const route = useRoute();
+const courseStore = useCourseStore();
+const progressStore = useProgressStore();
+const { currentCourse } = storeToRefs(courseStore);
 
-const { expandedCourseId, toggleCourse, getLessonsForCourse, getCourseClasses } = useLearn()
+const { expandedCourseId, toggleCourse, getLessonsForCourse, getCourseClasses } = useLearn();
 
 // Compute active course based on route
 const activeCourse = computed(() => {
-  return props.courses.find((course: Course) => course.id === (route.query.course as string))
-})
+  return props.courses.find((course: Course) => course.id === (route.query.course as string));
+});
 
 // Calculate total and completed lessons
 const totalLessons = computed(() => {
-  return currentCourse.value?.lessons?.length || 0
-})
+  return currentCourse.value?.lessons?.length || 0;
+});
 
 const completedLessons = computed(() => {
-  if (!activeCourse.value || !currentCourse.value?.lessons) return 0
+  if (!activeCourse.value || !currentCourse.value?.lessons) return 0;
 
   if (!activeCourse.value.id) {
-    return 0
+    return 0;
   }
 
   // Use the progress store to check if lessons are completed
-  return currentCourse.value.lessons.filter(lesson => 
-    progressStore.isLessonCompleted(activeCourse.value!.id, lesson.id)
-  ).length
-})
+  return currentCourse.value.lessons.filter((lesson) =>
+    progressStore.isLessonCompleted(activeCourse.value!.id, lesson.id),
+  ).length;
+});
 
 // Calculate progress percentage
 const progressPercentage = computed(() => {
-  if (!activeCourse.value) return 0
-  
+  if (!activeCourse.value) return 0;
+
   // Use the course store's calculation method
-  return courseStore.calculateCourseProgress(activeCourse.value.id)
-})
+  return courseStore.calculateCourseProgress(activeCourse.value.id);
+});
 
 // Progress bar color based on completion
 const progressBarColor = computed(() => {
-  if (progressPercentage.value === 100) return "bg-green-500"
-  if (progressPercentage.value > 0) return "bg-blue-500"
-  return "bg-gray-300"
-})
+  if (progressPercentage.value === 100) return "bg-green-500";
+  if (progressPercentage.value > 0) return "bg-blue-500";
+  return "bg-gray-300";
+});
 </script>
 <template>
   <div class="flex h-full flex-col">
@@ -126,9 +125,9 @@ const progressBarColor = computed(() => {
             :lessons="getLessonsForCourse(activeCourse.id)"
           />
         </div>
-        
+
         <!-- Other courses section -->
-        <div v-for="course in props.courses.filter(c => c.id !== activeCourse?.id)" :key="course.id">
+        <div v-for="course in props.courses.filter((c) => c.id !== activeCourse?.id)" :key="course.id">
           <button @click="toggleCourse(course.id)" :class="getCourseClasses(course.id)">
             <span class="font-medium text-gray-900 dark:text-white">{{ course.name }}</span>
             <svg

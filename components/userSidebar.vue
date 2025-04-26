@@ -1,88 +1,88 @@
 <script setup lang="ts">
-import { useProfilePicStore } from "~/stores/profilePicStore"
-import { usePointsStore } from "~/stores/pointsStore"
+import { useProfilePicStore } from "~/stores/profilePicStore";
+import { usePointsStore } from "~/stores/pointsStore";
 
 const props = defineProps({
   isOpen: {
     type: Boolean,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const emit = defineEmits(["close"])
-const router = useRouter()
-const authStore = useAuthStore()
-const profilePicStore = useProfilePicStore()
-const pointsStore = usePointsStore()
+const emit = defineEmits(["close"]);
+const router = useRouter();
+const authStore = useAuthStore();
+const profilePicStore = useProfilePicStore();
+const pointsStore = usePointsStore();
 
 // Stats data
-const totalPoints = ref(0)
-const exercisesCompleted = ref(0)
-const currentStreak = ref(0)
+const totalPoints = ref(0);
+const exercisesCompleted = ref(0);
+const currentStreak = ref(0);
 // Add new stats matching dashboard
-const dailyStreak = ref(0)
-const accuracyRate = ref(0)
-const totalAttempts = ref(0)
-const correctAttempts = ref(0)
+const dailyStreak = ref(0);
+const accuracyRate = ref(0);
+const totalAttempts = ref(0);
+const correctAttempts = ref(0);
 
 // Load profile pic data and user stats
 onMounted(async () => {
-  await profilePicStore.fetchUserProfilePic()
-  await fetchUserStats()
-})
+  await profilePicStore.fetchUserProfilePic();
+  await fetchUserStats();
+});
 
 // Watch for changes in isOpen to refresh stats when sidebar opens
 watch(
   () => props.isOpen,
-  async isOpen => {
+  async (isOpen) => {
     if (isOpen) {
-      await fetchUserStats()
+      await fetchUserStats();
     }
-  }
-)
+  },
+);
 
 // Watch for changes in points summary
 watch(
   () => pointsStore.summary,
   () => {
     if (pointsStore.summary) {
-      totalPoints.value = pointsStore.totalPoints
-      currentStreak.value = pointsStore.currentStreak
+      totalPoints.value = pointsStore.totalPoints;
+      currentStreak.value = pointsStore.currentStreak;
 
       // Count completed exercises from transactions
       const completedExercises = pointsStore.recentTransactions.filter(
-        tx => tx.transactionType === "correct_answer"
-      ).length
+        (tx) => tx.transactionType === "correct_answer",
+      ).length;
 
-      exercisesCompleted.value = completedExercises
+      exercisesCompleted.value = completedExercises;
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Watch for changes in daily streak data
 watch(
   () => pointsStore.dailyStreak,
   () => {
     if (pointsStore.dailyStreak) {
-      dailyStreak.value = pointsStore.currentDailyStreak
+      dailyStreak.value = pointsStore.currentDailyStreak;
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Watch for changes in accuracy data
 watch(
   () => pointsStore.accuracyStats,
   () => {
     if (pointsStore.accuracyStats) {
-      accuracyRate.value = pointsStore.accuracyRate
-      totalAttempts.value = pointsStore.totalAttempts
-      correctAttempts.value = pointsStore.correctAttempts
+      accuracyRate.value = pointsStore.accuracyRate;
+      totalAttempts.value = pointsStore.totalAttempts;
+      correctAttempts.value = pointsStore.correctAttempts;
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Fetch user stats
 const fetchUserStats = async () => {
@@ -90,68 +90,68 @@ const fetchUserStats = async () => {
     await Promise.all([
       pointsStore.fetchPointsSummary(100),
       pointsStore.fetchDailyStreak(),
-      pointsStore.fetchAccuracyStats()
-    ])
+      pointsStore.fetchAccuracyStats(),
+    ]);
 
     if (pointsStore.summary) {
-      totalPoints.value = pointsStore.totalPoints
-      currentStreak.value = pointsStore.currentStreak
+      totalPoints.value = pointsStore.totalPoints;
+      currentStreak.value = pointsStore.currentStreak;
 
       // Count completed exercises from transactions
       const completedExercises = pointsStore.recentTransactions.filter(
-        tx => tx.transactionType === "correct_answer"
-      ).length
+        (tx) => tx.transactionType === "correct_answer",
+      ).length;
 
-      exercisesCompleted.value = completedExercises
+      exercisesCompleted.value = completedExercises;
     }
 
     if (pointsStore.dailyStreak) {
-      dailyStreak.value = pointsStore.currentDailyStreak
+      dailyStreak.value = pointsStore.currentDailyStreak;
     }
 
     if (pointsStore.accuracyStats) {
-      accuracyRate.value = pointsStore.accuracyRate
-      totalAttempts.value = pointsStore.totalAttempts
-      correctAttempts.value = pointsStore.correctAttempts
+      accuracyRate.value = pointsStore.accuracyRate;
+      totalAttempts.value = pointsStore.totalAttempts;
+      correctAttempts.value = pointsStore.correctAttempts;
     }
   } catch (error) {
-    console.error("Failed to fetch user stats:", error)
+    console.error("Failed to fetch user stats:", error);
   }
-}
+};
 
 // Formatted accuracy rate as percentage without decimal points
 const formattedAccuracy = computed(() => {
-  return Math.round(accuracyRate.value) + "%"
-})
+  return Math.round(accuracyRate.value) + "%";
+});
 
 const close = () => {
-  emit("close")
-}
+  emit("close");
+};
 
 const handleLogout = async () => {
   try {
-    await authStore.logout()
-    close()
-    router.push("/signin")
+    await authStore.logout();
+    close();
+    router.push("/signin");
   } catch (error) {
-    console.error("Logout failed:", error)
+    console.error("Logout failed:", error);
   }
-}
+};
 
 const handleLeaderboardClick = () => {
-  close()
-  router.push("/leaderboard")
-}
+  close();
+  router.push("/leaderboard");
+};
 
 const handleDashboardClick = () => {
-  close()
-  router.push("/dashboard")
-}
+  close();
+  router.push("/dashboard");
+};
 
 const handleGlossaryClick = () => {
-  close()
-  router.push("/glossary")
-}
+  close();
+  router.push("/glossary");
+};
 </script>
 
 <template>

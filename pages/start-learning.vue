@@ -1,35 +1,35 @@
 <script setup lang="ts">
 // Auth protection
 definePageMeta({
-  middleware: ["auth"]
-})
+  middleware: ["auth"],
+});
 
-const courseStore = useCourseStore()
-const { courses } = storeToRefs(courseStore)
-const loading = ref(true)
-const error = ref("")
+const courseStore = useCourseStore();
+const { courses } = storeToRefs(courseStore);
+const loading = ref(true);
+const error = ref("");
 
 // Fetch courses - just the basic course info
 const fetchCourses = async () => {
   try {
-    loading.value = true
-    error.value = ""
-    
+    loading.value = true;
+    error.value = "";
+
     // Fetch basic course info - this is lightweight and doesn't include all lesson details
-    await courseStore.fetchCourses()
-    
+    await courseStore.fetchCourses();
+
     // Don't try to load all course details here - let the CourseCard components handle that
     // This makes the dashboard load faster
   } catch (err: any) {
-    console.error("Error fetching courses:", err)
-    error.value = "Unable to load courses. Please try again later."
+    console.error("Error fetching courses:", err);
+    error.value = "Unable to load courses. Please try again later.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Initialize on mount
-onMounted(fetchCourses)
+onMounted(fetchCourses);
 </script>
 
 <template>

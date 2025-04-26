@@ -1,28 +1,28 @@
 <script setup lang="ts">
-const email = ref("")
-const isLoading = ref(false)
-const requestSent = ref(false)
-const authStore = useAuthStore()
-const errorMessage = ref("")
+const email = ref("");
+const isLoading = ref(false);
+const requestSent = ref(false);
+const authStore = useAuthStore();
+const errorMessage = ref("");
 
 const isValidEmail = computed(() => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email.value)
-})
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.value);
+});
 
 async function handleResetRequest() {
-  if (!isValidEmail.value) return
-  
+  if (!isValidEmail.value) return;
+
   try {
-    isLoading.value = true
-    await authStore.requestPasswordReset(email.value)
-    requestSent.value = true
-    errorMessage.value = ""
+    isLoading.value = true;
+    await authStore.requestPasswordReset(email.value);
+    requestSent.value = true;
+    errorMessage.value = "";
   } catch (error: any) {
-    console.error("Password reset request failed:", error)
-    errorMessage.value = authStore.error || "Failed to send reset request"
+    console.error("Password reset request failed:", error);
+    errorMessage.value = authStore.error || "Failed to send reset request";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>
@@ -32,7 +32,7 @@ async function handleResetRequest() {
     <div class="flex w-full flex-1 items-center justify-center">
       <div class="card w-full max-w-md p-6">
         <h2 class="mb-6 text-2xl font-bold text-gray-800 dark:text-white">Forgot Password</h2>
-        
+
         <div v-if="requestSent" class="mb-4 rounded bg-green-100 p-4 text-green-700">
           <p>If an account exists with this email, we've sent you instructions to reset your password.</p>
           <p class="mt-4">Please check your email and follow the instructions.</p>
@@ -42,16 +42,16 @@ async function handleResetRequest() {
             </NuxtLink>
           </div>
         </div>
-        
+
         <div v-else>
           <div v-if="errorMessage" class="mb-4 rounded bg-red-100 p-3 text-red-700">
             {{ errorMessage }}
           </div>
-          
+
           <p class="mb-6 text-gray-600 dark:text-gray-300">
             Enter your email address and we'll send you instructions to reset your password.
           </p>
-          
+
           <form @submit.prevent="handleResetRequest">
             <div class="mb-6">
               <label class="mb-2 block font-medium text-gray-700 dark:text-gray-200" for="email">Email Address</label>
@@ -64,7 +64,7 @@ async function handleResetRequest() {
                 required
               />
             </div>
-            
+
             <button
               type="submit"
               :disabled="!isValidEmail || isLoading"
@@ -73,7 +73,7 @@ async function handleResetRequest() {
               {{ isLoading ? "Sending..." : "Send Reset Instructions" }}
             </button>
           </form>
-          
+
           <p class="mt-4 text-center text-gray-600 dark:text-gray-300">
             Remember your password?
             <NuxtLink to="/signin" class="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
