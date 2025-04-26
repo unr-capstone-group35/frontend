@@ -3,6 +3,9 @@ definePageMeta({
   middleware: ["auth"],
 });
 
+useHead({
+  title: "Learn | DevQuest",
+});
 // Set up reactive state inside the component
 const route = useRoute();
 const router = useRouter();

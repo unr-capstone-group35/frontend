@@ -4,6 +4,10 @@ definePageMeta({
   middleware: ["auth"],
 });
 
+useHead({
+  title: "Start Learning | DevQuest",
+});
+
 const courseStore = useCourseStore();
 const { courses } = storeToRefs(courseStore);
 const loading = ref(true);

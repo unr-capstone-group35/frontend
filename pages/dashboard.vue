@@ -3,6 +3,10 @@ definePageMeta({
   middleware: ["auth"],
 });
 
+useHead({
+  title: "Dashboard | DevQuest",
+});
+
 const username = useAuthStore().username;
 const showProfilePicSelector = ref(false);
 

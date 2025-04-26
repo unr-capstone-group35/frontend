@@ -18,4 +18,12 @@ export default defineNuxtConfig({
       apiBase: "http://localhost:8080/api",
     },
   },
+  app: {
+    head: {
+      title: "DevQuest",
+      htmlAttrs: {
+        lang: "en",
+      },
+    },
+  },
 });

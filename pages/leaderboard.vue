@@ -9,6 +9,10 @@ definePageMeta({
   middleware: ["auth"],
 });
 
+useHead({
+  title: "Leaderboard | DevQuest",
+});
+
 const profilePicUpdateTrigger = ref(Date.now());
 const authStore = useAuthStore();
 const profilePicStore = useProfilePicStore();

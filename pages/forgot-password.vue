@@ -1,4 +1,8 @@
 <script setup lang="ts">
+useHead({
+  title: "Forgot Password | DevQuest",
+});
+
 const email = ref("");
 const isLoading = ref(false);
 const requestSent = ref(false);

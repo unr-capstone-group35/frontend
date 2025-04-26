@@ -5,6 +5,10 @@ const showPassword = ref(false);
 const isLoading = ref(false);
 const authStore = useAuthStore();
 
+useHead({
+  title: "Signin | DevQuest",
+});
+
 async function handleSignIn() {
   try {
     isLoading.value = true;

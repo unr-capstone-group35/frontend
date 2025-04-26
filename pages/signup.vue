@@ -13,6 +13,10 @@ const authStore = useAuthStore();
 
 const MIN_PASSWORD_LENGTH = 8;
 
+useHead({
+  title: "Signup | DevQuest",
+});
+
 function validateEmail() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (email.value && !emailRegex.test(email.value)) {

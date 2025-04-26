@@ -6,6 +6,10 @@ onMounted(() => {
   authStore.initializeFromCookie();
 });
 
+useHead({
+  title: "DevQuest",
+});
+
 // Move the data properties to refs
 const learningFeatures = ref([
   "Basic to advanced programming concepts",

@@ -4,6 +4,10 @@ definePageMeta({
   middleware: ["auth"],
 });
 
+useHead({
+  title: "Glossary | DevQuest",
+});
+
 // Import and initialize all necessary data
 import { onMounted } from "vue";
 import { useAuthStore } from "~/stores/authStore";

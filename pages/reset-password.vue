@@ -5,6 +5,10 @@ interface TokenVerifyResponse {
   token: string;
 }
 
+useHead({
+  title: "Reset Password | DevQuest",
+});
+
 const route = useRoute();
 const token = computed(() => route.params.token as string);
 
