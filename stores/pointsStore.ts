@@ -133,10 +133,7 @@ export const usePointsStore = defineStore("points", {
       this.error = "";
 
       try {
-        const response = await useNuxtApp().$api<PointsSummary>(
-          `http://localhost:8080/api/points/summary?limit=${limit}`,
-          { method: "GET" },
-        );
+        const response = await useNuxtApp().$api<PointsSummary>(`/points/summary?limit=${limit}`, { method: "GET" });
 
         this.summary = response;
         return response;
@@ -155,10 +152,9 @@ export const usePointsStore = defineStore("points", {
       this.error = "";
 
       try {
-        const response = await useNuxtApp().$api<LessonPointsData>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/points`,
-          { method: "GET" },
-        );
+        const response = await useNuxtApp().$api<LessonPointsData>(`/courses/${courseId}/lessons/${lessonId}/points`, {
+          method: "GET",
+        });
 
         const key = `${courseId}-${lessonId}`;
         this.lessonPoints[key] = response;
@@ -178,7 +174,7 @@ export const usePointsStore = defineStore("points", {
 
       try {
         const response = await useNuxtApp().$api<ExercisePointsResult>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/exercises/${exerciseId}/points`,
+          `/courses/${courseId}/lessons/${lessonId}/exercises/${exerciseId}/points`,
           {
             method: "POST",
             body: JSON.stringify({ answer }),
@@ -213,7 +209,7 @@ export const usePointsStore = defineStore("points", {
 
       try {
         const response = await useNuxtApp().$api<PointTransaction>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/complete`,
+          `/courses/${courseId}/lessons/${lessonId}/complete`,
           { method: "POST" },
         );
 
@@ -237,10 +233,7 @@ export const usePointsStore = defineStore("points", {
       this.error = "";
 
       try {
-        const response = await useNuxtApp().$api<PointTransaction>(
-          `http://localhost:8080/api/courses/${courseId}/complete`,
-          { method: "POST" },
-        );
+        const response = await useNuxtApp().$api<PointTransaction>(`/courses/${courseId}/complete`, { method: "POST" });
 
         // Refresh points summary after completion
         await this.fetchPointsSummary();
@@ -261,10 +254,7 @@ export const usePointsStore = defineStore("points", {
       this.error = "";
 
       try {
-        const response = await useNuxtApp().$api<LeaderboardEntry[]>(
-          `http://localhost:8080/api/leaderboard?limit=${limit}`,
-          { method: "GET" },
-        );
+        const response = await useNuxtApp().$api<LeaderboardEntry[]>(`/leaderboard?limit=${limit}`, { method: "GET" });
 
         this.leaderboard = response;
         return response;
@@ -283,7 +273,7 @@ export const usePointsStore = defineStore("points", {
       this.error = "";
 
       try {
-        const response = await useNuxtApp().$api<DailyStreakInfo>(`http://localhost:8080/api/stats/daily-streak`, {
+        const response = await useNuxtApp().$api<DailyStreakInfo>(`/stats/daily-streak`, {
           method: "GET",
         });
 
@@ -304,7 +294,7 @@ export const usePointsStore = defineStore("points", {
       this.error = "";
 
       try {
-        const response = await useNuxtApp().$api<AccuracyStats>(`http://localhost:8080/api/stats/accuracy`, {
+        const response = await useNuxtApp().$api<AccuracyStats>(`/stats/accuracy`, {
           method: "GET",
         });
 

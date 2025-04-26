@@ -29,12 +29,9 @@ onMounted(async () => {
 
   try {
     isLoading.value = true;
-    const response = await $fetch<TokenVerifyResponse>(
-      `http://localhost:8080/api/reset-password/verify/${token.value}`,
-      {
-        method: "GET",
-      },
-    );
+    const response = await useNuxtApp().$api<TokenVerifyResponse>(`/reset-password/verify/${token.value}`, {
+      method: "GET",
+    });
 
     tokenValid.value = true;
     userEmail.value = response.email;
@@ -73,7 +70,7 @@ async function handleResetPassword() {
   try {
     isLoading.value = true;
 
-    await $fetch("http://localhost:8080/api/reset-password/reset", {
+    await useNuxtApp().$api("/reset-password/reset", {
       method: "POST",
       body: {
         token: token.value,

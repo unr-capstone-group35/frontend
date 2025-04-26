@@ -29,7 +29,7 @@ export const useProfilePicStore = defineStore("profilePic", {
 
       if (state.currentProfilePic === "custom") {
         // For custom uploads, we need to fetch from the API with a version parameter
-        const url = `http://localhost:8080/api/users/profilepic?type=image&v=${state.customImageVersion}`;
+        const url = `${useRuntimeConfig().public.apiBase}/users/profilepic?type=image&v=${state.customImageVersion}`;
         console.log("Using custom profile pic URL:", url);
         return url;
       }
@@ -58,7 +58,7 @@ export const useProfilePicStore = defineStore("profilePic", {
         console.log("Auth token exists:", !!token);
 
         // Use the correct backend URL
-        const response = await fetch("http://localhost:8080/api/users/profilepic", {
+        const response = await fetch(`${useRuntimeConfig().public.apiBase}/users/profilepic`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -98,7 +98,7 @@ export const useProfilePicStore = defineStore("profilePic", {
         const authStore = useAuthStore();
         const token = authStore.token;
 
-        const response = await fetch("http://localhost:8080/api/users/profilepic", {
+        const response = await fetch(`${useRuntimeConfig().public.apiBase}/users/profilepic`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -142,7 +142,9 @@ export const useProfilePicStore = defineStore("profilePic", {
         console.log("Auth token exists for upload:", !!token);
 
         console.log("Sending upload request to /api/users/profilepic/upload");
-        const response = await fetch("http://localhost:8080/api/users/profilepic/upload", {
+
+        //this should be $fetch
+        const response = await fetch(`${useRuntimeConfig().public.apiBase}/users/profilepic/upload`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

@@ -145,7 +145,7 @@ if (process.client) {
                 />
                 <img
                   v-else-if="user.profilePicture === 'custom'"
-                  :src="`http://localhost:8080/api/users/profilepic?type=image&username=${user.username}`"
+                  :src="`${useRuntimeConfig().public.apiBase}/users/profilepic?type=image&username=${user.username}`"
                   :alt="user.username"
                   class="h-full w-full object-contain p-1"
                   @error="($event.target as HTMLImageElement).src = '/images/profilepics/default.png'"

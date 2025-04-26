@@ -94,7 +94,7 @@ export const useCourseStore = defineStore("course", {
       };
 
       try {
-        const courseInfos = await useNuxtApp().$api<CourseInfo[]>("http://localhost:8080/api/courses", {
+        const courseInfos = await useNuxtApp().$api<CourseInfo[]>("/courses", {
           method: "GET",
         });
 
@@ -127,7 +127,7 @@ export const useCourseStore = defineStore("course", {
       try {
         console.log(`Requesting course with ID: ${courseId}`);
 
-        const courseResponse = await useNuxtApp().$api<Course>(`http://localhost:8080/api/courses/${courseId}`, {
+        const courseResponse = await useNuxtApp().$api<Course>(`/courses/${courseId}`, {
           method: "GET",
         });
 

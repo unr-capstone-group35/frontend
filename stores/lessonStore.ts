@@ -70,10 +70,9 @@ export const useLessonStore = defineStore("lesson", {
       try {
         console.log(`Requesting lesson ${lessonId} from course ${courseId}`);
 
-        const lessonData = await useNuxtApp().$api<Lesson>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}`,
-          { method: "GET" },
-        );
+        const lessonData = await useNuxtApp().$api<Lesson>(`/courses/${courseId}/lessons/${lessonId}`, {
+          method: "GET",
+        });
 
         console.log(`Received lesson data:`, lessonData);
 

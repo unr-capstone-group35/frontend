@@ -24,7 +24,7 @@ export const useAuthStore = defineStore("auth", {
     async requestPasswordReset(email: string) {
       this.error = "";
       try {
-        await useNuxtApp().$api("http://localhost:8080/api/reset-password/request", {
+        await useNuxtApp().$api("/reset-password/request", {
           method: "POST",
           body: {
             email: email,
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore("auth", {
     async verifyResetToken(token: string) {
       this.error = "";
       try {
-        const response = await useNuxtApp().$api(`http://localhost:8080/api/reset-password/verify/${token}`, {
+        const response = await useNuxtApp().$api(`/reset-password/verify/${token}`, {
           method: "GET",
         });
         return response;
@@ -53,7 +53,7 @@ export const useAuthStore = defineStore("auth", {
     async resetPassword(token: string, newPassword: string) {
       this.error = "";
       try {
-        await useNuxtApp().$api("http://localhost:8080/api/reset-password/reset", {
+        await useNuxtApp().$api("/reset-password/reset", {
           method: "POST",
           body: {
             token: token,
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore("auth", {
     async signup(email: string, username: string, password: string) {
       this.error = "";
       try {
-        await useNuxtApp().$api("http://localhost:8080/api/register", {
+        await useNuxtApp().$api("/register", {
           method: "POST",
           body: {
             email: email,
@@ -95,7 +95,7 @@ export const useAuthStore = defineStore("auth", {
         expiresAt: string;
       }
       try {
-        const signInResponse = await useNuxtApp().$api<SignInResponse>("http://localhost:8080/api/signin", {
+        const signInResponse = await useNuxtApp().$api<SignInResponse>("/signin", {
           method: "POST",
           body: {
             username: username,
@@ -116,7 +116,7 @@ export const useAuthStore = defineStore("auth", {
     async logout() {
       this.error = "";
       try {
-        await useNuxtApp().$api("http://localhost:8080/api/logout", {
+        await useNuxtApp().$api("/logout", {
           method: "POST",
         });
       } catch (error: any) {

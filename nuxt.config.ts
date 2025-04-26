@@ -13,4 +13,9 @@ export default defineNuxtConfig({
     fallback: "dark",
     classSuffix: "",
   },
+  runtimeConfig: {
+    public: {
+      apiBase: "http://localhost:8080/api",
+    },
+  },
 });

@@ -102,11 +102,14 @@ const loadCustomProfileImage = async () => {
     localVersion.value = profilePicStore.customImageVersion;
 
     // Create a fetch request with authentication - use version parameter to prevent caching
-    const response = await fetch(`http://localhost:8080/api/users/profilepic?type=image&v=${localVersion.value}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${useRuntimeConfig().public.apiBase}/users/profilepic?type=image&v=${localVersion.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       console.error("Failed to load custom profile image:", response.status);

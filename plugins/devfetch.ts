@@ -2,6 +2,7 @@ export default defineNuxtPlugin(() => {
   const authStore = useAuthStore();
 
   const api = $fetch.create({
+    baseURL: useRuntimeConfig().public.apiBase,
     async onRequest({ request, options }) {
       options.headers.set("Content-Type", "application/json");
 

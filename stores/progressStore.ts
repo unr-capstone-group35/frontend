@@ -106,10 +106,7 @@ export const useProgressStore = defineStore("progress", {
       this.error = "";
 
       try {
-        const progress = await useNuxtApp().$api<CourseProgress>(
-          `http://localhost:8080/api/courses/${courseId}/progress`,
-          { method: "GET" },
-        );
+        const progress = await useNuxtApp().$api<CourseProgress>(`/courses/${courseId}/progress`, { method: "GET" });
 
         this.courseProgress[courseId] = progress;
         return progress;
@@ -128,10 +125,9 @@ export const useProgressStore = defineStore("progress", {
       this.error = "";
 
       try {
-        const progress = await useNuxtApp().$api<LessonProgress>(
-          `http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`,
-          { method: "GET" },
-        );
+        const progress = await useNuxtApp().$api<LessonProgress>(`/courses/${courseId}/lessons/${lessonId}/progress`, {
+          method: "GET",
+        });
 
         this.lessonProgress[`${courseId}-${lessonId}`] = progress;
         return progress;
@@ -150,7 +146,7 @@ export const useProgressStore = defineStore("progress", {
       this.error = "";
 
       try {
-        await useNuxtApp().$api(`http://localhost:8080/api/courses/${courseId}/lessons/${lessonId}/progress`, {
+        await useNuxtApp().$api(`/courses/${courseId}/lessons/${lessonId}/progress`, {
           method: "POST",
           body: JSON.stringify({ status }),
         });
