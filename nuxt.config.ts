@@ -5,12 +5,25 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
-    "@nuxtjs/color-mode" // No longer a dev dependency
+    "@nuxtjs/color-mode", // No longer a dev dependency
   ],
   css: ["~/assets/css/tailwind.css"],
   colorMode: {
-    preference: 'dark',
-    fallback: 'dark',  
-    classSuffix: '', 
-  }
-})
+    preference: "dark",
+    fallback: "dark",
+    classSuffix: "",
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: "http://localhost:8080/api",
+    },
+  },
+  app: {
+    head: {
+      title: "DevQuest",
+      htmlAttrs: {
+        lang: "en",
+      },
+    },
+  },
+});

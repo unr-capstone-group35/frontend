@@ -1,7 +1,6 @@
-@tailwind base;  
-@tailwind components; 
-@tailwind utilities;  
-
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   html {
@@ -9,21 +8,21 @@
   }
 
   body {
-    @apply bg-gradient-to-b from-white dark:from-gray-900 to-green-50 dark:to-gray-800;
+    @apply bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800;
   }
 
   .h-page {
     height: calc(100vh - 64px) !important;
   }
-  
+
   .min-h-page {
     min-height: calc(100vh - 64px) !important;
   }
-  
+
   /* Page background gradient */
   .bg-page-gradient {
-    @apply bg-gradient-to-b from-slate-100 dark:from-gray-950 to-green-50 dark:to-gray-800;
-  } 
+    @apply bg-gradient-to-b from-slate-100 to-green-50 dark:from-gray-950 dark:to-gray-800;
+  }
 
   /* use this for most pages*/
   .page-container {
@@ -33,28 +32,28 @@
   h1 {
     @apply mb-4 text-4xl font-bold text-gray-900 dark:text-white;
   }
-  
+
   h2 {
     @apply mb-4 text-2xl font-bold text-gray-800 dark:text-white;
   }
-  
+
   p {
     @apply text-gray-600 dark:text-gray-300;
   }
-  
+
   /* Primary colors */
   .text-primary {
     @apply text-emerald-600 dark:text-emerald-400;
   }
-  
+
   .bg-primary {
     @apply bg-emerald-500 dark:bg-emerald-600; /* For primary buttons and interactive elements */
   }
-  
+
   .border-primary {
     @apply border-emerald-500 dark:border-emerald-500; /* For borders that use the primary brand color */
   }
-  
+
   .hover-primary {
     @apply hover:bg-emerald-700 dark:hover:bg-emerald-800; /* Hover state for primary buttons */
   }
@@ -62,15 +61,12 @@
   .accent-gradient {
     @apply bg-gradient-to-br from-emerald-400 to-emerald-700 dark:from-emerald-800 dark:to-emerald-600;
   }
-  
-  
+
   .card {
-    @apply rounded-xl bg-gradient-to-b from-slate-50 dark:from-gray-700 to-slate-300 dark:to-gray-800;
+    @apply rounded-xl bg-gradient-to-b from-slate-50 to-slate-300 dark:from-gray-700 dark:to-gray-800;
   }
-  
+
   .background-card {
     @apply accent-gradient absolute inset-0 -rotate-3 transform rounded-2xl;
   }
-  
-
 }

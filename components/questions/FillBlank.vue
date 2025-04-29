@@ -1,95 +1,95 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue"
+import { ref, computed, watch } from "vue";
 
 const props = defineProps({
   exercise: {
     type: Object,
-    required: true
+    required: true,
   },
   selectedAnswer: {
     type: [String, null],
-    default: null
+    default: null,
   },
   showFeedback: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const emit = defineEmits(["update-answer"])
+const emit = defineEmits(["update-answer"]);
 
-const localAnswer = ref("")
+const localAnswer = ref("");
 
 watch(
   () => props.selectedAnswer,
-  newVal => {
+  (newVal) => {
     if (newVal === null) {
-      localAnswer.value = ""
+      localAnswer.value = "";
     } else {
-      localAnswer.value = newVal
+      localAnswer.value = newVal;
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 // Find the text before and after the blank
 const codeParts = computed(() => {
   // Get the part after "write:"
-  const promptParts = props.exercise.question.split("write:")
-  const questionWithoutPrompt = promptParts.length > 1 ? promptParts[1].trim() : props.exercise.question
+  const promptParts = props.exercise.question.split("write:");
+  const questionWithoutPrompt = promptParts.length > 1 ? promptParts[1].trim() : props.exercise.question;
 
   // Special case for function syntax where the blank is usually at the beginning, we should def just change the question setup instead
   if (questionWithoutPrompt.includes("greet()") || questionWithoutPrompt.includes("function")) {
-    const match = questionWithoutPrompt.match(/(.*)(_+)(.*)/)
+    const match = questionWithoutPrompt.match(/(.*)(_+)(.*)/);
     if (match) {
       return {
         before: "",
-        after: questionWithoutPrompt.replace(/_/g, "")
-      }
+        after: questionWithoutPrompt.replace(/_/g, ""),
+      };
     }
   }
 
   // Check for placeholders like "_" or "$BLANK$" or similar
-  const parts = questionWithoutPrompt.split(/[_$]/)
-  const cleanParts = parts.filter((part: string) => part && part !== "BLANK")
+  const parts = questionWithoutPrompt.split(/[_$]/);
+  const cleanParts = parts.filter((part: string) => part && part !== "BLANK");
 
   // Position of underscore determines position of input field
-  const hasLeadingUnderscore = questionWithoutPrompt.trim().startsWith("_")
+  const hasLeadingUnderscore = questionWithoutPrompt.trim().startsWith("_");
 
   // If underscore is at the beginning or we couldn't find parts, special case
   if (hasLeadingUnderscore || cleanParts.length < 2) {
     return {
       before: "",
-      after: hasLeadingUnderscore ? questionWithoutPrompt.replace(/_/g, "").trim() : questionWithoutPrompt.trim()
-    }
+      after: hasLeadingUnderscore ? questionWithoutPrompt.replace(/_/g, "").trim() : questionWithoutPrompt.trim(),
+    };
   }
 
   return {
     before: cleanParts[0].trim(),
-    after: cleanParts[1].trim()
-  }
-})
+    after: cleanParts[1].trim(),
+  };
+});
 
 // Get input width based on correct answer length
 const inputWidth = computed(() => {
   if (props.exercise.correctAnswer) {
     // Estimate width based on answer length (min 60px, max 200px)
-    const length = props.exercise.correctAnswer.length
-    return Math.max(60, Math.min(200, length * 16)) + "px"
+    const length = props.exercise.correctAnswer.length;
+    return Math.max(60, Math.min(200, length * 16)) + "px";
   }
-  return "80px" // Default width
-})
+  return "80px"; // Default width
+});
 
 function handleInput(event: any) {
-  const value = event.target.value
-  localAnswer.value = value
-  emit("update-answer", value)
+  const value = event.target.value;
+  localAnswer.value = value;
+  emit("update-answer", value);
 }
 
 const isCorrect = computed(() => {
-  if (!props.exercise.correctAnswer) return false
-  return localAnswer.value.toLowerCase() === props.exercise.correctAnswer.toLowerCase()
-})
+  if (!props.exercise.correctAnswer) return false;
+  return localAnswer.value.toLowerCase() === props.exercise.correctAnswer.toLowerCase();
+});
 </script>
 
 <template>
@@ -124,7 +124,7 @@ const isCorrect = computed(() => {
             :class="{
               'border-green-500 bg-green-50 dark:bg-green-900/20': showFeedback && isCorrect,
               'border-red-500 bg-red-50 dark:bg-red-900/20': showFeedback && !isCorrect,
-              'border-gray-300': !showFeedback
+              'border-gray-300': !showFeedback,
             }"
           />
 

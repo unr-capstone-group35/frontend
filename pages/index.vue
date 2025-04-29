@@ -1,25 +1,29 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 // Initialize auth state from cookies when the component mounts
 onMounted(() => {
-  authStore.initializeFromCookie()
-})
+  authStore.initializeFromCookie();
+});
+
+useHead({
+  title: "DevQuest",
+});
 
 // Move the data properties to refs
 const learningFeatures = ref([
   "Basic to advanced programming concepts",
   "Problem-solving techniques",
   "Data structures & algorithms",
-  "Software design principles"
-])
+  "Software design principles",
+]);
 
 const gameFeatures = ref([
   "Daily streaks & achievements",
   "Points system for completed lessons",
   "Compete with friends on leaderboards",
-  "Unlock new challenges as you progress"
-])
+  "Unlock new challenges as you progress",
+]);
 </script>
 
 <template>

@@ -1,116 +1,116 @@
 <script setup lang="ts">
 const props = defineProps<{
-  courseId: string
-  imagePath: string
-}>()
+  courseId: string;
+  imagePath: string;
+}>();
 
-const router = useRouter()
-const courseStore = useCourseStore()
-const progressStore = useProgressStore()
+const router = useRouter();
+const courseStore = useCourseStore();
+const progressStore = useProgressStore();
 
-const loading = ref(false)
-const error = ref("")
-const dataLoaded = ref(false)
+const loading = ref(false);
+const error = ref("");
+const dataLoaded = ref(false);
 
 // Computed properties
-const course = computed(() => courseStore.courses[props.courseId])
-const progress = computed(() => progressStore.getCourseProgress(props.courseId))
+const course = computed(() => courseStore.courses[props.courseId]);
+const progress = computed(() => progressStore.getCourseProgress(props.courseId));
 
 const courseDifficulty = computed((): { text: string; bgClass: string } => {
   const difficulties: { [key: string]: { text: string; bgClass: string } } = {
     algorithms: { text: "Hard", bgClass: "bg-red-500" },
     data_structures: { text: "Medium", bgClass: "bg-yellow-400" },
-    programming_basics: { text: "Easy", bgClass: "bg-emerald-500" }
-  }
-  return difficulties[props.courseId] || { text: "Medium", bgClass: "bg-yellow-400" }
-})
+    programming_basics: { text: "Easy", bgClass: "bg-emerald-500" },
+  };
+  return difficulties[props.courseId] || { text: "Medium", bgClass: "bg-yellow-400" };
+});
 
 const buttonBgColor = computed((): string => {
-  return "bg-blue-600 hover:bg-blue-700"
-})
+  return "bg-blue-600 hover:bg-blue-700";
+});
 
 // Load all required data
 const loadCourseData = async () => {
   try {
-    loading.value = true
-    error.value = ""
-    
-    await courseStore.fetchCourse(props.courseId)
-    
-    await progressStore.fetchCourseProgress(props.courseId)
-    
+    loading.value = true;
+    error.value = "";
+
+    await courseStore.fetchCourse(props.courseId);
+
+    await progressStore.fetchCourseProgress(props.courseId);
+
     if (course.value?.lessons) {
       for (const lesson of course.value.lessons) {
-        await progressStore.fetchLessonProgress(props.courseId, lesson.id)
+        await progressStore.fetchLessonProgress(props.courseId, lesson.id);
       }
     }
-    
-    dataLoaded.value = true
+
+    dataLoaded.value = true;
   } catch (err) {
-    console.error(`Error loading course data for ${props.courseId}:`, err)
-    error.value = "Failed to load course data"
+    console.error(`Error loading course data for ${props.courseId}:`, err);
+    error.value = "Failed to load course data";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Use the course store method to calculate progress
 const progressPercentage = computed(() => {
   if (dataLoaded.value && course.value?.lessons) {
-    return courseStore.calculateCourseProgress(props.courseId)
+    return courseStore.calculateCourseProgress(props.courseId);
   }
-  return progress.value?.progressPercentage || 0
-})
+  return progress.value?.progressPercentage || 0;
+});
 
 const courseStatus = computed((): Status => {
-  if (!progress.value) return "not_started"
-  return progress.value.status || "not_started"
-})
+  if (!progress.value) return "not_started";
+  return progress.value.status || "not_started";
+});
 
 // Utility functions
 const formatStatus = (status: Status) => {
   const formats = {
     completed: "Completed",
     in_progress: "In Progress",
-    not_started: "Start Course"
-  }
-  return formats[status] || status
-}
+    not_started: "Start Course",
+  };
+  return formats[status] || status;
+};
 
 // Event handlers
 const handleCourseSelect = async () => {
   try {
-    loading.value = true
-    error.value = ""
-    
-    await courseStore.fetchCourse(props.courseId)
-    
-    const currentCourse = courseStore.courses[props.courseId]
+    loading.value = true;
+    error.value = "";
+
+    await courseStore.fetchCourse(props.courseId);
+
+    const currentCourse = courseStore.courses[props.courseId];
     if (!currentCourse?.lessons || currentCourse.lessons.length === 0) {
-      throw new Error("No lessons available in this course")
+      throw new Error("No lessons available in this course");
     }
 
     // Get first lesson
-    const firstLesson = currentCourse.lessons[0]
+    const firstLesson = currentCourse.lessons[0];
 
     // Navigate to learn page
     await router.push({
       path: "/learn",
       query: {
         course: props.courseId,
-        lesson: firstLesson.id
-      }
-    })
+        lesson: firstLesson.id,
+      },
+    });
   } catch (err: any) {
-    console.error("Error accessing course:", err)
-    error.value = "Unable to access course at this time"
+    console.error("Error accessing course:", err);
+    error.value = "Unable to access course at this time";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Load data on component mount
-onMounted(loadCourseData)
+onMounted(loadCourseData);
 </script>
 
 <template>
@@ -143,9 +143,7 @@ onMounted(loadCourseData)
       <div class="flex items-center justify-between">
         <!-- Lesson count and difficulty label -->
         <div class="flex items-center space-x-3">
-          <span class="text-sm text-gray-500 dark:text-gray-400">
-            {{ course?.lessonAmount }} lessons
-          </span>
+          <span class="text-sm text-gray-500 dark:text-gray-400"> {{ course?.lessonAmount }} lessons </span>
           <span class="rounded-full px-3 py-1 text-sm font-medium text-white" :class="courseDifficulty.bgClass">
             {{ courseDifficulty.text }}
           </span>
@@ -160,7 +158,7 @@ onMounted(loadCourseData)
                 'bg-emerald-500': courseId === 'programming_basics',
                 'bg-blue-500': courseId === 'data_structures',
                 'bg-red-500': courseId === 'algorithms',
-                'bg-indigo-500': !['programming_basics', 'data_structures', 'algorithms'].includes(courseId)
+                'bg-indigo-500': !['programming_basics', 'data_structures', 'algorithms'].includes(courseId),
               }"
               :style="{ width: `${progressPercentage}%` }"
             ></div>
@@ -184,7 +182,7 @@ onMounted(loadCourseData)
           class="rounded-full px-3 py-1 text-sm"
           :class="{
             'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100': courseStatus === 'completed',
-            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': courseStatus === 'in_progress'
+            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100': courseStatus === 'in_progress',
           }"
         >
           {{ formatStatus(courseStatus) }}

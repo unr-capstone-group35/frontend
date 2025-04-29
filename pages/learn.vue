@@ -1,11 +1,14 @@
 <script setup lang="ts">
 definePageMeta({
-  middleware: ["auth"]
-})
+  middleware: ["auth"],
+});
 
+useHead({
+  title: "Learn | DevQuest",
+});
 // Set up reactive state inside the component
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // Use the composable within the setup function
 const {
@@ -30,43 +33,43 @@ const {
   canAccessLesson,
   getLessonClasses,
   initialize,
-  selectLesson
-} = useLearn()
+  selectLesson,
+} = useLearn();
 
 // Initialize the component when mounted - this ensures proper context
 onMounted(async () => {
-  await initialize()
-})
+  await initialize();
+});
 
 // Navigate to glossary
 const navigateToGlossary = () => {
-  router.push("/glossary")
-}
+  router.push("/glossary");
+};
 
 // Compute total and completed lessons with proper reactivity
 const totalLessons = computed(() => {
-  return currentCourse.value?.lessons?.length || 0
-})
+  return currentCourse.value?.lessons?.length || 0;
+});
 
 const completedLessons = computed(() => {
-  if (!currentCourse.value?.id || !currentCourse.value?.lessons) return 0
+  if (!currentCourse.value?.id || !currentCourse.value?.lessons) return 0;
 
-  const courseId = currentCourse.value.id
-  return currentCourse.value.lessons.filter(lesson => isLessonCompleted(courseId, lesson.id)).length
-})
+  const courseId = currentCourse.value.id;
+  return currentCourse.value.lessons.filter((lesson) => isLessonCompleted(courseId, lesson.id)).length;
+});
 
 // Calculate progress percentage
 const progressPercentage = computed(() => {
-  if (!currentCourse.value?.id) return 0
-  return calculateCourseProgress(currentCourse.value.id)
-})
+  if (!currentCourse.value?.id) return 0;
+  return calculateCourseProgress(currentCourse.value.id);
+});
 
 // Progress bar color based on completion
 const progressBarColor = computed(() => {
-  if (progressPercentage.value === 100) return "bg-green-500"
-  if (progressPercentage.value > 0) return "bg-blue-500"
-  return "bg-gray-300"
-})
+  if (progressPercentage.value === 100) return "bg-green-500";
+  if (progressPercentage.value > 0) return "bg-blue-500";
+  return "bg-gray-300";
+});
 </script>
 
 <template>

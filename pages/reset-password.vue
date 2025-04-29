@@ -1,96 +1,93 @@
 <!-- reset-password.vue -->
 <script setup lang="ts">
-
 interface TokenVerifyResponse {
   email: string;
   token: string;
 }
 
-const route = useRoute()
-const token = computed(() => route.params.token as string)
+useHead({
+  title: "Reset Password | DevQuest",
+});
 
-const newPassword = ref('')
-const confirmPassword = ref('')
-const passwordError = ref('')
-const confirmError = ref('')
-const isLoading = ref(false)
-const resetSuccess = ref(false)
-const resetError = ref('')
-const tokenValid = ref(false)
-const tokenChecked = ref(false)
-const userEmail = ref('')
+const route = useRoute();
+const token = computed(() => route.params.token as string);
+
+const newPassword = ref("");
+const confirmPassword = ref("");
+const passwordError = ref("");
+const confirmError = ref("");
+const isLoading = ref(false);
+const resetSuccess = ref(false);
+const resetError = ref("");
+const tokenValid = ref(false);
+const tokenChecked = ref(false);
+const userEmail = ref("");
 
 // Validate the token on page load
 onMounted(async () => {
   if (!token.value) {
-    resetError.value = 'Invalid reset token'
-    tokenChecked.value = true
-    return
+    resetError.value = "Invalid reset token";
+    tokenChecked.value = true;
+    return;
   }
 
   try {
-  isLoading.value = true
-  const response = await $fetch<TokenVerifyResponse>(`http://localhost:8080/api/reset-password/verify/${token.value}`, {
-    method: 'GET'
-  })
-  
-    tokenValid.value = true
-    userEmail.value = response.email
-  } catch (error) {
-    console.error('Invalid token:', error)
-    resetError.value = 'This password reset link is invalid or has expired.'
-  } finally {
-    isLoading.value = false
-    tokenChecked.value = true
-  }
+    isLoading.value = true;
+    const response = await useNuxtApp().$api<TokenVerifyResponse>(`/reset-password/verify/${token.value}`, {
+      method: "GET",
+    });
 
-})
+    tokenValid.value = true;
+    userEmail.value = response.email;
+  } catch (error) {
+    console.error("Invalid token:", error);
+    resetError.value = "This password reset link is invalid or has expired.";
+  } finally {
+    isLoading.value = false;
+    tokenChecked.value = true;
+  }
+});
 
 function validatePassword() {
   if (newPassword.value.length < 8) {
-    passwordError.value = 'Password must be at least 8 characters long'
+    passwordError.value = "Password must be at least 8 characters long";
   } else {
-    passwordError.value = ''
+    passwordError.value = "";
   }
 }
 
 function validateConfirmPassword() {
   if (confirmPassword.value !== newPassword.value) {
-    confirmError.value = 'Passwords do not match'
+    confirmError.value = "Passwords do not match";
   } else {
-    confirmError.value = ''
+    confirmError.value = "";
   }
 }
 
 const isValid = computed(() => {
-  return (
-    newPassword.value &&
-    confirmPassword.value &&
-    !passwordError.value &&
-    !confirmError.value
-  )
-})
+  return newPassword.value && confirmPassword.value && !passwordError.value && !confirmError.value;
+});
 
 async function handleResetPassword() {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
   try {
-    isLoading.value = true
-    
-    await $fetch('http://localhost:8080/api/reset-password/reset', {
-      method: 'POST',
+    isLoading.value = true;
+
+    await useNuxtApp().$api("/reset-password/reset", {
+      method: "POST",
       body: {
         token: token.value,
-        newPassword: newPassword.value
-      }
-    })
-    
-    resetSuccess.value = true
+        newPassword: newPassword.value,
+      },
+    });
+
+    resetSuccess.value = true;
   } catch (error) {
-    console.error('Password reset failed:', error)
-    resetError.value = 'Failed to reset password. Please try again or request a new reset link.'
+    console.error("Password reset failed:", error);
+    resetError.value = "Failed to reset password. Please try again or request a new reset link.";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>
@@ -143,7 +140,9 @@ async function handleResetPassword() {
           </div>
 
           <div class="mb-6">
-            <label class="mb-2 block font-medium text-gray-700 dark:text-gray-200" for="confirm-password">Confirm Password</label>
+            <label class="mb-2 block font-medium text-gray-700 dark:text-gray-200" for="confirm-password"
+              >Confirm Password</label
+            >
             <input
               v-model="confirmPassword"
               type="password"

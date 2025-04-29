@@ -1,66 +1,71 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue"
-import { useAuthStore } from "~/stores/authStore"
-import { useProfilePicStore } from "~/stores/profilePicStore"
-import { usePointsStore } from "~/stores/pointsStore"
+import { ref, watch, onMounted } from "vue";
+import { useAuthStore } from "~/stores/authStore";
+import { useProfilePicStore } from "~/stores/profilePicStore";
+import { usePointsStore } from "~/stores/pointsStore";
 
 // Add middleware to ensure auth
 definePageMeta({
-  middleware: ["auth"]
-})
+  middleware: ["auth"],
+});
 
-const profilePicUpdateTrigger = ref(Date.now())
-const authStore = useAuthStore()
-const profilePicStore = useProfilePicStore()
-const pointsStore = usePointsStore()
+useHead({
+  title: "Leaderboard | DevQuest",
+});
+
+const profilePicUpdateTrigger = ref(Date.now());
+const authStore = useAuthStore();
+const profilePicStore = useProfilePicStore();
+const pointsStore = usePointsStore();
 
 // Load data on mount
 onMounted(async () => {
   if (authStore.isAuthenticated) {
-    await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(10)])
+    await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(10)]);
   }
-})
+});
 
 // Helper function to determine if a user is the current user
 const isCurrentUser = (username: string) => {
-  return username === authStore.username
-}
+  return username === authStore.username;
+};
 
 const refreshProfilePic = async () => {
-  await profilePicStore.fetchUserProfilePic()
-  profilePicUpdateTrigger.value = Date.now()
-}
+  await profilePicStore.fetchUserProfilePic();
+  profilePicUpdateTrigger.value = Date.now();
+};
 
 // Computed properties for user stats
-const userStreak = computed(() => pointsStore.currentStreak)
-const userPoints = computed(() => pointsStore.totalPoints)
+const userStreak = computed(() => pointsStore.currentStreak);
+const userPoints = computed(() => pointsStore.totalPoints);
 const completedExercises = computed(() => {
   return (
-    pointsStore.recentTransactions?.filter(transaction => transaction.transactionType === "correct_answer").length || 0
-  )
-})
+    pointsStore.recentTransactions?.filter((transaction) => transaction.transactionType === "correct_answer").length ||
+    0
+  );
+});
 
 // Watch for auth state changes
 watch(
   () => authStore.isAuthenticated,
-  async isAuthenticated => {
+  async (isAuthenticated) => {
     if (isAuthenticated) {
-      await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(10)])
+      await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(10)]);
     }
-  }
-)
+  },
+);
 
 // Watch route changes
 if (process.client) {
-  const route = useRoute()
+  const route = useRoute();
   watch(
     () => route.path,
     () => {
       if (route.path === "/leaderboard" && authStore.isAuthenticated) {
-        refreshProfilePic()
+        refreshProfilePic();
       }
-    }
-  )
+    },
+  );
 }
 </script>
 
@@ -126,7 +131,7 @@ if (process.client) {
               'border-2 border-yellow-500': user.rank === 1,
               'border-2 border-gray-300': user.rank === 2,
               'border-2 border-amber-600': user.rank === 3,
-              border: user.rank > 3
+              border: user.rank > 3,
             }"
           >
             <div class="flex items-center space-x-4">
@@ -144,7 +149,7 @@ if (process.client) {
                 />
                 <img
                   v-else-if="user.profilePicture === 'custom'"
-                  :src="`http://localhost:8080/api/users/profilepic?type=image&username=${user.username}`"
+                  :src="`${useRuntimeConfig().public.apiBase}/users/profilepic?type=image&username=${user.username}`"
                   :alt="user.username"
                   class="h-full w-full object-contain p-1"
                   @error="($event.target as HTMLImageElement).src = '/images/profilepics/default.png'"

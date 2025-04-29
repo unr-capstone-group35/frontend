@@ -1,18 +1,22 @@
 <script setup lang="ts">
-const username = ref("")
-const password = ref("")
-const showPassword = ref(false)
-const isLoading = ref(false)
-const authStore = useAuthStore()
+const username = ref("");
+const password = ref("");
+const showPassword = ref(false);
+const isLoading = ref(false);
+const authStore = useAuthStore();
+
+useHead({
+  title: "Signin | DevQuest",
+});
 
 async function handleSignIn() {
   try {
-    isLoading.value = true
-    await authStore.signin(username.value, password.value)
+    isLoading.value = true;
+    await authStore.signin(username.value, password.value);
   } catch (error) {
-    console.error("Signin failed:", error)
+    console.error("Signin failed:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>

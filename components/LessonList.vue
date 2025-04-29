@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = defineProps<{
-  courseId: string
-  lessons: Lesson[]
-}>()
+  courseId: string;
+  lessons: Lesson[];
+}>();
 
-const { progressStore, selectLesson, canAccessLesson, getLessonClasses } = useLearn()
+const { progressStore, selectLesson, canAccessLesson, getLessonClasses } = useLearn();
 </script>
 
 <template>

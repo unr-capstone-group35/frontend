@@ -2,263 +2,263 @@
 const props = defineProps({
   exercise: {
     type: Object,
-    required: true
+    required: true,
   },
   onSubmitAnswer: {
     type: Function,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const emit = defineEmits(["next-exercise"])
+const emit = defineEmits(["next-exercise"]);
 
-const exerciseStore = useExerciseStore()
-const pointsStore = usePointsStore()
-const isCorrect = ref(false)
-const showFeedback = ref(false)
-const selectedAnswer = ref(null)
-const pointsAwarded = ref(0)
-const currentStreak = ref(0)
-const previousStreak = ref(0)
-const previousPoints = ref(0)
-const displayedTotalPoints = ref(0)
-const streakIncreased = ref(false)
-const animateStreak = ref(false)
-const animatePoints = ref(false)
-const shakeStreak = ref(false)
-const initialLoad = ref(true)
+const exerciseStore = useExerciseStore();
+const pointsStore = usePointsStore();
+const isCorrect = ref(false);
+const showFeedback = ref(false);
+const selectedAnswer = ref(null);
+const pointsAwarded = ref(0);
+const currentStreak = ref(0);
+const previousStreak = ref(0);
+const previousPoints = ref(0);
+const displayedTotalPoints = ref(0);
+const streakIncreased = ref(false);
+const animateStreak = ref(false);
+const animatePoints = ref(false);
+const shakeStreak = ref(false);
+const initialLoad = ref(true);
 
 // Get the course and lesson IDs
-const route = useRoute()
-const courseId = computed(() => route.query.course as string)
-const lessonId = computed(() => route.query.lesson as string)
+const route = useRoute();
+const courseId = computed(() => route.query.course as string);
+const lessonId = computed(() => route.query.lesson as string);
 
 // Get streak information
 const lessonStreak = computed(() => {
-  if (!courseId.value || !lessonId.value) return 0
-  return pointsStore.getLessonStreak(courseId.value, lessonId.value)
-})
+  if (!courseId.value || !lessonId.value) return 0;
+  return pointsStore.getLessonStreak(courseId.value, lessonId.value);
+});
 
 // Load points data
 onMounted(async () => {
   if (courseId.value && lessonId.value) {
-    await pointsStore.fetchLessonPoints(courseId.value, lessonId.value)
-    await pointsStore.fetchPointsSummary()
-    displayedTotalPoints.value = pointsStore.totalPoints
-    previousPoints.value = displayedTotalPoints.value
-    
-    const key = `${courseId.value}-${lessonId.value}`
-    const lessonPoints = pointsStore.lessonPoints[key]
+    await pointsStore.fetchLessonPoints(courseId.value, lessonId.value);
+    await pointsStore.fetchPointsSummary();
+    displayedTotalPoints.value = pointsStore.totalPoints;
+    previousPoints.value = displayedTotalPoints.value;
+
+    const key = `${courseId.value}-${lessonId.value}`;
+    const lessonPoints = pointsStore.lessonPoints[key];
     if (lessonPoints) {
-      currentStreak.value = lessonPoints.currentStreak
-      previousStreak.value = currentStreak.value
+      currentStreak.value = lessonPoints.currentStreak;
+      previousStreak.value = currentStreak.value;
     }
-    
+
     setTimeout(() => {
-      initialLoad.value = false
-    }, 500)
+      initialLoad.value = false;
+    }, 500);
   }
-})
+});
 
 const canSubmit = computed(() => {
   if (props.exercise.type === "ordering") {
-    return true
+    return true;
   }
-  return selectedAnswer.value !== null
-})
+  return selectedAnswer.value !== null;
+});
 
 // Reset state when exercise changes
 watch(
   () => props.exercise,
   () => {
-    isCorrect.value = false
-    showFeedback.value = false
-    selectedAnswer.value = null
-    pointsAwarded.value = 0
-    streakIncreased.value = false
-    animateStreak.value = false
-    animatePoints.value = false
-    shakeStreak.value = false
+    isCorrect.value = false;
+    showFeedback.value = false;
+    selectedAnswer.value = null;
+    pointsAwarded.value = 0;
+    streakIncreased.value = false;
+    animateStreak.value = false;
+    animatePoints.value = false;
+    shakeStreak.value = false;
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 // Watch for lesson points changes
 watch(
   () => pointsStore.lessonPoints,
   () => {
     if (courseId.value && lessonId.value && !initialLoad.value) {
-      const key = `${courseId.value}-${lessonId.value}`
-      const lessonPoints = pointsStore.lessonPoints[key]
+      const key = `${courseId.value}-${lessonId.value}`;
+      const lessonPoints = pointsStore.lessonPoints[key];
       if (lessonPoints) {
         // Check if streak increased
         if (lessonPoints.currentStreak > previousStreak.value) {
-          streakIncreased.value = true
-          animateStreak.value = true
+          streakIncreased.value = true;
+          animateStreak.value = true;
           setTimeout(() => {
-            animateStreak.value = false
-          }, 1500)
+            animateStreak.value = false;
+          }, 1500);
         }
 
         // Check if streak was reset to 0 (was > 0 before and now is 0)
         if (previousStreak.value > 0 && lessonPoints.currentStreak === 0) {
-          shakeStreak.value = true
+          shakeStreak.value = true;
           setTimeout(() => {
-            shakeStreak.value = false
-          }, 820) // Animation duration + buffer
+            shakeStreak.value = false;
+          }, 820); // Animation duration + buffer
         }
 
-        previousStreak.value = currentStreak.value
-        currentStreak.value = lessonPoints.currentStreak
+        previousStreak.value = currentStreak.value;
+        currentStreak.value = lessonPoints.currentStreak;
       }
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Watch for total points
 watch(
   () => pointsStore.summary,
   () => {
     if (pointsStore.summary && !initialLoad.value) {
-      previousPoints.value = displayedTotalPoints.value
-      displayedTotalPoints.value = pointsStore.totalPoints
+      previousPoints.value = displayedTotalPoints.value;
+      displayedTotalPoints.value = pointsStore.totalPoints;
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 const questionComponent = computed(() => {
   switch (props.exercise.type) {
     case "multiple_choice":
-      return resolveComponent("questions/MultipleChoice")
+      return resolveComponent("questions/MultipleChoice");
     case "true_false":
-      return resolveComponent("questions/TrueFalse")
+      return resolveComponent("questions/TrueFalse");
     case "fill_blank":
-      return resolveComponent("questions/FillBlank")
+      return resolveComponent("questions/FillBlank");
     case "ordering":
-      return resolveComponent("questions/Ordering")
+      return resolveComponent("questions/Ordering");
     case "matching":
-      return resolveComponent("questions/Matching")
+      return resolveComponent("questions/Matching");
     default:
-      return null
+      return null;
   }
-})
+});
 
 function updateAnswer(answer: any) {
-  console.log("Question Container - Answer updated:", answer)
-  selectedAnswer.value = answer
-  showFeedback.value = false
-  isCorrect.value = false // Reset correctness state
-  pointsAwarded.value = 0 // Reset points
-  streakIncreased.value = false // Reset streak increased flag
-  animateStreak.value = false
-  animatePoints.value = false
-  shakeStreak.value = false
+  console.log("Question Container - Answer updated:", answer);
+  selectedAnswer.value = answer;
+  showFeedback.value = false;
+  isCorrect.value = false; // Reset correctness state
+  pointsAwarded.value = 0; // Reset points
+  streakIncreased.value = false; // Reset streak increased flag
+  animateStreak.value = false;
+  animatePoints.value = false;
+  shakeStreak.value = false;
 }
 
 async function handleMainButton() {
   if (showFeedback.value) {
     // Handle retry
-    retryQuestion()
+    retryQuestion();
   } else {
     // Handle submit
-    await submitAnswer()
+    await submitAnswer();
   }
 }
 
 async function submitAnswer() {
   // For ordering, we should allow submission even if selectedAnswer is null
-  if (selectedAnswer.value === null && props.exercise.type !== "ordering") return
+  if (selectedAnswer.value === null && props.exercise.type !== "ordering") return;
 
-  console.log("Question Container - Submitting answer:", selectedAnswer.value)
-  showFeedback.value = false // Reset feedback before new submission
-  streakIncreased.value = false // Reset streak increased flag
-  animateStreak.value = false
-  animatePoints.value = false
-  shakeStreak.value = false
+  console.log("Question Container - Submitting answer:", selectedAnswer.value);
+  showFeedback.value = false; // Reset feedback before new submission
+  streakIncreased.value = false; // Reset streak increased flag
+  animateStreak.value = false;
+  animatePoints.value = false;
+  shakeStreak.value = false;
 
   try {
     // Use the updated submission method that returns points info
-    const result = await props.onSubmitAnswer(selectedAnswer.value)
-    console.log("Question Container - Submission result:", result)
+    const result = await props.onSubmitAnswer(selectedAnswer.value);
+    console.log("Question Container - Submission result:", result);
 
     // The result might now be an object with isCorrect and points
     if (typeof result === "object" && result !== null) {
-      isCorrect.value = result.isCorrect
+      isCorrect.value = result.isCorrect;
       if (result.points) {
-        pointsAwarded.value = result.points
+        pointsAwarded.value = result.points;
       }
       if (result.currentStreak !== undefined) {
         if (result.currentStreak > previousStreak.value) {
-          streakIncreased.value = true
+          streakIncreased.value = true;
         }
 
         if (previousStreak.value > 0 && result.currentStreak === 0) {
-          shakeStreak.value = true
+          shakeStreak.value = true;
           setTimeout(() => {
-            shakeStreak.value = false
-          }, 820) // Animation duration + buffer
+            shakeStreak.value = false;
+          }, 820); // Animation duration + buffer
         }
 
-        previousStreak.value = currentStreak.value
-        currentStreak.value = result.currentStreak
+        previousStreak.value = currentStreak.value;
+        currentStreak.value = result.currentStreak;
       }
     } else {
       // Backward compatibility
-      isCorrect.value = !!result
+      isCorrect.value = !!result;
     }
 
-    showFeedback.value = true
+    showFeedback.value = true;
 
     // Refresh points data
     if (courseId.value && lessonId.value) {
-      await pointsStore.fetchLessonPoints(courseId.value, lessonId.value)
-      await pointsStore.fetchPointsSummary() // Refresh total points
-      previousPoints.value = displayedTotalPoints.value
-      displayedTotalPoints.value = pointsStore.totalPoints // Update displayed points
+      await pointsStore.fetchLessonPoints(courseId.value, lessonId.value);
+      await pointsStore.fetchPointsSummary(); // Refresh total points
+      previousPoints.value = displayedTotalPoints.value;
+      displayedTotalPoints.value = pointsStore.totalPoints; // Update displayed points
 
       // Trigger animations if correct
       if (isCorrect.value) {
         if (streakIncreased.value) {
-          animateStreak.value = true
+          animateStreak.value = true;
           setTimeout(() => {
-            animateStreak.value = false
-          }, 1500)
+            animateStreak.value = false;
+          }, 1500);
         }
 
         if (pointsAwarded.value > 0) {
-          animatePoints.value = true
+          animatePoints.value = true;
           setTimeout(() => {
-            animatePoints.value = false
-          }, 1500)
+            animatePoints.value = false;
+          }, 1500);
         }
       }
     }
   } catch (error) {
-    console.error("Error submitting answer:", error)
-    isCorrect.value = false
-    showFeedback.value = true
+    console.error("Error submitting answer:", error);
+    isCorrect.value = false;
+    showFeedback.value = true;
   }
 }
 
 function handleNextExercise() {
   if (isCorrect.value) {
-    emit("next-exercise")
+    emit("next-exercise");
   }
 }
 
 function retryQuestion() {
-  showFeedback.value = false
-  selectedAnswer.value = null
-  pointsAwarded.value = 0
-  streakIncreased.value = false
-  animateStreak.value = false
-  animatePoints.value = false
-  shakeStreak.value = false
+  showFeedback.value = false;
+  selectedAnswer.value = null;
+  pointsAwarded.value = 0;
+  streakIncreased.value = false;
+  animateStreak.value = false;
+  animatePoints.value = false;
+  shakeStreak.value = false;
 
   // Reset the current exercise state in the store
-  exerciseStore.resetCurrentExercise()
+  exerciseStore.resetCurrentExercise();
 }
 </script>
 
@@ -300,7 +300,7 @@ function retryQuestion() {
             class="ml-1 font-bold text-blue-600 transition-all duration-300 dark:text-blue-300"
             :class="{
               'scale-150 text-blue-500 dark:text-blue-200': animateStreak,
-              'shake-animation': shakeStreak
+              'shake-animation': shakeStreak,
             }"
           >
             {{ currentStreak }}
@@ -357,7 +357,7 @@ function retryQuestion() {
           :class="[
             showFeedback
               ? 'bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800'
-              : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
+              : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600',
           ]"
           :disabled="!canSubmit"
         >
@@ -371,7 +371,7 @@ function retryQuestion() {
           :class="[
             isCorrect
               ? 'bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600'
-              : 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-gray-800 dark:text-gray-600'
+              : 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-gray-800 dark:text-gray-600',
           ]"
           :disabled="!isCorrect"
         >

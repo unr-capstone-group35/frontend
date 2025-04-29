@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const authStore = useAuthStore()
+  const authStore = useAuthStore();
 
   /*
   // for debugging
@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     */
 
   // Initialize auth state from cookies
-  authStore.initializeFromCookie()
+  authStore.initializeFromCookie();
 
   /*
   // for debugging
@@ -23,17 +23,17 @@ export default defineNuxtRouteMiddleware((to, from) => {
     */
 
   // Define protected routes
-  const protectedRoutes = ["/dashboard", "/learn", "/start-learning"]
-  const authRoutes = ["/signin", "/signup", "/forgot-password"]
+  const protectedRoutes = ["/dashboard", "/learn", "/start-learning"];
+  const authRoutes = ["/signin", "/signup", "/forgot-password"];
 
   // If token is invalid and trying to access protected route
   if (!authStore.isTokenValid && protectedRoutes.includes(to.path)) {
-    authStore.clearSession() // Clear any invalid session data
-    return navigateTo("/signin")
+    authStore.clearSession(); // Clear any invalid session data
+    return navigateTo("/signin");
   }
 
   // If authenticated and trying to access auth pages
   if (authStore.isTokenValid && (authRoutes.includes(to.path) || to.path.startsWith("/reset-password"))) {
-    return navigateTo("/dashboard")
+    return navigateTo("/dashboard");
   }
-})
+});

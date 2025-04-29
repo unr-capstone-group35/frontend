@@ -1,65 +1,69 @@
 <script setup lang="ts">
 definePageMeta({
-  middleware: ["auth"]
-})
+  middleware: ["auth"],
+});
 
-const username = useAuthStore().username
-const showProfilePicSelector = ref(false)
+useHead({
+  title: "Dashboard | DevQuest",
+});
+
+const username = useAuthStore().username;
+const showProfilePicSelector = ref(false);
 
 // Initialize profile picture store
-const profilePicStore = useProfilePicStore()
+const profilePicStore = useProfilePicStore();
 // Initialize points store
-const pointsStore = usePointsStore()
+const pointsStore = usePointsStore();
 
-const totalPoints = ref(0)
-const currentStreak = ref(0)
-const dailyStreak = ref(0)
-const accuracyRate = ref(0)
-const totalAttempts = ref(0)
-const correctAttempts = ref(0)
-const exercisesCompleted = ref(0)
+const totalPoints = ref(0);
+const currentStreak = ref(0);
+const dailyStreak = ref(0);
+const accuracyRate = ref(0);
+const totalAttempts = ref(0);
+const correctAttempts = ref(0);
+const exercisesCompleted = ref(0);
 
 // Show loading indicators
-const isLoading = ref(true)
+const isLoading = ref(true);
 
 // Watch for changes in the points summary data
 watch(
   () => pointsStore.summary,
   () => {
     if (pointsStore.summary) {
-      totalPoints.value = pointsStore.totalPoints
-      currentStreak.value = pointsStore.currentStreak
+      totalPoints.value = pointsStore.totalPoints;
+      currentStreak.value = pointsStore.currentStreak;
 
-      const completed = pointsStore.recentTransactions.filter(tx => tx.transactionType === "correct_answer").length
-      exercisesCompleted.value = completed
+      const completed = pointsStore.recentTransactions.filter((tx) => tx.transactionType === "correct_answer").length;
+      exercisesCompleted.value = completed;
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Watch for changes in daily streak data
 watch(
   () => pointsStore.dailyStreak,
   () => {
     if (pointsStore.dailyStreak) {
-      dailyStreak.value = pointsStore.currentDailyStreak
+      dailyStreak.value = pointsStore.currentDailyStreak;
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Watch for changes in accuracy data
 watch(
   () => pointsStore.accuracyStats,
   () => {
     if (pointsStore.accuracyStats) {
-      accuracyRate.value = pointsStore.accuracyRate
-      totalAttempts.value = pointsStore.totalAttempts
-      correctAttempts.value = pointsStore.correctAttempts
+      accuracyRate.value = pointsStore.accuracyRate;
+      totalAttempts.value = pointsStore.totalAttempts;
+      correctAttempts.value = pointsStore.correctAttempts;
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Fetch points data on component mount
 onMounted(async () => {
@@ -67,24 +71,24 @@ onMounted(async () => {
     await Promise.all([
       pointsStore.fetchPointsSummary(100),
       pointsStore.fetchDailyStreak(),
-      pointsStore.fetchAccuracyStats()
-    ])
+      pointsStore.fetchAccuracyStats(),
+    ]);
   } catch (error) {
-    console.error("Error loading stats:", error)
+    console.error("Error loading stats:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-})
+});
 
 // Handle edit profile pic button click
 const handleProfilePicEdit = () => {
-  showProfilePicSelector.value = true
-}
+  showProfilePicSelector.value = true;
+};
 
 // Format accuracy rate as percentage without decimal points
 const formattedAccuracy = computed(() => {
-  return Math.round(accuracyRate.value) + "%"
-})
+  return Math.round(accuracyRate.value) + "%";
+});
 </script>
 
 <template>

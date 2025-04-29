@@ -4,13 +4,13 @@ export default {
   name: "RoadmapPage",
 
   setup() {
-    const courseStore = useCourseStore()
-    const router = useRouter()
+    const courseStore = useCourseStore();
+    const router = useRouter();
 
     return {
       courseStore,
-      router
-    }
+      router,
+    };
   },
 
   data() {
@@ -19,18 +19,18 @@ export default {
         {
           id: "cs-basics",
           name: "Computer Science Basics",
-          description: "Master the fundamental concepts of computer science and programming"
+          description: "Master the fundamental concepts of computer science and programming",
         },
         {
           id: "data-structures",
           name: "Data Structures",
-          description: "Dive deep into essential data structures that power modern software"
+          description: "Dive deep into essential data structures that power modern software",
         },
         {
           id: "algorithms",
           name: "Algorithms",
-          description: "Master complex algorithms and optimization techniques used in modern software development"
-        }
+          description: "Master complex algorithms and optimization techniques used in modern software development",
+        },
       ],
 
       selectedTopic: null,
@@ -38,84 +38,84 @@ export default {
         {
           id: 1,
           name: "Top Learner",
-          value: "User123"
+          value: "User123",
         },
         {
           id: 2,
           name: "Completed Topics",
-          value: "15"
+          value: "15",
         },
         {
           id: 3,
           name: "Total Points",
-          value: "3450"
-        }
+          value: "3450",
+        },
       ],
-      roadmapSteps: []
-    }
+      roadmapSteps: [],
+    };
   },
 
   mounted() {
-    const currentCourseStore = this.courseStore
+    const currentCourseStore = this.courseStore;
 
     if (currentCourseStore.selectedCourse) {
-      const selectedCourseId = currentCourseStore.selectedCourse.id
+      const selectedCourseId = currentCourseStore.selectedCourse.id;
       const matchingTopic = this.topics.find(function (topic) {
-        return topic.id === selectedCourseId
-      })
+        return topic.id === selectedCourseId;
+      });
 
       if (matchingTopic) {
-        this.selectTopic(matchingTopic)
+        this.selectTopic(matchingTopic);
       }
     }
   },
 
   methods: {
     getTopicClasses(topicId) {
-      let baseClasses = "p-4 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition"
+      let baseClasses = "p-4 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition";
 
       if (this.selectedTopic) {
-        const isSelected = this.selectedTopic.id === topicId
+        const isSelected = this.selectedTopic.id === topicId;
 
         if (isSelected) {
-          baseClasses = baseClasses + " bg-emerald-200 dark:bg-emerald-800"
+          baseClasses = baseClasses + " bg-emerald-200 dark:bg-emerald-800";
         }
       }
 
-      return baseClasses
+      return baseClasses;
     },
 
     getMainContent() {
-      let hasSelectedTopic
+      let hasSelectedTopic;
       if (this.selectedTopic !== null) {
-        hasSelectedTopic = true
+        hasSelectedTopic = true;
       } else {
-        hasSelectedTopic = false
+        hasSelectedTopic = false;
       }
-      return hasSelectedTopic
+      return hasSelectedTopic;
     },
 
     getEmptyState() {
-      let hasSelectedTopic
+      let hasSelectedTopic;
       if (this.selectedTopic !== null) {
-        hasSelectedTopic = true
+        hasSelectedTopic = true;
       } else {
-        hasSelectedTopic = false
+        hasSelectedTopic = false;
       }
-      return !hasSelectedTopic
+      return !hasSelectedTopic;
     },
 
     selectTopic(topic) {
-      this.selectedTopic = topic
+      this.selectedTopic = topic;
 
-      const topicId = topic.id
-      const availableCourses = this.courseStore.courses
+      const topicId = topic.id;
+      const availableCourses = this.courseStore.courses;
 
       if (availableCourses[topicId]) {
-        const courseSteps = availableCourses[topicId].steps
-        this.roadmapSteps = courseSteps
+        const courseSteps = availableCourses[topicId].steps;
+        this.roadmapSteps = courseSteps;
       } else {
-        this.roadmapSteps = []
+        this.roadmapSteps = [];
       }
     },
 
@@ -125,14 +125,14 @@ export default {
         query: {
           course: this.selectedTopic.id,
           lesson: step.lessonId,
-          exercise: step.exerciseId
-        }
-      }
+          exercise: step.exerciseId,
+        },
+      };
 
-      this.router.push(navigationConfig)
-    }
-  }
-}
+      this.router.push(navigationConfig);
+    },
+  },
+};
 </script>
 
 <style scoped>

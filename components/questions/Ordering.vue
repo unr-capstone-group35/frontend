@@ -1,90 +1,90 @@
 <script setup>
-import { ref, watch, onMounted } from "vue"
-import draggable from "vuedraggable/src/vuedraggable"
+import { ref, watch, onMounted } from "vue";
+import draggable from "vuedraggable/src/vuedraggable";
 
 const props = defineProps({
   exercise: {
     type: Object,
-    required: true
+    required: true,
   },
   selectedAnswer: {
     type: Array,
-    default: null
+    default: null,
   },
   showFeedback: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const emit = defineEmits(["update-answer"])
+const emit = defineEmits(["update-answer"]);
 
-const orderedItems = ref([])
+const orderedItems = ref([]);
 
 onMounted(() => {
-  initializeItems()
-})
+  initializeItems();
+});
 
 watch(
   () => props.exercise,
   () => {
-    initializeItems()
+    initializeItems();
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 watch(
   () => props.selectedAnswer,
-  newVal => {
+  (newVal) => {
     if (newVal === null) {
-      initializeItems()
+      initializeItems();
     }
-  }
-)
+  },
+);
 
 function initializeItems() {
   if (!props.exercise?.items) {
-    console.warn("No items found in exercise")
-    return
+    console.warn("No items found in exercise");
+    return;
   }
 
   const items = props.exercise.items.map((text, index) => ({
     id: `item-${index}`,
     text,
-    originalIndex: index
-  }))
+    originalIndex: index,
+  }));
 
-  orderedItems.value = shuffleArray(items)
-  handleChange()
+  orderedItems.value = shuffleArray(items);
+  handleChange();
 }
 
 function shuffleArray(array) {
-  const shuffled = [...array]
+  const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  return shuffled
+  return shuffled;
 }
 
 function handleChange() {
   if (orderedItems.value.length > 0) {
-    const indices = orderedItems.value.map(item => item.originalIndex)
-    emit("update-answer", indices.map(Number))
+    const indices = orderedItems.value.map((item) => item.originalIndex);
+    emit("update-answer", indices.map(Number));
   }
 }
 
 function getItemClasses(item, index) {
-  const baseClasses = "bg-white dark:bg-gray-800 border"
+  const baseClasses = "bg-white dark:bg-gray-800 border";
 
   if (!props.showFeedback) {
-    return `${baseClasses} border-gray-200 dark:border-gray-700`
+    return `${baseClasses} border-gray-200 dark:border-gray-700`;
   }
 
-  const isCorrect = item.originalIndex === props.exercise.correctOrder[index]
+  const isCorrect = item.originalIndex === props.exercise.correctOrder[index];
   return isCorrect
     ? `${baseClasses} border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-900/20`
-    : `${baseClasses} border-red-500 dark:border-red-400 bg-red-50 dark:bg-red-900/20`
+    : `${baseClasses} border-red-500 dark:border-red-400 bg-red-50 dark:bg-red-900/20`;
 }
 </script>
 
@@ -149,7 +149,7 @@ function getItemClasses(item, index) {
             :class="[
               'flex-1 rounded-lg p-4 text-gray-900 transition-all duration-200 dark:text-white',
               'hover:bg-gray-50 dark:hover:bg-gray-700',
-              getItemClasses(element, orderedItems.indexOf(element))
+              getItemClasses(element, orderedItems.indexOf(element)),
             ]"
           >
             {{ element.text }}

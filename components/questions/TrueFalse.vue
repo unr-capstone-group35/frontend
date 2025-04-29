@@ -2,28 +2,28 @@
 const props = defineProps({
   exercise: {
     type: Object,
-    required: true
+    required: true,
   },
   selectedAnswer: {
     type: Boolean,
-    default: null
-  }
-})
+    default: null,
+  },
+});
 
-const emit = defineEmits(["update-answer"])
+const emit = defineEmits(["update-answer"]);
 
 function selectAnswer(value) {
-  emit("update-answer", value)
+  emit("update-answer", value);
 }
 
 function getChoiceClasses(option) {
-  const baseClasses = "border transition-colors"
+  const baseClasses = "border transition-colors";
   const selectedClasses =
     props.selectedAnswer === option
       ? "bg-blue-100 dark:bg-blue-900 border-blue-500"
-      : "bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600"
+      : "bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600";
 
-  return `${baseClasses} ${selectedClasses}`
+  return `${baseClasses} ${selectedClasses}`;
 }
 </script>
 

@@ -1,35 +1,16 @@
 <script setup lang="ts">
-const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === "dark")
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === "dark");
 
 const toggleTheme = () => {
-  colorMode.preference = isDark.value ? "light" : "dark"
-}
+  colorMode.preference = isDark.value ? "light" : "dark";
+};
 
-const route = useRoute()
-const isMenuOpen = ref(false)
-
-// Import the auth store
-const authStore = useAuthStore()
-
-const showHamburger = computed(() => {
-  const excludedRoutes = ["/signin", "/signup"]
-
-  if (excludedRoutes.includes(route.path)) {
-    return false
-  }
-
-  if (route.path === "/") {
-    return authStore.isAuthenticated
-  }
-
-  // Show on all other routes
-  return true
-})
+const isMenuOpen = ref(false);
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
+  isMenuOpen.value = !isMenuOpen.value;
+};
 </script>
 
 <template>
@@ -51,7 +32,7 @@ const toggleMenu = () => {
 
           <!-- Hamburger Menu Button -->
           <button
-            v-if="showHamburger"
+            v-if="useAuthStore().isLoggedIn"
             @click="toggleMenu"
             class="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
             aria-label="Toggle menu"
@@ -62,7 +43,7 @@ const toggleMenu = () => {
       </nav>
     </header>
 
-    <UserSidebar :is-open="isMenuOpen" @close="toggleMenu" />
+    <UserSidebar v-if="useAuthStore().isLoggedIn" :is-open="isMenuOpen" @close="toggleMenu" />
   </div>
 </template>
 
