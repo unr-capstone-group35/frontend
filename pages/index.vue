@@ -41,7 +41,8 @@ const gameFeatures = ref([
               The free, fun, and effective way to learn programming concepts!
             </h1>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
-              Master programming fundamentals through interactive lessons and hands-on coding challenges.
+              Learn programming concepts through interactive exercises and reference materials in a gamified,
+              competitive way.
             </p>
             <div class="mx-auto flex max-w-md flex-col gap-4 sm:flex-row lg:mx-0">
               <NuxtLink
