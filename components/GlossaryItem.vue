@@ -263,6 +263,16 @@ const glossaryItems = ref([
     isExampleVisible: false,
   },
   {
+    term: "Programming",
+    definition:
+      "The process of creating a set of instructions that tell a computer how to perform a task or solve a problem.",
+    example: "console.log('Hello, World!');",
+    explanation:
+      "This simple line of code instructs the computer to display the text 'Hello, World!' in the console, demonstrating a basic programming instruction.",
+    category: "Basics",
+    isExampleVisible: false,
+  },
+  {
     term: "Function",
     definition:
       "A reusable block of code that performs a specific task when called and can accept inputs and return outputs.",
@@ -287,24 +297,7 @@ const glossaryItems = ref([
     category: "Data Structures",
     isExampleVisible: false,
   },
-  {
-    term: "Recursion",
-    definition: "A programming technique where a function calls itself to solve a problem.",
-    example: "function factorial(n) {\n  if (n <= 1) return 1;\n  return n * factorial(n-1);\n}",
-    explanation:
-      "This recursive function calculates the factorial of a number by calling itself with a smaller input until it reaches the base case.",
-    category: "Algorithms",
-    isExampleVisible: false,
-  },
   // additional basics
-  {
-    term: "Program",
-    definition: "A set of instructions written in a programming language that tells a computer what tasks to perform.",
-    example: "console.log('Hello, World!');",
-    explanation: "This simple program outputs the text 'Hello, World!' to the console.",
-    category: "Basics",
-    isExampleVisible: false,
-  },
   {
     term: "Bug",
     definition:
