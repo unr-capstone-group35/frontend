@@ -24,20 +24,36 @@ const gameFeatures = ref([
   "Compete with friends on leaderboards",
   "Unlock new challenges as you progress",
 ]);
+
+// Detect if we're on mobile
+const isMobile = ref(false);
+
+onMounted(() => {
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile);
+});
+
+function checkMobile() {
+  isMobile.value = window.innerWidth < 768; // Common breakpoint for mobile
+}
 </script>
 
 <template>
   <div>
     <!-- Start Learning Card -->
-    <section class="page-container flex items-start">
-      <div class="container mx-auto px-4 pt-20">
-        <div class="mb-12 text-center">
-          <span class="animate-gradient bg-gradient-text text-6xl font-bold">DevQuest</span>
+    <section class="page-container flex items-start min-h-screen py-12">
+      <div class="container mx-auto px-4 pt-10 md:pt-20">
+        <div class="mb-8 md:mb-12 text-center">
+          <span class="animate-gradient bg-gradient-text text-4xl md:text-6xl font-bold">DevQuest</span>
         </div>
         <!-- First card content-->
-        <div class="mx-auto mt-32 flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
-          <div class="order-2 text-center lg:order-1 lg:w-1/2 lg:text-left">
-            <h1 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">
+        <div class="mx-auto mt-8 md:mt-32 flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
+          <div class="order-1 text-center lg:order-1 lg:w-1/2 lg:text-left">
+            <h1 class="mb-6 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">
               The free, fun, and effective way to learn programming concepts!
             </h1>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
@@ -59,7 +75,7 @@ const gameFeatures = ref([
               </NuxtLink>
             </div>
           </div>
-          <div class="order-1 lg:order-2 lg:w-1/2">
+          <div v-if="!isMobile" class="order-2 lg:order-2 lg:w-1/2">
             <div class="relative">
               <div class="background-card"></div>
               <div class="card relative p-8">
@@ -118,12 +134,12 @@ const gameFeatures = ref([
 
     <!-- What You'll Learn Card -->
     <section
-      class="flex h-screen items-center bg-gradient-to-b from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950"
+      class="flex min-h-screen py-12 items-center bg-gradient-to-b from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950"
     >
       <div class="container mx-auto px-4">
-        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-20 lg:flex-row">
-          <div class="order-2 text-center lg:order-2 lg:w-1/2 lg:text-left">
-            <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">What You'll Learn</h2>
+        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 md:gap-20 lg:flex-row">
+          <div class="order-1 text-center lg:order-2 lg:w-1/2 lg:text-left">
+            <h2 class="mb-6 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">What You'll Learn</h2>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
               Dive deep into computer science fundamentals including algorithms, data structures, and programming
               patterns.
@@ -137,7 +153,7 @@ const gameFeatures = ref([
               </div>
             </div>
           </div>
-          <div class="order-1 lg:order-1 lg:w-1/2">
+          <div v-if="!isMobile" class="order-2 lg:order-1 lg:w-1/2">
             <div class="relative">
               <div class="background-card"></div>
               <div class="card relative p-8">
@@ -179,11 +195,11 @@ const gameFeatures = ref([
     </section>
 
     <!-- Game Mechanics Card -->
-    <section class="bg-page-gradient flex h-screen items-center">
+    <section class="bg-page-gradient flex min-h-screen py-12 items-center">
       <div class="container mx-auto px-4">
         <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
-          <div class="order-2 text-center lg:order-1 lg:w-1/2 lg:text-left">
-            <h2 class="mb-6 text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Game Mechanics</h2>
+          <div class="order-1 text-center lg:order-1 lg:w-1/2 lg:text-left">
+            <h2 class="mb-6 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Game Mechanics</h2>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
               Learn while having fun with game-like features that keep you motivated.
             </p>
@@ -196,7 +212,7 @@ const gameFeatures = ref([
               </div>
             </div>
           </div>
-          <div class="order-1 lg:order-2 lg:w-1/2">
+          <div v-if="!isMobile" class="order-2 lg:order-2 lg:w-1/2">
             <div class="relative">
               <div class="background-card"></div>
               <div class="card relative p-8">
@@ -234,15 +250,17 @@ const gameFeatures = ref([
 </template>
 
 <style scoped>
-/* Scrolling behavior */
-:deep(html) {
-  scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
-}
+/* Scrolling behavior - disabled on mobile */
+@media (min-width: 768px) {
+  :deep(html) {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+  }
 
-:deep(section) {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+  :deep(section) {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
 }
 
 /* Scrollbar hiding */
