@@ -299,14 +299,6 @@ const glossaryItems = ref([
   },
   // additional basics
   {
-    term: "Program",
-    definition: "A set of instructions written in a programming language that tells a computer what tasks to perform.",
-    example: "console.log('Hello, World!');",
-    explanation: "This simple program outputs the text 'Hello, World!' to the console.",
-    category: "Basics",
-    isExampleVisible: false,
-  },
-  {
     term: "Bug",
     definition:
       "An error or flaw in a program that causes it to produce incorrect results or behave in unintended ways.",
