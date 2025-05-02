@@ -21,7 +21,7 @@ const pointsStore = usePointsStore();
 // Load data on mount
 onMounted(async () => {
   if (authStore.isAuthenticated) {
-    await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(10)]);
+    await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(50)]);
   }
 });
 
@@ -50,7 +50,7 @@ watch(
   () => authStore.isAuthenticated,
   async (isAuthenticated) => {
     if (isAuthenticated) {
-      await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(10)]);
+      await Promise.all([refreshProfilePic(), pointsStore.fetchPointsSummary(100), pointsStore.fetchLeaderboard(50)]);
     }
   },
 );
