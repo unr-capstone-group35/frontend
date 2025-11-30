@@ -1,0 +1,12 @@
+services:
+  frontend:
+    image: capstone-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NUXT_PUBLIC_API_BASE: "https://devquestapi.tylerolson.dev/api"
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
