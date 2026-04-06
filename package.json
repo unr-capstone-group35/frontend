@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "capstone-frontend",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,26 +9,26 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@nuxtjs/color-mode": "^3.5.2",
     "@pinia/nuxt": "^0.7.0",
-    "nuxt": "^3.15.4",
+    "nuxt": "^3.21.2",
     "pinia": "^2.3.1",
-    "prettier-plugin-tailwindcss": "^0.6.11",
-    "vue": "latest",
-    "vue-draggable-next": "^2.2.1",
-    "vue-router": "latest",
+    "vue-draggable-next": "^2.3.0",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "^6.13.1",
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@vitejs/plugin-vue": "^5.2.4",
     "@vue/test-utils": "^2.4.6",
-    "jsdom": "^26.0.0",
-    "prettier": "^3.5.2",
-    "vitest": "^3.0.7"
+    "jsdom": "^26.1.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "vitest": "^3.2.4"
   },
-  "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af"
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
 }
