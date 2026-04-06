@@ -30,11 +30,11 @@ const isMobile = ref(false);
 
 onMounted(() => {
   checkMobile();
-  window.addEventListener('resize', checkMobile);
+  window.addEventListener("resize", checkMobile);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', checkMobile);
+  window.removeEventListener("resize", checkMobile);
 });
 
 function checkMobile() {
@@ -45,15 +45,15 @@ function checkMobile() {
 <template>
   <div>
     <!-- Start Learning Card -->
-    <section class="page-container flex items-start min-h-screen py-12">
+    <section class="page-container flex min-h-screen items-start py-12">
       <div class="container mx-auto px-4 pt-10 md:pt-20">
-        <div class="mb-8 md:mb-12 text-center">
-          <span class="animate-gradient bg-gradient-text text-4xl md:text-6xl font-bold">DevQuest</span>
+        <div class="mb-8 text-center md:mb-12">
+          <span class="animate-gradient bg-gradient-text text-4xl font-bold md:text-6xl">DevQuest</span>
         </div>
         <!-- First card content-->
-        <div class="mx-auto mt-8 md:mt-32 flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
+        <div class="mx-auto mt-8 flex max-w-6xl flex-col items-center justify-between gap-12 md:mt-32 lg:flex-row">
           <div class="order-1 text-center lg:order-1 lg:w-1/2 lg:text-left">
-            <h1 class="mb-6 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">
+            <h1 class="mb-6 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
               The free, fun, and effective way to learn programming concepts!
             </h1>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
@@ -134,12 +134,14 @@ function checkMobile() {
 
     <!-- What You'll Learn Card -->
     <section
-      class="flex min-h-screen py-12 items-center bg-gradient-to-b from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950"
+      class="flex min-h-screen items-center bg-gradient-to-b from-indigo-50 to-purple-50 py-12 dark:from-indigo-950 dark:to-purple-950"
     >
       <div class="container mx-auto px-4">
         <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 md:gap-20 lg:flex-row">
           <div class="order-1 text-center lg:order-2 lg:w-1/2 lg:text-left">
-            <h2 class="mb-6 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">What You'll Learn</h2>
+            <h2 class="mb-6 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+              What You'll Learn
+            </h2>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
               Dive deep into computer science fundamentals including algorithms, data structures, and programming
               patterns.
@@ -195,11 +197,13 @@ function checkMobile() {
     </section>
 
     <!-- Game Mechanics Card -->
-    <section class="bg-page-gradient flex min-h-screen py-12 items-center">
+    <section class="bg-page-gradient flex min-h-screen items-center py-12">
       <div class="container mx-auto px-4">
         <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-12 lg:flex-row">
           <div class="order-1 text-center lg:order-1 lg:w-1/2 lg:text-left">
-            <h2 class="mb-6 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white lg:text-5xl">Game Mechanics</h2>
+            <h2 class="mb-6 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+              Game Mechanics
+            </h2>
             <p class="mb-8 text-lg text-gray-600 dark:text-gray-300">
               Learn while having fun with game-like features that keep you motivated.
             </p>
